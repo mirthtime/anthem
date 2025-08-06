@@ -58,13 +58,13 @@ export const TripOnboarding = () => {
           </div>
           
           <div className="space-y-3">
-            <h1 className="text-5xl font-bold text-foreground">
+            <h1 className="text-4xl md:text-5xl font-bold text-foreground leading-tight">
               Ready to make your road trip
-              <span className="block text-transparent bg-clip-text bg-gradient-primary">
+              <span className="block text-transparent bg-clip-text bg-gradient-primary break-words">
                 unforgettable?
               </span>
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
               Create songs for each stop! Turn your real memories into personalized music that captures every moment.
             </p>
           </div>
@@ -95,9 +95,12 @@ export const TripOnboarding = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
             >
-              <Card className="text-center bg-gradient-card border-border shadow-card h-full">
+              <Card className="text-center bg-gradient-card border-border shadow-card h-full relative">
                 <CardContent className="p-6">
-                  <div className="flex justify-center mb-4">
+                  <div className="flex justify-center mb-4 relative">
+                    <div className="absolute -top-2 -left-2 w-8 h-8 rounded-full bg-gradient-primary text-white text-sm font-bold flex items-center justify-center shadow-glow">
+                      {index + 1}
+                    </div>
                     <div className="p-3 rounded-full bg-primary/10 border border-primary/20">
                       <step.icon className="h-8 w-8 text-primary" />
                     </div>
