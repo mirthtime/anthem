@@ -147,15 +147,38 @@ export const CreditPurchaseModal = ({ isOpen, onClose }: CreditPurchaseModalProp
         
         // Initialize embedded checkout with proper error handling
         try {
+          console.log('Attempting to initialize embedded checkout with client secret:', data.clientSecret);
+          console.log('Stripe object:', stripeRef.current);
+          console.log('Checkout ref element:', checkoutRef.current);
+          
           const checkout = await stripeRef.current.initEmbeddedCheckout({
             clientSecret: data.clientSecret,
           });
 
+          console.log('Checkout object created:', checkout);
+
           if (checkoutRef.current) {
+            console.log('Mounting checkout to element...');
             checkout.mount(checkoutRef.current);
+            console.log('Checkout mounted successfully');
+          } else {
+            console.error('Checkout ref element not found');
           }
         } catch (stripeError) {
           console.error('Stripe embedded checkout error:', stripeError);
+          console.error('Error details:', {
+            name: stripeError.name,
+            message: stripeError.message,
+            stack: stripeError.stack
+          });
+          
+          // Show user-friendly error
+          toast({
+            title: "Embedded Checkout Failed",
+            description: "Falling back to redirect checkout...",
+            variant: "destructive",
+          });
+          
           // Fallback to redirect checkout if embedded fails
           const { data: redirectData, error: redirectError } = await supabase.functions.invoke('purchase-credits', {
             body: { 
