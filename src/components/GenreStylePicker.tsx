@@ -1,10 +1,7 @@
-import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { InputField } from '@/components/ui/input-field';
 import { TextareaField } from '@/components/ui/textarea-field';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Music, Sparkles, X } from 'lucide-react';
+import { Music, Sparkles } from 'lucide-react';
 import { GENRES, STYLE_SUGGESTIONS } from '@/types';
 
 interface GenreStylePickerProps {
@@ -22,36 +19,12 @@ export const GenreStylePicker = ({
   onStyleChange,
   error 
 }: GenreStylePickerProps) => {
-  const [customTags, setCustomTags] = useState<string[]>([]);
-  const [tagInput, setTagInput] = useState('');
-
   const isCustomGenre = selectedGenre === 'Custom';
 
-  const addCustomTag = (tag: string) => {
-    const trimmedTag = tag.trim();
-    if (trimmedTag && !customTags.includes(trimmedTag)) {
-      const newTags = [...customTags, trimmedTag];
-      setCustomTags(newTags);
-      onStyleChange(newTags.join(', '));
-    }
-    setTagInput('');
-  };
-
-  const removeCustomTag = (tagToRemove: string) => {
-    const newTags = customTags.filter(tag => tag !== tagToRemove);
-    setCustomTags(newTags);
-    onStyleChange(newTags.join(', '));
-  };
-
   const handleSuggestionClick = (suggestion: string) => {
-    addCustomTag(suggestion);
-  };
-
-  const handleTagInputKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ',') {
-      e.preventDefault();
-      addCustomTag(tagInput);
-    }
+    const currentValue = customStyle || '';
+    const newValue = currentValue ? `${currentValue}, ${suggestion}` : suggestion;
+    onStyleChange(newValue);
   };
 
   return (
@@ -87,64 +60,26 @@ export const GenreStylePicker = ({
             <h3 className="font-medium text-foreground">Custom Style & Instruments</h3>
           </div>
           
-          {/* Current Tags */}
-          {customTags.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {customTags.map((tag, index) => (
-                <Badge 
-                  key={index} 
-                  variant="secondary" 
-                  className="gap-1 pr-1"
-                >
-                  {tag}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-4 w-4 p-0 hover:bg-destructive hover:text-destructive-foreground"
-                    onClick={() => removeCustomTag(tag)}
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
-                </Badge>
-              ))}
-            </div>
-          )}
-
-          {/* Tag Input */}
-          <InputField
-            placeholder="e.g., acoustic guitar, nostalgic, harmonica"
-            value={tagInput}
-            onChange={(e) => setTagInput(e.target.value)}
-            onKeyDown={handleTagInputKeyDown}
+          {/* Style Prompt Input */}
+          <TextareaField
+            placeholder="e.g., acoustic guitar, nostalgic, harmonica, folk rock with storytelling vocals"
+            value={customStyle}
+            onChange={(e) => onStyleChange(e.target.value)}
+            rows={3}
+            className="resize-none"
           />
-          
-          <div className="flex gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => addCustomTag(tagInput)}
-              disabled={!tagInput.trim()}
-            >
-              Add Tag
-            </Button>
-          </div>
 
           {/* Suggested Tags */}
           <div className="space-y-2">
             <p className="text-xs text-muted-foreground">
-              Click to add popular styles:
+              Click to add popular styles to your prompt:
             </p>
             <div className="flex flex-wrap gap-1">
               {STYLE_SUGGESTIONS.map((suggestion, index) => (
                 <button
                   key={index}
                   onClick={() => handleSuggestionClick(suggestion)}
-                  disabled={customTags.includes(suggestion)}
-                  className={`px-2 py-1 text-xs rounded-md border transition-all ${
-                    customTags.includes(suggestion)
-                      ? 'border-border bg-accent text-muted-foreground cursor-not-allowed'
-                      : 'border-border hover:border-primary hover:bg-primary/10 text-muted-foreground hover:text-primary cursor-pointer'
-                  }`}
+                  className="px-2 py-1 text-xs rounded-md border transition-all border-border hover:border-primary hover:bg-primary/10 text-muted-foreground hover:text-primary cursor-pointer"
                 >
                   {suggestion}
                 </button>
