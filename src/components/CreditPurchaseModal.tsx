@@ -48,10 +48,6 @@ const loadStripe = async (): Promise<any> => {
 
 export const CreditPurchaseModal = ({ isOpen, onClose }: CreditPurchaseModalProps) => {
   const [loading, setLoading] = useState<string | null>(null);
-  const [checkoutLoading, setCheckoutLoading] = useState(false);
-  const [showCheckout, setShowCheckout] = useState(false);
-  const checkoutRef = useRef<HTMLDivElement>(null);
-  const stripeRef = useRef<any>(null);
 
   const packages = [
     {
@@ -80,34 +76,8 @@ export const CreditPurchaseModal = ({ isOpen, onClose }: CreditPurchaseModalProp
     },
   ];
 
-  useEffect(() => {
-    if (isOpen) {
-      loadStripe().then((stripe) => {
-        stripeRef.current = stripe;
-        console.log('Stripe initialized successfully:', !!stripe);
-      }).catch((error) => {
-        console.error('Failed to initialize Stripe:', error);
-        toast({
-          title: "Payment System Error",
-          description: error.message,
-          variant: "destructive",
-        });
-      });
-    }
-  }, [isOpen]);
-
   const handlePurchase = async (packageType: string) => {
-    if (!stripeRef.current) {
-      toast({
-        title: "Loading Payment System",
-        description: "Please wait a moment and try again.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setLoading(packageType);
-    setCheckoutLoading(true);
     
     try {
       console.log('Starting purchase for package:', packageType);
@@ -121,11 +91,11 @@ export const CreditPurchaseModal = ({ isOpen, onClose }: CreditPurchaseModalProp
       
       console.log('User authenticated, calling purchase-credits function...');
       
-      // Use Supabase function with proper error handling
+      // Use Supabase function to create checkout session
       const { data, error } = await supabase.functions.invoke('purchase-credits', {
         body: { 
           packageType,
-          mode: 'embedded'
+          mode: 'payment'
         }
       });
 
@@ -141,62 +111,16 @@ export const CreditPurchaseModal = ({ isOpen, onClose }: CreditPurchaseModalProp
         throw new Error(data.error);
       }
 
-      if (data?.clientSecret) {
-        console.log('Received client secret, initializing embedded checkout...');
-        setShowCheckout(true);
-        
-        // Initialize embedded checkout with proper error handling
-        try {
-          console.log('Attempting to initialize embedded checkout with client secret:', data.clientSecret);
-          console.log('Current domain:', window.location.hostname);
-          
-          const checkout = await stripeRef.current.initEmbeddedCheckout({
-            clientSecret: data.clientSecret,
-          });
-
-          console.log('Checkout object created successfully');
-
-          if (checkoutRef.current) {
-            checkout.mount(checkoutRef.current);
-            console.log('Checkout mounted successfully');
-          }
-        } catch (stripeError) {
-          console.error('Stripe embedded checkout error:', stripeError);
-          
-          // Check for domain-related errors
-          if (stripeError.message?.includes('domain') || stripeError.message?.includes('origin')) {
-            toast({
-              title: "Domain Configuration Required",
-              description: "Please add your domain to Stripe's embedded checkout allowlist.",
-              variant: "destructive",
-            });
-          } else {
-            toast({
-              title: "Using Standard Checkout",
-              description: "Opening secure checkout in new tab...",
-            });
-          }
-          
-          // Always fall back to redirect checkout
-          const { data: redirectData, error: redirectError } = await supabase.functions.invoke('purchase-credits', {
-            body: { 
-              packageType,
-              mode: 'payment'
-            }
-          });
-          
-          if (redirectError || redirectData?.error) {
-            throw new Error('Failed to initialize payment');
-          }
-          
-          if (redirectData?.url) {
-            window.open(redirectData.url, '_blank');
-            onClose();
-            return;
-          }
-        }
+      if (data?.url) {
+        // Open Stripe checkout in a new tab
+        window.open(data.url, '_blank');
+        toast({
+          title: "Redirecting to Checkout",
+          description: "Opening secure payment in a new tab...",
+        });
+        onClose();
       } else {
-        throw new Error('No client secret received from server');
+        throw new Error('No checkout URL received from server');
       }
     } catch (error: any) {
       console.error('Purchase failed:', error);
@@ -222,14 +146,11 @@ export const CreditPurchaseModal = ({ isOpen, onClose }: CreditPurchaseModalProp
       }
     } finally {
       setLoading(null);
-      setCheckoutLoading(false);
     }
   };
 
   const handleClose = () => {
-    setShowCheckout(false);
     setLoading(null);
-    setCheckoutLoading(false);
     onClose();
   };
 
@@ -237,43 +158,13 @@ export const CreditPurchaseModal = ({ isOpen, onClose }: CreditPurchaseModalProp
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold">
-            {showCheckout ? "Complete Your Purchase" : "Choose Your Credit Package"}
-          </DialogTitle>
+          <DialogTitle className="text-2xl font-bold">Choose Your Credit Package</DialogTitle>
           <DialogDescription>
-            {showCheckout 
-              ? "Secure payment powered by Stripe with Apple Pay support on mobile"
-              : "Credits are used to generate AI songs for your road trip memories. Each credit = 1 song."
-            }
+            Credits are used to generate AI songs for your road trip memories. Each credit = 1 song.
           </DialogDescription>
         </DialogHeader>
 
-        {checkoutLoading && (
-          <div className="flex items-center justify-center py-8">
-            <div className="text-center space-y-2">
-              <Loader2 className="h-8 w-8 animate-spin mx-auto" />
-              <p className="text-sm text-muted-foreground">Setting up secure payment...</p>
-            </div>
-          </div>
-        )}
-
-        {showCheckout && !checkoutLoading && (
-          <div className="space-y-4">
-            <div 
-              ref={checkoutRef} 
-              className="min-h-[500px] border border-border rounded-lg"
-            />
-            <div className="text-center text-sm text-muted-foreground">
-              <p>✓ Secure payment powered by Stripe</p>
-              <p>✓ Apple Pay available on mobile devices</p>
-              <p>✓ No subscription required • One-time purchase</p>
-            </div>
-          </div>
-        )}
-
-        {!showCheckout && !checkoutLoading && (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
               {packages.map((pkg) => (
                 <motion.div
                   key={pkg.id}
@@ -338,14 +229,12 @@ export const CreditPurchaseModal = ({ isOpen, onClose }: CreditPurchaseModalProp
               ))}
             </div>
 
-            <div className="text-center text-sm text-muted-foreground mt-6 pt-4 border-t border-border">
-              <p>✓ Secure payment powered by Stripe</p>
-              <p>✓ Apple Pay available on mobile devices</p>
-              <p>✓ No subscription required • One-time purchase</p>
-              <p>✓ Credits never expire</p>
-            </div>
-          </>
-        )}
+        <div className="text-center text-sm text-muted-foreground mt-6 pt-4 border-t border-border">
+          <p>✓ Secure payment powered by Stripe</p>
+          <p>✓ Apple Pay available on mobile devices</p>
+          <p>✓ No subscription required • One-time purchase</p>
+          <p>✓ Credits never expire</p>
+        </div>
       </DialogContent>
     </Dialog>
   );
