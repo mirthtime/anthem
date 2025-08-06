@@ -54,25 +54,31 @@ export const CreditPurchaseModal = ({ isOpen, onClose }: CreditPurchaseModalProp
       id: 'starter',
       name: 'Starter Pack',
       credits: 3,
-      price: '$5.99',
-      description: 'Perfect for a weekend getaway',
+      price: '$7.99',
+      description: 'Perfect for a quick trip',
       popular: false,
+      perCredit: '$2.66',
+      savings: null,
     },
     {
       id: 'popular',
-      name: 'Popular Pack',
-      credits: 5,
-      price: '$9.99',
-      description: 'Great for most road trips',
+      name: 'Road Warrior',
+      credits: 8,
+      price: '$14.99',
+      description: 'Best value for most trips',
       popular: true,
+      perCredit: '$1.87',
+      savings: 'Save 30%',
     },
     {
       id: 'premium',
-      name: 'Premium Pack',
-      credits: 10,
-      price: '$19.99',
-      description: 'Full soundtrack experience',
+      name: 'Ultimate Pack',
+      credits: 20,
+      price: '$29.99',
+      description: 'Maximum savings & flexibility',
       popular: false,
+      perCredit: '$1.50',
+      savings: 'Save 44%',
     },
   ];
 
@@ -171,24 +177,32 @@ export const CreditPurchaseModal = ({ isOpen, onClose }: CreditPurchaseModalProp
                   whileHover={{ y: -2 }}
                   className="relative"
                 >
-                  {pkg.popular && (
-                    <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 z-10">
-                      <span className="bg-gradient-primary text-white text-xs font-bold px-3 py-1 rounded-full">
-                        Most Popular
-                      </span>
-                    </div>
-                  )}
+                   {pkg.popular && (
+                     <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 z-10">
+                       <span className="bg-gradient-primary text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                         🔥 Most Popular
+                       </span>
+                     </div>
+                   )}
                   
-                  <Card className={`h-full transition-all hover:shadow-lg ${
-                    pkg.popular ? 'border-primary shadow-lg scale-105' : 'border-border'
-                  }`}>
-                    <CardHeader className="text-center pb-4">
-                      <CardTitle className="text-xl">{pkg.name}</CardTitle>
-                      <div className="space-y-2">
-                        <div className="text-3xl font-bold text-primary">{pkg.price}</div>
-                        <div className="text-sm text-muted-foreground">{pkg.credits} credits</div>
-                      </div>
-                    </CardHeader>
+                   <Card className={`h-full transition-all hover:shadow-lg ${
+                     pkg.popular ? 'border-primary shadow-lg scale-105 bg-gradient-to-br from-primary/5 to-primary/10' : 'border-border'
+                   }`}>
+                     <CardHeader className="text-center pb-4">
+                       <CardTitle className="text-xl">{pkg.name}</CardTitle>
+                       <div className="space-y-2">
+                         <div className="flex items-center justify-center gap-2">
+                           <div className="text-3xl font-bold text-primary">{pkg.price}</div>
+                           {pkg.savings && (
+                             <div className="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                               {pkg.savings}
+                             </div>
+                           )}
+                         </div>
+                         <div className="text-sm text-muted-foreground">{pkg.credits} credits</div>
+                         <div className="text-xs text-muted-foreground">{pkg.perCredit} per credit</div>
+                       </div>
+                     </CardHeader>
                     
                     <CardContent className="space-y-4">
                       <p className="text-sm text-muted-foreground text-center">

@@ -34,9 +34,9 @@ serve(async (req) => {
     
     // Define credit packages with updated pricing
     const packages = {
-      starter: { credits: 3, price: 599, name: "Starter Pack" }, // $5.99
-      popular: { credits: 5, price: 999, name: "Popular Pack" }, // $9.99
-      premium: { credits: 10, price: 1999, name: "Premium Pack" }, // $19.99
+      starter: { credits: 3, price: 799, name: "Starter Pack" }, // $7.99
+      popular: { credits: 8, price: 1499, name: "Road Warrior" }, // $14.99
+      premium: { credits: 20, price: 2999, name: "Ultimate Pack" }, // $29.99
     };
 
     const selectedPackage = packages[packageType as keyof typeof packages];

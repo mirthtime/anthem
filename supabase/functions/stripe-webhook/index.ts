@@ -61,11 +61,11 @@ serve(async (req) => {
         return new Response('No package type', { status: 400 });
       }
 
-      // Determine credits based on package
+      // Determine credits based on package with new pricing
       const packages = {
-        starter: { credits: 3, price: 5.99 },
-        popular: { credits: 5, price: 9.99 },
-        premium: { credits: 10, price: 19.99 },
+        starter: { credits: 3, price: 7.99 },
+        popular: { credits: 8, price: 14.99 },
+        premium: { credits: 20, price: 29.99 },
       };
 
       const packageInfo = packages[packageType as keyof typeof packages];
