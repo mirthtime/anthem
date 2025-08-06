@@ -22,19 +22,29 @@ interface CreditPurchaseModalProps {
 
 // Load Stripe.js
 const loadStripe = async (): Promise<any> => {
+  // Check if we have a valid publishable key
+  const publishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
+  if (!publishableKey || publishableKey.startsWith('pk_test_51234567890')) {
+    console.error('Stripe publishable key not configured');
+    throw new Error('Payment system not configured. Please contact support.');
+  }
+
   if (typeof window !== 'undefined' && (window as any).Stripe) {
-    return (window as any).Stripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_51234567890');
+    return (window as any).Stripe(publishableKey);
   }
   
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const script = document.createElement('script');
     script.src = 'https://js.stripe.com/v3/';
     script.onload = () => {
       if ((window as any).Stripe) {
-        const stripe = (window as any).Stripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_51234567890');
+        const stripe = (window as any).Stripe(publishableKey);
         resolve(stripe);
+      } else {
+        reject(new Error('Failed to load Stripe'));
       }
     };
+    script.onerror = () => reject(new Error('Failed to load Stripe script'));
     document.head.appendChild(script);
   });
 };
@@ -77,7 +87,14 @@ export const CreditPurchaseModal = ({ isOpen, onClose }: CreditPurchaseModalProp
     if (isOpen) {
       loadStripe().then((stripe) => {
         stripeRef.current = stripe;
-        console.log('Stripe initialized:', stripe);
+        console.log('Stripe initialized successfully:', !!stripe);
+      }).catch((error) => {
+        console.error('Failed to initialize Stripe:', error);
+        toast({
+          title: "Payment System Error",
+          description: error.message,
+          variant: "destructive",
+        });
       });
     }
   }, [isOpen]);
@@ -206,27 +223,15 @@ export const CreditPurchaseModal = ({ isOpen, onClose }: CreditPurchaseModalProp
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <DialogTitle className="text-2xl font-bold">
-                {showCheckout ? "Complete Your Purchase" : "Choose Your Credit Package"}
-              </DialogTitle>
-              <DialogDescription>
-                {showCheckout 
-                  ? "Secure payment powered by Stripe with Apple Pay support on mobile"
-                  : "Credits are used to generate AI songs for your road trip memories. Each credit = 1 song."
-                }
-              </DialogDescription>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleClose}
-              className="h-8 w-8 p-0"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
+          <DialogTitle className="text-2xl font-bold">
+            {showCheckout ? "Complete Your Purchase" : "Choose Your Credit Package"}
+          </DialogTitle>
+          <DialogDescription>
+            {showCheckout 
+              ? "Secure payment powered by Stripe with Apple Pay support on mobile"
+              : "Credits are used to generate AI songs for your road trip memories. Each credit = 1 song."
+            }
+          </DialogDescription>
         </DialogHeader>
 
         {checkoutLoading && (
