@@ -23,7 +23,7 @@ interface CreditPurchaseModalProps {
 // Load Stripe.js
 const loadStripe = async (): Promise<any> => {
   if (typeof window !== 'undefined' && (window as any).Stripe) {
-    return (window as any).Stripe;
+    return (window as any).Stripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_51234567890');
   }
   
   return new Promise((resolve) => {
@@ -31,7 +31,8 @@ const loadStripe = async (): Promise<any> => {
     script.src = 'https://js.stripe.com/v3/';
     script.onload = () => {
       if ((window as any).Stripe) {
-        resolve((window as any).Stripe);
+        const stripe = (window as any).Stripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_51234567890');
+        resolve(stripe);
       }
     };
     document.head.appendChild(script);
@@ -76,6 +77,7 @@ export const CreditPurchaseModal = ({ isOpen, onClose }: CreditPurchaseModalProp
     if (isOpen) {
       loadStripe().then((stripe) => {
         stripeRef.current = stripe;
+        console.log('Stripe initialized:', stripe);
       });
     }
   }, [isOpen]);
@@ -129,13 +131,38 @@ export const CreditPurchaseModal = ({ isOpen, onClose }: CreditPurchaseModalProp
         console.log('Received client secret, initializing embedded checkout...');
         setShowCheckout(true);
         
-        // Initialize embedded checkout
-        const checkout = await stripeRef.current.initEmbeddedCheckout({
-          clientSecret: data.clientSecret,
-        });
+        // Initialize embedded checkout with proper error handling
+        try {
+          const checkout = await stripeRef.current.initEmbeddedCheckout({
+            clientSecret: data.clientSecret,
+          });
 
-        if (checkoutRef.current) {
-          checkout.mount(checkoutRef.current);
+          if (checkoutRef.current) {
+            checkout.mount(checkoutRef.current);
+          }
+        } catch (stripeError) {
+          console.error('Stripe embedded checkout error:', stripeError);
+          // Fallback to redirect checkout if embedded fails
+          const { data: redirectData, error: redirectError } = await supabase.functions.invoke('purchase-credits', {
+            body: { 
+              packageType,
+              mode: 'payment'
+            }
+          });
+          
+          if (redirectError || redirectData?.error) {
+            throw new Error('Failed to initialize payment');
+          }
+          
+          if (redirectData?.url) {
+            window.open(redirectData.url, '_blank');
+            toast({
+              title: "Redirecting to Checkout",
+              description: "Opening Stripe checkout in a new tab...",
+            });
+            onClose();
+            return;
+          }
         }
       } else {
         throw new Error('No client secret received from server');
