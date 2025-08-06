@@ -22,12 +22,9 @@ interface CreditPurchaseModalProps {
 
 // Load Stripe.js
 const loadStripe = async (): Promise<any> => {
-  // Check if we have a valid publishable key
-  const publishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
-  if (!publishableKey || publishableKey.startsWith('pk_test_51234567890')) {
-    console.error('Stripe publishable key not configured');
-    throw new Error('Payment system not configured. Please contact support.');
-  }
+  // You need to replace this with your actual Stripe publishable key
+  // Get it from: https://dashboard.stripe.com/apikeys
+  const publishableKey = 'pk_test_YOUR_ACTUAL_PUBLISHABLE_KEY_HERE';
 
   if (typeof window !== 'undefined' && (window as any).Stripe) {
     return (window as any).Stripe(publishableKey);
