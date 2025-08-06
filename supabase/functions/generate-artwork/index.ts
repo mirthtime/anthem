@@ -1,68 +1,45 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-const leonardoApiKey = Deno.env.get('LEONARDO_API_KEY');
-
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
-  if (!leonardoApiKey) {
-    return new Response(JSON.stringify({ error: 'Leonardo API key not configured' }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  }
-
   try {
-    const { songId, tripId, type, prompt } = await req.json();
+    const LEONARDO_API_KEY = Deno.env.get('LEONARDO_API_KEY');
+    if (!LEONARDO_API_KEY) {
+      throw new Error('LEONARDO_API_KEY is not configured');
+    }
+
+    const { prompt, width = 1024, height = 1024, type = 'song' } = await req.json();
     
-    if (!songId && !tripId) {
-      return new Response(JSON.stringify({ error: 'Either songId or tripId is required' }), {
+    if (!prompt) {
+      return new Response(JSON.stringify({ error: "Prompt is required" }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    console.log(`Generating ${type} artwork with prompt:`, prompt);
 
-    // Mark as generating
-    if (songId) {
-      await supabase
-        .from('songs')
-        .update({ artwork_generating: true })
-        .eq('id', songId);
-    } else if (tripId) {
-      await supabase
-        .from('trips')
-        .update({ artwork_generating: true })
-        .eq('id', tripId);
-    }
-
-    console.log('Generating artwork for:', type, songId || tripId);
-    console.log('Prompt:', prompt);
-
-    // Step 1: Create generation request
+    // Create generation with Leonardo AI
     const generationResponse = await fetch('https://cloud.leonardo.ai/api/rest/v1/generations', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${leonardoApiKey}`,
+        'Authorization': `Bearer ${LEONARDO_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        height: 1024,
-        modelId: "6bef9f1b-29cb-40c7-b9df-32b51c1f67d3", // Leonardo Phoenix model
         prompt: prompt,
-        width: 1024,
+        modelId: "6bef9f1b-29cb-40c7-b9df-32b51c1f67d3", // Leonardo Phoenix model
+        width: width,
+        height: height,
         num_images: 1,
         guidance_scale: 7,
         num_inference_steps: 30,
@@ -72,8 +49,8 @@ serve(async (req) => {
 
     if (!generationResponse.ok) {
       const errorText = await generationResponse.text();
-      console.error('Leonardo generation error:', errorText);
-      throw new Error(`Leonardo API error: ${generationResponse.status} ${errorText}`);
+      console.error('Leonardo API error:', errorText);
+      throw new Error(`Leonardo API error: ${generationResponse.status} - ${errorText}`);
     }
 
     const generationData = await generationResponse.json();
@@ -81,92 +58,59 @@ serve(async (req) => {
 
     console.log('Generation started with ID:', generationId);
 
-    // Step 2: Poll for completion
+    // Poll for completion
     let attempts = 0;
-    const maxAttempts = 30; // 5 minutes max
-    let imageUrl = null;
-
+    const maxAttempts = 30; // 5 minutes max wait time
+    
     while (attempts < maxAttempts) {
       await new Promise(resolve => setTimeout(resolve, 10000)); // Wait 10 seconds
-      
+      attempts++;
+
       const statusResponse = await fetch(`https://cloud.leonardo.ai/api/rest/v1/generations/${generationId}`, {
         headers: {
-          'Authorization': `Bearer ${leonardoApiKey}`,
+          'Authorization': `Bearer ${LEONARDO_API_KEY}`,
         },
       });
 
-      if (statusResponse.ok) {
-        const statusData = await statusResponse.json();
-        const generation = statusData.generations_by_pk;
-        
-        console.log('Generation status:', generation.status);
-        
-        if (generation.status === 'COMPLETE' && generation.generated_images.length > 0) {
-          imageUrl = generation.generated_images[0].url;
-          console.log('Image generated successfully:', imageUrl);
-          break;
-        } else if (generation.status === 'FAILED') {
-          throw new Error('Image generation failed');
-        }
+      if (!statusResponse.ok) {
+        console.error('Status check failed:', statusResponse.status);
+        continue;
       }
-      
-      attempts++;
+
+      const statusData = await statusResponse.json();
+      const generation = statusData.generations_by_pk;
+
+      console.log(`Attempt ${attempts}: Status - ${generation.status}`);
+
+      if (generation.status === 'COMPLETE') {
+        const imageUrl = generation.generated_images[0].url;
+        console.log('Artwork generation completed:', imageUrl);
+        
+        return new Response(JSON.stringify({ 
+          imageUrl,
+          generationId,
+          status: 'completed'
+        }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      } else if (generation.status === 'FAILED') {
+        throw new Error('Image generation failed');
+      }
     }
 
-    if (!imageUrl) {
-      throw new Error('Image generation timed out');
-    }
-
-    // Step 3: Update database with artwork URL
-    if (songId) {
-      await supabase
-        .from('songs')
-        .update({ 
-          artwork_url: imageUrl,
-          artwork_generating: false 
-        })
-        .eq('id', songId);
-    } else if (tripId) {
-      await supabase
-        .from('trips')
-        .update({ 
-          artwork_url: imageUrl,
-          artwork_generating: false 
-        })
-        .eq('id', tripId);
-    }
-
+    // If we get here, generation timed out
     return new Response(JSON.stringify({ 
-      success: true,
-      artwork_url: imageUrl,
-      generation_id: generationId
+      error: "Generation timed out",
+      generationId,
+      status: 'timeout'
     }), {
+      status: 408,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
   } catch (error) {
-    console.error('Error generating artwork:', error);
-    
-    // Clear generating flag on error
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
-    const { songId, tripId } = await req.json().catch(() => ({}));
-    
-    if (songId) {
-      await supabase
-        .from('songs')
-        .update({ artwork_generating: false })
-        .eq('id', songId);
-    } else if (tripId) {
-      await supabase
-        .from('trips')
-        .update({ artwork_generating: false })
-        .eq('id', tripId);
-    }
-
-    return new Response(JSON.stringify({ 
-      error: error.message,
-      success: false 
-    }), {
+    console.error('Error in generate-artwork function:', error);
+    return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });

@@ -4,10 +4,10 @@ export interface Trip {
   title: string;
   description?: string;
   stops: TripStop[];
-  created_at: string;
-  updated_at: string;
   artwork_url?: string;
   artwork_generating?: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface TripStop {
@@ -34,9 +34,9 @@ export interface Song {
   duration: number;
   stories: string;
   people: string;
-  created_at: string;
   artwork_url?: string;
   artwork_generating?: boolean;
+  created_at: string;
 }
 
 export const GENRES = [

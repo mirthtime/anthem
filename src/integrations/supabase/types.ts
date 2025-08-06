@@ -76,6 +76,8 @@ export type Database = {
       }
       songs: {
         Row: {
+          artwork_generating: boolean | null
+          artwork_url: string | null
           audio_url: string | null
           created_at: string
           duration: number | null
@@ -91,6 +93,8 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          artwork_generating?: boolean | null
+          artwork_url?: string | null
           audio_url?: string | null
           created_at?: string
           duration?: number | null
@@ -106,6 +110,8 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          artwork_generating?: boolean | null
+          artwork_url?: string | null
           audio_url?: string | null
           created_at?: string
           duration?: number | null
@@ -132,6 +138,8 @@ export type Database = {
       }
       trips: {
         Row: {
+          artwork_generating: boolean | null
+          artwork_url: string | null
           created_at: string
           description: string | null
           id: string
@@ -141,6 +149,8 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          artwork_generating?: boolean | null
+          artwork_url?: string | null
           created_at?: string
           description?: string | null
           id?: string
@@ -150,6 +160,8 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          artwork_generating?: boolean | null
+          artwork_url?: string | null
           created_at?: string
           description?: string | null
           id?: string

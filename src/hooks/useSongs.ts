@@ -39,7 +39,7 @@ export const useSongs = (tripId?: string) => {
     }
   };
 
-  const generateSong = async (songData: Omit<Song, 'id' | 'created_at' | 'audio_url' | 'lyrics'>) => {
+  const generateSong = async (songData: Omit<Song, 'id' | 'created_at' | 'audio_url' | 'lyrics' | 'artwork_url' | 'artwork_generating'>) => {
     try {
       // First create the song record
       const { data: song, error: songError } = await supabase
