@@ -2,117 +2,225 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Premium TripTunes Design System - World-class UI */
 
 @layer base {
+  /* Premium Dark Theme */
   :root {
-    /* TripTunes Dark Theme - #333333 base */
-    --background: 210 6% 20%;
-    --foreground: 0 0% 100%;
+    /* Base Colors - Ultra Premium Dark Palette */
+    --background: 220 13% 8%;           /* Rich dark grey #121318 */
+    --foreground: 210 40% 98%;          /* Pure white text */
+    --card: 220 13% 10%;                /* Slightly lighter cards #1a1b21 */
+    --card-foreground: 210 40% 98%;     
+    --popover: 220 13% 9%;              
+    --popover-foreground: 210 40% 98%;  
+    --primary: 195 100% 65%;            /* Vibrant cyan #00d4ff */
+    --primary-foreground: 220 13% 8%;   
+    --primary-glow: 185 100% 75%;       /* Lighter cyan for effects */
+    --secondary: 220 13% 15%;           /* Elevated surfaces */
+    --secondary-foreground: 210 40% 98%;
+    --muted: 220 13% 12%;               /* Subtle backgrounds */
+    --muted-foreground: 215 20% 65%;    /* Muted text */
+    --accent: 195 100% 60%;             /* Accent cyan */
+    --accent-foreground: 220 13% 8%;    
+    --destructive: 0 84% 60%;           /* Red for errors */
+    --destructive-foreground: 210 40% 98%;
+    --border: 220 13% 18%;              /* Subtle borders */
+    --input: 220 13% 15%;               /* Input backgrounds */
+    --ring: 195 100% 65%;               /* Focus rings */
+    --radius: 0.75rem;                  /* Slightly larger radius */
 
-    --card: 210 8% 18%;
-    --card-foreground: 0 0% 100%;
+    /* Premium Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(195 100% 65%), hsl(185 100% 75%));
+    --gradient-dark: linear-gradient(135deg, hsl(220 13% 8%), hsl(220 13% 12%));
+    --gradient-card: linear-gradient(135deg, hsl(220 13% 10%) 0%, hsl(220 13% 12%) 100%);
+    --gradient-premium: linear-gradient(135deg, 
+      hsl(195 100% 65%) 0%, 
+      hsl(185 100% 75%) 50%, 
+      hsl(175 100% 80%) 100%);
+    
+    /* Animated Background Gradients */
+    --gradient-bg-1: radial-gradient(circle at 20% 50%, hsl(195 100% 20% / 0.15) 0%, transparent 50%);
+    --gradient-bg-2: radial-gradient(circle at 80% 20%, hsl(185 100% 25% / 0.1) 0%, transparent 50%);
+    --gradient-bg-3: radial-gradient(circle at 40% 80%, hsl(175 100% 15% / 0.2) 0%, transparent 50%);
+    
+    /* Shadows - Premium depth */
+    --shadow-elegant: 0 25px 50px -12px hsl(195 100% 65% / 0.25);
+    --shadow-glow: 0 0 40px hsl(185 100% 75% / 0.4);
+    --shadow-card: 0 10px 30px -10px hsl(220 13% 0% / 0.4);
+    --shadow-intense: 0 35px 60px -15px hsl(195 100% 65% / 0.3);
+    
+    /* Animation durations */
+    --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 
-    --popover: 210 8% 18%;
-    --popover-foreground: 0 0% 100%;
-
-    /* Blue-Teal Gradient Primary */
-    --primary: 200 80% 50%;
-    --primary-foreground: 0 0% 100%;
-    --primary-glow: 180 70% 60%;
-
-    /* Green for Save Actions */
-    --secondary: 140 60% 50%;
-    --secondary-foreground: 0 0% 100%;
-
-    --muted: 210 10% 25%;
-    --muted-foreground: 210 15% 65%;
-
-    --accent: 210 10% 25%;
-    --accent-foreground: 0 0% 100%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 210 10% 30%;
-    --input: 210 10% 25%;
-    --ring: 200 80% 50%;
-
-    --radius: 1rem;
-
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(200 80% 50%), hsl(180 70% 60%));
-    --gradient-success: linear-gradient(135deg, hsl(140 60% 50%), hsl(120 70% 45%));
-    --gradient-card: linear-gradient(145deg, hsl(210 8% 18%), hsl(210 10% 16%));
-
-    /* Shadows */
-    --shadow-card: 0 4px 24px hsl(210 6% 10% / 0.3);
-    --shadow-button: 0 2px 12px hsl(200 80% 50% / 0.3);
-
-    --sidebar-background: 210 8% 18%;
-    --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 200 80% 50%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 10% 25%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 210 10% 30%;
-    --sidebar-ring: 200 80% 50%;
+    /* Sidebar */
+    --sidebar-background: 220 13% 10%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 195 100% 65%;
+    --sidebar-primary-foreground: 220 13% 8%;
+    --sidebar-accent: 220 13% 15%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 220 13% 18%;
+    --sidebar-ring: 195 100% 65%;
   }
 
-  .dark {
-    /* Same as root - TripTunes is dark by default */
-    --background: 210 6% 20%;
-    --foreground: 0 0% 100%;
-    --card: 210 8% 18%;
-    --card-foreground: 0 0% 100%;
-    --popover: 210 8% 18%;
-    --popover-foreground: 0 0% 100%;
-    --primary: 200 80% 50%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 140 60% 50%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 210 10% 25%;
-    --muted-foreground: 210 15% 65%;
-    --accent: 210 10% 25%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 210 10% 30%;
-    --input: 210 10% 25%;
-    --ring: 200 80% 50%;
-    --sidebar-background: 210 8% 18%;
-    --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 200 80% 50%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 10% 25%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 210 10% 30%;
-    --sidebar-ring: 200 80% 50%;
+  /* Premium animations and effects */
+  
+  /* Animated Background */
+  body {
+    background: hsl(var(--background));
+    background-image: 
+      var(--gradient-bg-1),
+      var(--gradient-bg-2),
+      var(--gradient-bg-3);
+    background-size: 100% 100%, 100% 100%, 100% 100%;
+    background-position: 0% 0%, 100% 0%, 50% 100%;
+    animation: gradientShift 20s ease infinite;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    @apply text-foreground antialiased;
   }
-}
 
-@layer base {
+  @keyframes gradientShift {
+    0%, 100% {
+      background-position: 0% 0%, 100% 0%, 50% 100%;
+    }
+    33% {
+      background-position: 100% 50%, 0% 100%, 0% 0%;
+    }
+    66% {
+      background-position: 50% 100%, 50% 0%, 100% 50%;
+    }
+  }
+
+  /* Premium button shine effect */
+  @keyframes shine {
+    0% { transform: translateX(-100%) rotate(45deg); }
+    100% { transform: translateX(300%) rotate(45deg); }
+  }
+
+  @keyframes glow {
+    0%, 100% { box-shadow: 0 0 20px hsl(var(--primary) / 0.3); }
+    50% { box-shadow: 0 0 40px hsl(var(--primary) / 0.6), 0 0 60px hsl(var(--primary) / 0.4); }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  @keyframes shimmer {
+    0%, 100% { background-position: 200% 0; }
+    50% { background-position: -200% 0; }
+  }
+
+  /* Premium scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--muted));
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, hsl(var(--primary-glow)), hsl(var(--primary)));
+  }
+
   * {
     @apply border-border;
   }
+}
 
-  body {
-    @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+@layer components {
+  /* Premium utility classes */
+  .premium-card {
+    background: var(--gradient-card);
+    border: 1px solid hsl(var(--border));
+    box-shadow: var(--shadow-card);
+    backdrop-filter: blur(10px);
+    transition: var(--transition-smooth);
+    border-radius: var(--radius);
   }
 
-  /* PWA Specific Styles */
-  .pwa-install-hidden {
-    display: none !important;
+  .premium-card:hover {
+    box-shadow: var(--shadow-elegant);
+    transform: translateY(-2px);
+    border-color: hsl(var(--primary) / 0.3);
   }
 
-  /* Mobile-first responsive design */
-  @media (max-width: 768px) {
-    .container {
-      padding-left: 1rem;
-      padding-right: 1rem;
-    }
+  .premium-button {
+    position: relative;
+    background: var(--gradient-primary);
+    border: none;
+    overflow: hidden;
+    transition: var(--transition-smooth);
+    border-radius: var(--radius);
+  }
+
+  .premium-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: var(--transition-smooth);
+  }
+
+  .premium-button:hover::before {
+    animation: shine 0.8s ease-out;
+  }
+
+  .premium-button:hover {
+    box-shadow: var(--shadow-glow);
+    transform: translateY(-1px);
+  }
+
+  .floating-element {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .glow-effect {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+
+  /* Text shimmer effect */
+  .text-shimmer {
+    background: linear-gradient(90deg, 
+      hsl(var(--foreground)) 40%, 
+      hsl(var(--primary)) 50%, 
+      hsl(var(--foreground)) 60%);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 3s ease-in-out infinite;
+  }
+
+  /* Premium glassmorphism */
+  .glass {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* PWA Specific Styles */
+.pwa-install-hidden {
+  display: none !important;
+}
+
+/* Mobile-first responsive design */
+@media (max-width: 768px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 }

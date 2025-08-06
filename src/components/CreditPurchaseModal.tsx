@@ -185,22 +185,22 @@ export const CreditPurchaseModal = ({ isOpen, onClose }: CreditPurchaseModalProp
                      </div>
                    )}
                   
-                   <Card className={`h-full transition-all hover:shadow-lg ${
-                     pkg.popular ? 'border-primary shadow-lg scale-105 bg-gradient-to-br from-primary/5 to-primary/10' : 'border-border'
+                   <Card className={`h-full transition-all duration-500 hover:shadow-elegant group ${
+                     pkg.popular ? 'border-primary shadow-glow scale-105 bg-gradient-to-br from-primary/5 to-primary/10 ring-1 ring-primary/20' : 'border-border hover:border-primary/30'
                    }`}>
                      <CardHeader className="text-center pb-4">
-                       <CardTitle className="text-xl">{pkg.name}</CardTitle>
+                       <CardTitle className="text-xl group-hover:text-primary transition-colors duration-300">{pkg.name}</CardTitle>
                        <div className="space-y-2">
                          <div className="flex items-center justify-center gap-2">
-                           <div className="text-3xl font-bold text-primary">{pkg.price}</div>
+                           <div className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">{pkg.price}</div>
                            {pkg.savings && (
-                             <div className="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                             <div className="bg-gradient-to-r from-green-500 to-emerald-400 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md animate-pulse">
                                {pkg.savings}
                              </div>
                            )}
                          </div>
                          <div className="text-sm text-muted-foreground">{pkg.credits} credits</div>
-                         <div className="text-xs text-muted-foreground">{pkg.perCredit} per credit</div>
+                         <div className="text-xs text-primary/70 font-medium">{pkg.perCredit} per credit</div>
                        </div>
                      </CardHeader>
                     
@@ -228,15 +228,26 @@ export const CreditPurchaseModal = ({ isOpen, onClose }: CreditPurchaseModalProp
                         </div>
                       </div>
                       
-                      <Button
-                        onClick={() => handlePurchase(pkg.id)}
-                        disabled={loading === pkg.id}
-                        className={`w-full gap-2 ${pkg.popular ? 'bg-gradient-primary hover:opacity-90' : ''}`}
-                        variant={pkg.popular ? 'default' : 'outline'}
-                      >
-                        <CreditCard className="h-4 w-4" />
-                        {loading === pkg.id ? 'Processing...' : 'Purchase'}
-                      </Button>
+                       <Button
+                         onClick={() => handlePurchase(pkg.id)}
+                         disabled={loading === pkg.id}
+                         className={`w-full gap-2 font-semibold ${
+                           pkg.popular 
+                             ? 'premium-button text-white shadow-glow hover:shadow-intense' 
+                             : 'hover:shadow-md'
+                         }`}
+                         variant={pkg.popular ? 'premium' : 'outline'}
+                       >
+                         <CreditCard className="h-4 w-4" />
+                         {loading === pkg.id ? (
+                           <>
+                             <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                             Processing...
+                           </>
+                         ) : (
+                           'Purchase'
+                         )}
+                       </Button>
                     </CardContent>
                   </Card>
                 </motion.div>
