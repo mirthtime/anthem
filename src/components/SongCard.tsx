@@ -2,15 +2,20 @@ import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Song } from '@/types';
-import { Play, Pause, Download, Share2, Music } from 'lucide-react';
+import { Play, Pause, Download, Share2, Music, Copy, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
+import { useSharing } from '@/hooks/useSharing';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface SongCardProps {
   song: Song;
   onPlay?: () => void;
   onPause?: () => void;
-  onDownload?: () => void;
-  onShare?: () => void;
   isPlaying?: boolean;
 }
 
@@ -18,11 +23,16 @@ export const SongCard = ({
   song, 
   onPlay, 
   onPause, 
-  onDownload, 
-  onShare, 
   isPlaying = false 
 }: SongCardProps) => {
   const [audioLoaded, setAudioLoaded] = useState(false);
+  const { 
+    generateShareableUrl, 
+    copyToClipboard, 
+    downloadAudio, 
+    shareToTwitter, 
+    generateSongCaption 
+  } = useSharing();
 
   const handlePlayPause = () => {
     if (isPlaying) {
@@ -30,6 +40,34 @@ export const SongCard = ({
     } else {
       onPlay?.();
     }
+  };
+
+  const handleDownload = () => {
+    if (song.audio_url) {
+      downloadAudio(song.audio_url, `${song.title} - ${song.stop_name}`);
+    }
+  };
+
+  const handleCopyLink = () => {
+    const shareUrl = generateShareableUrl('song', song.id);
+    copyToClipboard(shareUrl, 'Song link copied!');
+  };
+
+  const handleCopyCaption = () => {
+    const caption = generateSongCaption(song.title, song.stop_name, song.genre);
+    copyToClipboard(caption, 'Caption copied!');
+  };
+
+  const handleShareToTwitter = () => {
+    const shareUrl = generateShareableUrl('song', song.id);
+    const description = generateSongCaption(song.title, song.stop_name, song.genre);
+    shareToTwitter({
+      title: song.title,
+      description,
+      url: shareUrl,
+      audioUrl: song.audio_url || undefined,
+      type: 'song'
+    });
   };
 
   return (
@@ -99,17 +137,31 @@ export const SongCard = ({
                   )}
                 </Button>
                 
-                {onDownload && (
-                  <Button size="sm" variant="outline" onClick={onDownload}>
-                    <Download className="h-4 w-4" />
-                  </Button>
-                )}
+                <Button size="sm" variant="outline" onClick={handleDownload}>
+                  <Download className="h-4 w-4" />
+                </Button>
                 
-                {onShare && (
-                  <Button size="sm" variant="outline" onClick={onShare}>
-                    <Share2 className="h-4 w-4" />
-                  </Button>
-                )}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button size="sm" variant="outline">
+                      <Share2 className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={handleCopyLink}>
+                      <Copy className="h-4 w-4 mr-2" />
+                      Copy Link
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleCopyCaption}>
+                      <Copy className="h-4 w-4 mr-2" />
+                      Copy Caption
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleShareToTwitter}>
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      Share to Twitter
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
           )}

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, Music, Calendar, MoreVertical, Edit2, Copy, Trash2 } from 'lucide-react';
+import { MapPin, Music, Calendar, MoreVertical, Edit2, Copy, Trash2, Share2, ExternalLink } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -14,6 +14,7 @@ import {
 import { Trip } from '@/types';
 import { useTrips } from '@/hooks/useTrips';
 import { useSongs } from '@/hooks/useSongs';
+import { useSharing } from '@/hooks/useSharing';
 import { toast } from '@/hooks/use-toast';
 
 interface TripCardProps {
@@ -24,6 +25,12 @@ export const TripCard = ({ trip }: TripCardProps) => {
   const navigate = useNavigate();
   const { deleteTrip, duplicateTrip } = useTrips();
   const { songs } = useSongs(trip.id);
+  const { 
+    generateShareableUrl, 
+    copyToClipboard, 
+    shareToTwitter, 
+    generateTripCaption 
+  } = useSharing();
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleViewTrip = () => {
@@ -73,6 +80,30 @@ export const TripCard = ({ trip }: TripCardProps) => {
     }
   };
 
+  const handleCopyTripLink = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const shareUrl = generateShareableUrl('trip', trip.id);
+    await copyToClipboard(shareUrl, 'Trip link copied!');
+  };
+
+  const handleCopyTripCaption = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const caption = generateTripCaption(trip.title, trip.stops.length, songs.length);
+    await copyToClipboard(caption, 'Trip caption copied!');
+  };
+
+  const handleShareTripToTwitter = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const shareUrl = generateShareableUrl('trip', trip.id);
+    const description = generateTripCaption(trip.title, trip.stops.length, songs.length);
+    shareToTwitter({
+      title: trip.title,
+      description,
+      url: shareUrl,
+      type: 'trip'
+    });
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'short',
@@ -119,6 +150,18 @@ export const TripCard = ({ trip }: TripCardProps) => {
                 <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleDuplicateTrip(); }}>
                   <Copy className="h-4 w-4 mr-2" />
                   Duplicate
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleCopyTripLink}>
+                  <Copy className="h-4 w-4 mr-2" />
+                  Copy Link
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleCopyTripCaption}>
+                  <Copy className="h-4 w-4 mr-2" />
+                  Copy Caption
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleShareTripToTwitter}>
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  Share to Twitter
                 </DropdownMenuItem>
                 <DropdownMenuItem 
                   onClick={(e) => { e.stopPropagation(); handleDeleteTrip(); }}
