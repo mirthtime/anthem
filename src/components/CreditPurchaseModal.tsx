@@ -21,16 +21,16 @@ interface CreditPurchaseModalProps {
 
 // Load Stripe.js
 const loadStripe = async (): Promise<any> => {
-  if (typeof window !== 'undefined' && window.Stripe) {
-    return window.Stripe;
+  if (typeof window !== 'undefined' && (window as any).Stripe) {
+    return (window as any).Stripe;
   }
   
   return new Promise((resolve) => {
     const script = document.createElement('script');
     script.src = 'https://js.stripe.com/v3/';
     script.onload = () => {
-      if (window.Stripe) {
-        resolve(window.Stripe);
+      if ((window as any).Stripe) {
+        resolve((window as any).Stripe);
       }
     };
     document.head.appendChild(script);

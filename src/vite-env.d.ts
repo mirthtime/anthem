@@ -6,3 +6,5 @@ declare global {
     Stripe: any;
   }
 }
+
+export {};
