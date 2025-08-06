@@ -30,9 +30,9 @@ serve(async (req) => {
       throw new Error("User not authenticated or email not available");
     }
 
-    const { packageType } = await req.json();
+    const { packageType, mode = 'payment' } = await req.json();
     
-    // Define new credit packages with updated pricing
+    // Define credit packages with updated pricing
     const packages = {
       starter: { credits: 3, price: 599, name: "Starter Pack" }, // $5.99
       popular: { credits: 5, price: 999, name: "Popular Pack" }, // $9.99
@@ -68,8 +68,7 @@ serve(async (req) => {
       customerId = customers.data[0].id;
     }
 
-    // Create checkout session
-    const session = await stripe.checkout.sessions.create({
+    const sessionConfig: any = {
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
       line_items: [
@@ -86,19 +85,48 @@ serve(async (req) => {
         },
       ],
       mode: "payment",
-      success_url: `${req.headers.get("origin")}/settings?purchase=success`,
-      cancel_url: `${req.headers.get("origin")}/settings?purchase=cancelled`,
+      payment_method_types: ["card"],
       metadata: {
         user_id: user.id,
         credits: selectedPackage.credits.toString(),
         package_type: packageType
       }
-    });
+    };
 
-    return new Response(JSON.stringify({ url: session.url }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 200,
-    });
+    // Enable Apple Pay and Google Pay on mobile
+    const userAgent = req.headers.get("user-agent") || "";
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(userAgent);
+    
+    if (isMobile) {
+      sessionConfig.payment_method_types.push("apple_pay", "google_pay");
+    }
+
+    // Configure for embedded mode or redirect mode
+    if (mode === 'embedded') {
+      sessionConfig.ui_mode = 'embedded';
+      sessionConfig.return_url = `${req.headers.get("origin")}/settings?purchase=success`;
+    } else {
+      sessionConfig.success_url = `${req.headers.get("origin")}/settings?purchase=success`;
+      sessionConfig.cancel_url = `${req.headers.get("origin")}/settings?purchase=cancelled`;
+    }
+
+    // Create checkout session
+    const session = await stripe.checkout.sessions.create(sessionConfig);
+
+    // Return appropriate response based on mode
+    if (mode === 'embedded') {
+      return new Response(JSON.stringify({ 
+        clientSecret: session.client_secret 
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      });
+    } else {
+      return new Response(JSON.stringify({ url: session.url }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      });
+    }
   } catch (error) {
     console.error('Error in purchase-credits:', error);
     return new Response(JSON.stringify({ error: error.message }), {

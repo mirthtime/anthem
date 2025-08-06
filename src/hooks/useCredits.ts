@@ -93,7 +93,7 @@ export const useCredits = () => {
       console.log('Starting credit purchase for package:', packageType);
       
       const { data, error } = await supabase.functions.invoke('purchase-credits', {
-        body: { packageType }
+        body: { packageType, mode: 'embedded' }
       });
 
       if (error) {
@@ -108,17 +108,19 @@ export const useCredits = () => {
         throw new Error(data.error);
       }
       
-      if (data?.url) {
-        // Open Stripe checkout in a new tab
+      // For embedded mode, we return the clientSecret to be handled by the modal
+      if (data?.clientSecret) {
+        return data.clientSecret;
+      } else if (data?.url) {
+        // Fallback to redirect mode if embedded isn't supported
         window.open(data.url, '_blank');
         
-        // Show success message
         toast({
           title: "Redirecting to Checkout",
           description: "Opening Stripe checkout in a new tab...",
         });
       } else {
-        throw new Error('No checkout URL received');
+        throw new Error('No checkout session received');
       }
     } catch (error: any) {
       console.error('Error purchasing credits:', error);
