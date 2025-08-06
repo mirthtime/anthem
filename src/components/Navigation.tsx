@@ -75,10 +75,10 @@ export const Navigation = () => {
                 </span>
               </div>
 
-              {/* Create Trip Button */}
+              {/* Create Memory Button */}
               <Button onClick={handleCreateTrip} size="sm" className="gap-2">
                 <Plus className="h-4 w-4" />
-                New Trip
+                Capture Memory
               </Button>
 
               {/* User Menu */}
@@ -158,7 +158,7 @@ export const Navigation = () => {
                   variant="secondary"
                 >
                   <Plus className="h-5 w-5" />
-                  Create New Trip
+                  Capture a Memory
                 </Button>
 
                 <Button 

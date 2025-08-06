@@ -64,7 +64,7 @@ export const Dashboard = () => {
 
           <Button onClick={handleCreateTrip} size="lg" className="gap-2">
             <Plus className="h-5 w-5" />
-            Create New Trip
+            Capture a Memory
           </Button>
         </div>
       </motion.div>
@@ -120,9 +120,9 @@ export const Dashboard = () => {
       ) : (
         <EmptyState
           icon={MapPin}
-          title="No trips yet"
-          description="Start your musical journey by creating your first road trip. Add stops, generate AI soundtracks, and make memories!"
-          actionLabel="Create Your First Trip"
+          title="No musical memories yet"
+          description="Start capturing your adventures! Each stop becomes a unique song that tells your story."
+          actionLabel="Capture Your First Memory"
           onAction={handleCreateTrip}
         />
       )}

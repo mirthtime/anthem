@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Navigation } from "./components/Navigation";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Dashboard } from "./pages/Dashboard";
+import { TripOnboarding } from "./pages/TripOnboarding";
+import { TripAlbum } from "./pages/TripAlbum";
 import { TripWizard } from "./components/TripWizard";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -26,7 +28,9 @@ const App = () => (
               <Navigation />
               <Routes>
                 <Route path="/" element={<Dashboard />} />
-                <Route path="/trip/new" element={<TripWizard />} />
+                <Route path="/trip/new" element={<TripOnboarding />} />
+                <Route path="/trip/plan" element={<TripWizard />} />
+                <Route path="/trip/:tripId" element={<TripAlbum />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </ProtectedRoute>
