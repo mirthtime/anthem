@@ -1,16 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  Play, 
-  Pause, 
-  SkipBack, 
-  SkipForward, 
-  Volume2, 
-  Repeat, 
-  Shuffle,
-  Download,
-  Heart
-} from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Volume2, Shuffle, Repeat, Download, Heart, Music } from "lucide-react";
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
@@ -155,20 +145,35 @@ export const AudioPlayer = ({ songs, currentSongIndex, onSongChange, className }
         {/* Now Playing Info */}
         <div className="space-y-4">
           <div className="flex items-start justify-between">
-            <div className="flex-1 min-w-0">
-              <h3 className="text-lg font-semibold text-foreground truncate">
-                {currentSong.title}
-              </h3>
-              <p className="text-sm text-muted-foreground truncate">
-                {currentSong.stop_name}
-              </p>
-              <div className="flex gap-2 mt-2">
-                <Badge variant="secondary">{currentSong.genre}</Badge>
-                {currentSong.people && (
-                  <Badge variant="outline">{currentSong.people}</Badge>
+            <div className="flex items-center gap-4">
+              <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                {currentSong.artwork_url ? (
+                  <img 
+                    src={currentSong.artwork_url} 
+                    alt={`${currentSong.title} artwork`}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-primary flex items-center justify-center">
+                    <Music className="h-6 w-6 text-white" />
+                  </div>
                 )}
               </div>
-            </div>
+              <div className="flex-1 min-w-0">
+                 <h3 className="text-lg font-semibold text-foreground truncate">
+                   {currentSong.title}
+                 </h3>
+                 <p className="text-sm text-muted-foreground truncate">
+                   {currentSong.stop_name}
+                 </p>
+                 <div className="flex gap-2 mt-2">
+                   <Badge variant="secondary">{currentSong.genre}</Badge>
+                   {currentSong.people && (
+                     <Badge variant="outline">{currentSong.people}</Badge>
+                   )}
+                 </div>
+               </div>
+             </div>
             <div className="flex gap-1">
               <Button size="sm" variant="ghost" onClick={handleDownload}>
                 <Download className="h-4 w-4" />

@@ -59,7 +59,7 @@ export const useSongs = (tripId?: string) => {
       
       // Generate artwork for the song
       if (song) {
-        generateSongArtwork(song.id, song.title, song.stop_name, song.genre, song.stories);
+        generateSongArtwork(song);
       }
       
       return song;

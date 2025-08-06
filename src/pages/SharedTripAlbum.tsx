@@ -156,18 +156,29 @@ const SharedTripAlbum = () => {
           animate={{ opacity: 1, y: 0 }}
           className="space-y-6"
         >
-          {/* Trip Info */}
-          <div className="text-center space-y-4">
-            <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-              <Music className="h-4 w-4" />
-              <span>Shared from TripTunes AI</span>
-            </div>
-            
-            <div>
-              <h1 className="text-4xl font-bold text-foreground">{trip.title}</h1>
-              {trip.description && (
-                <p className="text-muted-foreground mt-2 text-lg">{trip.description}</p>
-              )}
+           {/* Trip Info */}
+           <div className="text-center space-y-4">
+             <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+               <Music className="h-4 w-4" />
+               <span>Shared from TripTunes AI</span>
+             </div>
+             
+             <div className="flex flex-col items-center space-y-4">
+               {trip.artwork_url && (
+                 <div className="w-48 h-48 rounded-xl overflow-hidden shadow-lg">
+                   <img 
+                     src={trip.artwork_url} 
+                     alt={`${trip.title} album artwork`}
+                     className="w-full h-full object-cover"
+                   />
+                 </div>
+               )}
+               <div>
+                 <h1 className="text-4xl font-bold text-foreground">{trip.title}</h1>
+                 {trip.description && (
+                   <p className="text-muted-foreground mt-2 text-lg">{trip.description}</p>
+               )}
+             </div>
             </div>
 
             {/* Trip Stats */}

@@ -28,7 +28,7 @@ serve(async (req) => {
 
     console.log(`Generating ${type} artwork with prompt:`, prompt);
 
-    // Create generation with Leonardo AI
+    // Create generation with Leonardo AI - using their documented API format
     const generationResponse = await fetch('https://cloud.leonardo.ai/api/rest/v1/generations', {
       method: 'POST',
       headers: {
@@ -40,10 +40,7 @@ serve(async (req) => {
         modelId: "6bef9f1b-29cb-40c7-b9df-32b51c1f67d3", // Leonardo Phoenix model
         width: width,
         height: height,
-        num_images: 1,
-        guidance_scale: 7,
-        num_inference_steps: 30,
-        presetStyle: "DYNAMIC"
+        num_images: 1
       }),
     });
 
@@ -54,7 +51,11 @@ serve(async (req) => {
     }
 
     const generationData = await generationResponse.json();
-    const generationId = generationData.sdGenerationJob.generationId;
+    const generationId = generationData.sdGenerationJob?.generationId;
+
+    if (!generationId) {
+      throw new Error('No generation ID returned from Leonardo API');
+    }
 
     console.log('Generation started with ID:', generationId);
 
@@ -82,8 +83,11 @@ serve(async (req) => {
 
       console.log(`Attempt ${attempts}: Status - ${generation.status}`);
 
-      if (generation.status === 'COMPLETE') {
-        const imageUrl = generation.generated_images[0].url;
+      if (generation?.status === 'COMPLETE') {
+        const imageUrl = generation.generated_images?.[0]?.url;
+        if (!imageUrl) {
+          throw new Error('No image URL in completed generation');
+        }
         console.log('Artwork generation completed:', imageUrl);
         
         return new Response(JSON.stringify({ 
@@ -93,7 +97,7 @@ serve(async (req) => {
         }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
-      } else if (generation.status === 'FAILED') {
+      } else if (generation?.status === 'FAILED') {
         throw new Error('Image generation failed');
       }
     }
