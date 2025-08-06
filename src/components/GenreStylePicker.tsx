@@ -74,12 +74,12 @@ export const GenreStylePicker = ({
             <p className="text-xs text-muted-foreground">
               Click to add popular styles to your prompt:
             </p>
-            <div className="flex flex-wrap gap-1">
+            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
               {STYLE_SUGGESTIONS.map((suggestion, index) => (
                 <button
                   key={index}
                   onClick={() => handleSuggestionClick(suggestion)}
-                  className="px-2 py-1 text-xs rounded-md border transition-all border-border hover:border-primary hover:bg-primary/10 text-muted-foreground hover:text-primary cursor-pointer"
+                  className="px-3 py-1 text-xs rounded-full border transition-all border-border hover:border-primary hover:bg-primary/10 text-muted-foreground hover:text-primary cursor-pointer whitespace-nowrap flex-shrink-0"
                 >
                   {suggestion}
                 </button>
