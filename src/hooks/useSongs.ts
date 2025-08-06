@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
+import { useArtwork } from './useArtwork';
 import { Song } from '@/types';
 
 export const useSongs = (tripId?: string) => {
   const { user } = useAuth();
+  const { generateSongArtwork } = useArtwork();
   const [songs, setSongs] = useState<Song[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -54,6 +56,12 @@ export const useSongs = (tripId?: string) => {
       // TODO: When ElevenLabs is ready, call the generation function
       // For now, just return the created song record
       await fetchSongs();
+      
+      // Generate artwork for the song
+      if (song) {
+        generateSongArtwork(song.id, song.title, song.stop_name, song.genre, song.stories);
+      }
+      
       return song;
     } catch (error) {
       console.error('Error generating song:', error);

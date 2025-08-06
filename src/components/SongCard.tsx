@@ -80,9 +80,19 @@ export const SongCard = ({
         <CardHeader>
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-full bg-gradient-primary">
-                <Music className="h-5 w-5 text-white" />
-              </div>
+              {song.artwork_url ? (
+                <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
+                  <img 
+                    src={song.artwork_url} 
+                    alt={`${song.title} artwork`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="p-2 rounded-full bg-gradient-primary">
+                  <Music className="h-5 w-5 text-white" />
+                </div>
+              )}
               <div>
                 <CardTitle className="text-lg">{song.title}</CardTitle>
                 <p className="text-sm text-muted-foreground">

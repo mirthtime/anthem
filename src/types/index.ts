@@ -6,6 +6,8 @@ export interface Trip {
   stops: TripStop[];
   created_at: string;
   updated_at: string;
+  artwork_url?: string;
+  artwork_generating?: boolean;
 }
 
 export interface TripStop {
@@ -33,6 +35,8 @@ export interface Song {
   stories: string;
   people: string;
   created_at: string;
+  artwork_url?: string;
+  artwork_generating?: boolean;
 }
 
 export const GENRES = [

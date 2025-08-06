@@ -132,9 +132,20 @@ const SharedSong = () => {
               <span>Shared from TripTunes AI</span>
             </div>
             
-            <div>
-              <h1 className="text-4xl font-bold text-foreground">{song.title}</h1>
-              <p className="text-xl text-muted-foreground mt-2">{song.stop_name}</p>
+            <div className="flex flex-col items-center space-y-4">
+              {song.artwork_url && (
+                <div className="w-48 h-48 rounded-xl overflow-hidden shadow-lg">
+                  <img 
+                    src={song.artwork_url} 
+                    alt={`${song.title} artwork`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+              <div>
+                <h1 className="text-4xl font-bold text-foreground">{song.title}</h1>
+                <p className="text-xl text-muted-foreground mt-2">{song.stop_name}</p>
+              </div>
             </div>
 
             {/* Song Meta */}
