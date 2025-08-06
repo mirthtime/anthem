@@ -1,7 +1,9 @@
-import { useState } from 'react';
+
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, MapPin, Plus, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, MapPin, Plus, X, RotateCcw } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { InputField } from '@/components/ui/input-field';
@@ -9,6 +11,8 @@ import { TextareaField } from '@/components/ui/textarea-field';
 import { Badge } from '@/components/ui/badge';
 import { TripStop } from '@/types';
 import { useTrips } from '@/hooks/useTrips';
+import { useAutoSave } from '@/hooks/useAutoSave';
+import { AutoSaveIndicator } from '@/components/AutoSaveIndicator';
 import { toast } from '@/hooks/use-toast';
 
 interface TripWizardProps {
@@ -34,6 +38,41 @@ export const TripWizard = ({ onComplete }: TripWizardProps) => {
     stories: '',
     people: ''
   });
+
+  // Auto-save setup
+  const autoSaveData = {
+    tripData,
+    stops,
+    currentStop,
+    currentStep
+  };
+
+  const { isSaving, lastSaved, loadFromStorage, clearSaved } = useAutoSave({
+    key: 'trip-wizard-draft',
+    data: autoSaveData,
+    debounceMs: 2000 // Save 2 seconds after user stops typing
+  });
+
+  // Load saved data on mount
+  useEffect(() => {
+    const saved = loadFromStorage();
+    if (saved && saved.data) {
+      const { tripData: savedTripData, stops: savedStops, currentStop: savedCurrentStop, currentStep: savedStep } = saved.data;
+      
+      // Only restore if there's meaningful data
+      if (savedTripData?.title || savedStops?.length > 0) {
+        setTripData(savedTripData || { title: '', description: '' });
+        setStops(savedStops || []);
+        setCurrentStop(savedCurrentStop || { name: '', description: '', stories: '', people: '' });
+        setCurrentStep(savedStep || 1);
+        
+        toast({
+          title: "Draft Restored",
+          description: "We've restored your previous work from " + formatDistanceToNow(saved.timestamp) + " ago.",
+        });
+      }
+    }
+  }, [loadFromStorage]);
 
   const steps = [
     { number: 1, title: 'Trip Details', description: 'Basic information about your trip' },
@@ -69,6 +108,18 @@ export const TripWizard = ({ onComplete }: TripWizardProps) => {
     setStops(stops.filter((_, i) => i !== index));
   };
 
+  const handleStartOver = () => {
+    setTripData({ title: '', description: '' });
+    setStops([]);
+    setCurrentStop({ name: '', description: '', stories: '', people: '' });
+    setCurrentStep(1);
+    clearSaved();
+    toast({
+      title: "Draft Cleared",
+      description: "Started over with a fresh trip.",
+    });
+  };
+
   const handleCreateTrip = async () => {
     if (!tripData.title.trim()) {
       toast({
@@ -95,6 +146,9 @@ export const TripWizard = ({ onComplete }: TripWizardProps) => {
         description: tripData.description,
         stops: stops
       });
+
+      // Clear the saved draft after successful creation
+      clearSaved();
 
       toast({
         title: "Trip Created!",
@@ -154,6 +208,20 @@ export const TripWizard = ({ onComplete }: TripWizardProps) => {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Auto-save indicator and controls */}
+      <div className="flex justify-between items-center mb-4 p-3 rounded-lg bg-accent/20 border border-border">
+        <AutoSaveIndicator isSaving={isSaving} lastSaved={lastSaved} />
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleStartOver}
+          className="gap-2 text-muted-foreground hover:text-foreground"
+        >
+          <RotateCcw className="h-4 w-4" />
+          Start Over
+        </Button>
       </div>
 
       {/* Step Content */}
