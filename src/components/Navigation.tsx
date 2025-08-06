@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -5,6 +6,7 @@ import { Music, Home, Settings, CreditCard, Menu, X, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { useCredits } from '@/hooks/useCredits';
+import { CreditPurchaseModal } from '@/components/CreditPurchaseModal';
 
 export const Navigation = () => {
   const location = useLocation();
@@ -12,6 +14,7 @@ export const Navigation = () => {
   const { user, signOut } = useAuth();
   const { balance } = useCredits();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isCreditModalOpen, setIsCreditModalOpen] = useState(false);
 
   const navItems = [
     { path: '/', label: 'Dashboard', icon: Home },
@@ -31,6 +34,11 @@ export const Navigation = () => {
 
   const handleCreateTrip = () => {
     navigate('/trip/new');
+    setIsMobileMenuOpen(false);
+  };
+
+  const handleCreditsClick = () => {
+    setIsCreditModalOpen(true);
     setIsMobileMenuOpen(false);
   };
 
@@ -67,13 +75,16 @@ export const Navigation = () => {
                 </Link>
               ))}
 
-              {/* Credits Display */}
-              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-card border border-border">
+              {/* Credits Display - Clickable */}
+              <button
+                onClick={handleCreditsClick}
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-card border border-border hover:bg-accent transition-all"
+              >
                 <CreditCard className="h-4 w-4 text-primary" />
                 <span className="text-sm font-medium">
                   {balance?.available_credits || 0} credits
                 </span>
-              </div>
+              </button>
 
               {/* Create Memory Button */}
               <Button onClick={handleCreateTrip} size="sm" className="gap-2">
@@ -109,10 +120,13 @@ export const Navigation = () => {
 
             {/* Credits & Menu */}
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-gradient-card border border-border text-xs">
+              <button
+                onClick={handleCreditsClick}
+                className="flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-card border border-border hover:bg-accent transition-all text-xs"
+              >
                 <CreditCard className="h-3 w-3 text-primary" />
                 <span className="font-medium">{balance?.available_credits || 0}</span>
-              </div>
+              </button>
               
               <Button
                 variant="ghost"
@@ -173,6 +187,12 @@ export const Navigation = () => {
           )}
         </AnimatePresence>
       </nav>
+
+      {/* Credit Purchase Modal */}
+      <CreditPurchaseModal
+        isOpen={isCreditModalOpen}
+        onClose={() => setIsCreditModalOpen(false)}
+      />
 
       {/* Spacer for fixed navigation */}
       <div className="h-20 lg:h-24" />

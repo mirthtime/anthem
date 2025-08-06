@@ -1,3 +1,4 @@
+
 import { motion } from 'framer-motion';
 import { Plus, MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -53,23 +54,13 @@ export const Dashboard = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-4">
-          {/* Credits Display */}
-          <div className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-card border border-border">
-            <div className="w-2 h-2 rounded-full bg-green-500" />
-            <span className="text-sm font-medium">
-              {balance?.available_credits || 0} credits available
-            </span>
-          </div>
-
-          {/* Only show header CTA when user has trips */}
-          {trips.length > 0 && (
-            <Button onClick={handleCreateTrip} size="lg" className="gap-2">
-              <Plus className="h-5 w-5" />
-              Capture a Memory
-            </Button>
-          )}
-        </div>
+        {/* Only show header CTA when user has trips */}
+        {trips.length > 0 && (
+          <Button onClick={handleCreateTrip} size="lg" className="gap-2">
+            <Plus className="h-5 w-5" />
+            Capture a Memory
+          </Button>
+        )}
       </motion.div>
 
       {/* Quick Stats */}
