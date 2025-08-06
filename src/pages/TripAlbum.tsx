@@ -14,7 +14,8 @@ import {
   ArrowLeft,
   MoreVertical,
   Edit2,
-  Trash2
+  Trash2,
+  ArrowUpDown
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,12 +25,15 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useTrips } from '@/hooks/useTrips';
-import { useSongs } from '@/hooks/useSongs';
+import { useSongManagement } from '@/hooks/useSongManagement';
 import { StopStoryForm } from '@/components/StopStoryForm';
 import { EmptyState } from '@/components/EmptyState';
+import { SongEditModal } from '@/components/SongEditModal';
+import { SongReorderList } from '@/components/SongReorderList';
 import { toast } from '@/hooks/use-toast';
 import { Song } from '@/types';
 
@@ -37,7 +41,17 @@ export const TripAlbum = () => {
   const { tripId } = useParams<{ tripId: string }>();
   const navigate = useNavigate();
   const { getTripById } = useTrips();
-  const { songs, loading: songsLoading, deleteSong } = useSongs(tripId);
+  const {
+    songs,
+    editingSong,
+    showReorderModal,
+    setEditingSong,
+    setShowReorderModal,
+    handleEditSong,
+    handleSaveEdit,
+    handleDeleteSong,
+    handleReorderSongs
+  } = useSongManagement(tripId);
   
   const [trip, setTrip] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -71,7 +85,7 @@ export const TripAlbum = () => {
 
   const handleAddStopComplete = () => {
     setShowAddStop(false);
-    loadTrip(); // Refresh trip data
+    loadTrip();
   };
 
   const handlePlaySong = (songId: string) => {
@@ -79,25 +93,6 @@ export const TripAlbum = () => {
       setCurrentlyPlaying(null);
     } else {
       setCurrentlyPlaying(songId);
-      // TODO: Implement actual audio playback
-    }
-  };
-
-  const handleDeleteSong = async (song: Song) => {
-    if (!confirm(`Are you sure you want to delete "${song.title}"?`)) return;
-    
-    try {
-      await deleteSong(song.id);
-      toast({
-        title: "Song Deleted",
-        description: "The song has been removed from your album.",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to delete song. Please try again.",
-        variant: "destructive",
-      });
     }
   };
 
@@ -221,6 +216,15 @@ export const TripAlbum = () => {
                 <Share2 className="h-5 w-5" />
                 Share Album
               </Button>
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="gap-2"
+                onClick={() => setShowReorderModal(true)}
+              >
+                <ArrowUpDown className="h-5 w-5" />
+                Reorder Songs
+              </Button>
             </>
           )}
         </div>
@@ -274,7 +278,7 @@ export const TripAlbum = () => {
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
-                                <DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleEditSong(song)}>
                                   <Edit2 className="h-4 w-4 mr-2" />
                                   Edit Song
                                 </DropdownMenuItem>
@@ -282,6 +286,7 @@ export const TripAlbum = () => {
                                   <Download className="h-4 w-4 mr-2" />
                                   Download
                                 </DropdownMenuItem>
+                                <DropdownMenuSeparator />
                                 <DropdownMenuItem 
                                   onClick={() => handleDeleteSong(song)}
                                   className="text-destructive focus:text-destructive"
@@ -355,6 +360,21 @@ export const TripAlbum = () => {
           />
         )}
       </motion.div>
+
+      {/* Modals */}
+      <SongEditModal
+        song={editingSong}
+        isOpen={!!editingSong}
+        onClose={() => setEditingSong(null)}
+        onSave={handleSaveEdit}
+      />
+
+      <SongReorderList
+        songs={songs}
+        isOpen={showReorderModal}
+        onClose={() => setShowReorderModal(false)}
+        onReorder={handleReorderSongs}
+      />
     </div>
   );
 };
