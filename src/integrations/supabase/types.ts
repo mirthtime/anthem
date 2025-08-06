@@ -14,7 +14,92 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      songs: {
+        Row: {
+          audio_url: string | null
+          created_at: string
+          duration: number | null
+          genre: string
+          id: string
+          lyrics: string | null
+          people: string | null
+          prompt: string
+          stop_name: string
+          stories: string | null
+          title: string
+          trip_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          audio_url?: string | null
+          created_at?: string
+          duration?: number | null
+          genre: string
+          id?: string
+          lyrics?: string | null
+          people?: string | null
+          prompt: string
+          stop_name: string
+          stories?: string | null
+          title: string
+          trip_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          audio_url?: string | null
+          created_at?: string
+          duration?: number | null
+          genre?: string
+          id?: string
+          lyrics?: string | null
+          people?: string | null
+          prompt?: string
+          stop_name?: string
+          stories?: string | null
+          title?: string
+          trip_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "songs_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trips: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          stops: Json | null
+          title: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          stops?: Json | null
+          title: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          stops?: Json | null
+          title?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
