@@ -107,7 +107,7 @@ export const SongCard = ({
               <div>
                 <CardTitle className="text-lg">{song.title}</CardTitle>
                 <p className="text-sm text-muted-foreground">
-                  {song.stop_name} • {song.genre} • {song.duration}s
+                  {song.stop_name} • {song.genre}
                 </p>
               </div>
             </div>

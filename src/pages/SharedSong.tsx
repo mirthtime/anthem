@@ -234,8 +234,8 @@ const SharedSong = () => {
 
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <span className="font-medium text-foreground">Duration:</span>{' '}
-                    <span className="text-muted-foreground">{song.duration}s</span>
+                    <span className="font-medium text-foreground">Genre:</span>{' '}
+                    <span className="text-muted-foreground">{song.genre}</span>
                   </div>
                   <div>
                     <span className="font-medium text-foreground">Location:</span>{' '}

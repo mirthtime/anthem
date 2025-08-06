@@ -31,7 +31,6 @@ export interface Song {
   prompt: string;
   audio_url?: string;
   lyrics?: string;
-  duration: number;
   stories: string;
   people: string;
   artwork_url?: string;
@@ -66,9 +65,6 @@ export const STYLE_SUGGESTIONS = [
 ] as const;
 
 export type Genre = typeof GENRES[number];
-
-export const DURATIONS = [30, 60, 90] as const;
-export type Duration = typeof DURATIONS[number];
 
 export interface CreditBalance {
   id: string;

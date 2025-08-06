@@ -5,7 +5,7 @@ import { TextareaField } from '@/components/ui/textarea-field';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { GENRES, DURATIONS, Genre, Duration } from '@/types';
+import { GENRES, Genre } from '@/types';
 import { Loader2, Music } from 'lucide-react';
 
 interface TripStopFormProps {
@@ -14,7 +14,6 @@ interface TripStopFormProps {
     people: string;
     stories: string;
     genre: Genre;
-    duration: Duration;
   }) => void;
   loading?: boolean;
 }
@@ -24,7 +23,6 @@ export const TripStopForm = ({ onSubmit, loading = false }: TripStopFormProps) =
   const [people, setPeople] = useState('');
   const [stories, setStories] = useState('');
   const [genre, setGenre] = useState<Genre>('Rock');
-  const [duration, setDuration] = useState<Duration>(30);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,7 +31,6 @@ export const TripStopForm = ({ onSubmit, loading = false }: TripStopFormProps) =
       people,
       stories,
       genre,
-      duration,
     });
   };
 
@@ -77,42 +74,22 @@ export const TripStopForm = ({ onSubmit, loading = false }: TripStopFormProps) =
               rows={4}
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">
-                  Genre/Style
-                </label>
-                <Select value={genre} onValueChange={(value: Genre) => setGenre(value)}>
-                  <SelectTrigger className="rounded-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {GENRES.map((g) => (
-                      <SelectItem key={g} value={g}>
-                        {g}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">
-                  Song Length
-                </label>
-                <Select value={duration.toString()} onValueChange={(value) => setDuration(parseInt(value) as Duration)}>
-                  <SelectTrigger className="rounded-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {DURATIONS.map((d) => (
-                      <SelectItem key={d} value={d.toString()}>
-                        {d}s {d >= 90 ? '(Premium)' : ''}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">
+                Genre/Style
+              </label>
+              <Select value={genre} onValueChange={(value: Genre) => setGenre(value)}>
+                <SelectTrigger className="rounded-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {GENRES.map((g) => (
+                    <SelectItem key={g} value={g}>
+                      {g}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <Button

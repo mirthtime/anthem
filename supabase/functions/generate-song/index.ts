@@ -12,17 +12,27 @@ serve(async (req) => {
   }
 
   try {
-    const { stopName, people, stories, genre, duration } = await req.json();
+    const { stopName, people, stories, genre } = await req.json();
     
-    // Build ElevenLabs prompt
-    const prompt = `Create an upbeat ${genre} song about ${stories} at ${stopName}${people ? ` with ${people}` : ''}, capturing an adventurous road trip vibe. Duration: ${duration} seconds.`;
+    // Build ElevenLabs prompt with proper song structure
+    const prompt = `Create a full-length ${genre} song about ${stories} at ${stopName}${people ? ` with ${people}` : ''}, capturing an adventurous road trip vibe. 
+
+Structure the song with:
+- Verse 1: Set the scene and introduce the story
+- Chorus: Capture the main feeling and memory 
+- Verse 2: Develop the story with more details
+- Chorus: Repeat the main hook
+- Bridge: Reflect on what this moment meant
+- Final Chorus: Bring it home with emotion
+
+Make it a complete, radio-ready song with natural pacing and emotional depth.`;
     
     // TODO: Integrate with ElevenLabs Music API when user provides API key
     
     return new Response(JSON.stringify({ 
       message: "Song generation ready - ElevenLabs API key needed",
       prompt,
-      metadata: { stopName, people, stories, genre, duration }
+      metadata: { stopName, people, stories, genre }
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });

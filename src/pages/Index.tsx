@@ -31,7 +31,6 @@ const Index = () => {
     people: string;
     stories: string;
     genre: string;
-    duration: number;
   }) => {
     setGeneratingAudio(true);
     

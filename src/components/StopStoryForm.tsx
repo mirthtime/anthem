@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, Users, Heart, Music, Sparkles, Clock } from 'lucide-react';
+import { MapPin, Users, Heart, Music, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { InputField } from '@/components/ui/input-field';
@@ -14,7 +14,6 @@ import { useTrips } from '@/hooks/useTrips';
 import { useSongs } from '@/hooks/useSongs';
 import { useCredits } from '@/hooks/useCredits';
 import { toast } from '@/hooks/use-toast';
-import { DURATIONS } from '@/types';
 
 interface StopStoryFormProps {
   onComplete?: (tripId: string) => void;
@@ -35,7 +34,6 @@ export const StopStoryForm = ({ onComplete, existingTripId }: StopStoryFormProps
     whatHappened: '',
     genre: '',
     customStyle: '',
-    duration: 30,
     mood: '',
     customLyrics: '',
     useCustomLyrics: false
@@ -141,7 +139,6 @@ export const StopStoryForm = ({ onComplete, existingTripId }: StopStoryFormProps
         stop_name: formData.stopName,
         genre: formData.genre === 'Custom' ? 'Custom' : formData.genre,
         prompt: generatePrompt(),
-        duration: formData.duration,
         people: formData.whoWasThere,
         stories: formData.whatHappened,
         lyrics: formData.useCustomLyrics ? formData.customLyrics : undefined,
@@ -308,29 +305,6 @@ export const StopStoryForm = ({ onComplete, existingTripId }: StopStoryFormProps
               onStyleChange={(style) => setFormData({ ...formData, customStyle: style })}
               error={errors.genre}
             />
-
-            {/* Duration */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground flex items-center gap-2">
-                <Clock className="h-4 w-4" />
-                Song Length
-              </label>
-              <Select 
-                value={formData.duration.toString()} 
-                onValueChange={(value) => setFormData({ ...formData, duration: parseInt(value) })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-background border-border shadow-lg z-50">
-                  {DURATIONS.map((duration) => (
-                    <SelectItem key={duration} value={duration.toString()}>
-                      {duration} seconds
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
 
             {/* Lyrics Control */}
             <LyricsControl

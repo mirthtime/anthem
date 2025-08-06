@@ -297,7 +297,6 @@ export const TripAlbum = () => {
                           <div className="space-y-2">
                             <div className="flex flex-wrap gap-2">
                               <Badge variant="secondary">{song.genre}</Badge>
-                              <Badge variant="outline">{song.duration}s</Badge>
                               {song.people && (
                                 <Badge variant="outline" className="gap-1">
                                   <Users className="h-3 w-3" />
