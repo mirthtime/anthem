@@ -96,7 +96,16 @@ export const CreditPurchaseModal = ({ isOpen, onClose }: CreditPurchaseModalProp
     try {
       console.log('Starting purchase for package:', packageType);
       
-      // Use Supabase function instead of direct API call
+      // Get current session to ensure we're authenticated
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError || !session) {
+        throw new Error('Please log in to purchase credits');
+      }
+      
+      console.log('User authenticated, calling purchase-credits function...');
+      
+      // Use Supabase function with proper error handling
       const { data, error } = await supabase.functions.invoke('purchase-credits', {
         body: { 
           packageType,
@@ -104,7 +113,7 @@ export const CreditPurchaseModal = ({ isOpen, onClose }: CreditPurchaseModalProp
         }
       });
 
-      console.log('Purchase credits response:', data, error);
+      console.log('Purchase credits response:', { data, error });
       
       if (error) {
         console.error('Supabase function error:', error);
@@ -112,10 +121,12 @@ export const CreditPurchaseModal = ({ isOpen, onClose }: CreditPurchaseModalProp
       }
       
       if (data?.error) {
+        console.error('Server error:', data.error);
         throw new Error(data.error);
       }
 
       if (data?.clientSecret) {
+        console.log('Received client secret, initializing embedded checkout...');
         setShowCheckout(true);
         
         // Initialize embedded checkout
@@ -136,6 +147,12 @@ export const CreditPurchaseModal = ({ isOpen, onClose }: CreditPurchaseModalProp
         toast({
           title: "Payment Setup Required",
           description: "Payment processing is being set up. Please try again later.",
+          variant: "destructive",
+        });
+      } else if (error.message?.includes('log in')) {
+        toast({
+          title: "Authentication Required",
+          description: "Please log in to purchase credits.",
           variant: "destructive",
         });
       } else {
