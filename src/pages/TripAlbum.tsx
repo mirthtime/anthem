@@ -166,205 +166,207 @@ export default function TripAlbum() {
             </div>
           </div>
 
-          <Button 
-            onClick={() => setShowStopForm(true)} 
-            size="lg"
-            className="gap-2 bg-gradient-primary hover:bg-gradient-primary/90"
-          >
-            <Plus className="h-5 w-5" />
-            Add Next Stop
-          </Button>
-        
-          {songs.length > 0 && (
-            <>
-              <Button 
-                variant="secondary" 
-                size="lg" 
-                className="gap-2"
-                onClick={handlePlayAlbum}
-              >
-                <Play className="h-5 w-5" />
-                Play Album
-              </Button>
-              <Button variant="outline" size="lg" className="gap-2">
-                <Share2 className="h-5 w-5" />
-                Share Album
-              </Button>
-              <Button 
-                variant="outline" 
-                size="lg" 
-                className="gap-2"
-                onClick={() => setShowReorderModal(true)}
-              >
-                <ArrowUpDown className="h-5 w-5" />
-                Reorder Songs
-              </Button>
-            </>
-          )}
-        </div>
-      </motion.div>
+          <div className="flex items-center gap-3">
+            <Button 
+              onClick={() => setShowStopForm(true)} 
+              size="lg"
+              className="gap-2 bg-gradient-primary hover:bg-gradient-primary/90"
+            >
+              <Plus className="h-5 w-5" />
+              Add Next Stop
+            </Button>
+          
+            {songs.length > 0 && (
+              <>
+                <Button 
+                  variant="secondary" 
+                  size="lg" 
+                  className="gap-2"
+                  onClick={handlePlayAlbum}
+                >
+                  <Play className="h-5 w-5" />
+                  Play Album
+                </Button>
+                <Button variant="outline" size="lg" className="gap-2">
+                  <Share2 className="h-5 w-5" />
+                  Share Album
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="gap-2"
+                  onClick={() => setShowReorderModal(true)}
+                >
+                  <ArrowUpDown className="h-5 w-5" />
+                  Reorder Songs
+                </Button>
+              </>
+            )}
+          </div>
+        </motion.div>
 
-      {/* Enhanced Layout with Sidebar */}
-      <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Main Content */}
-        <div className="lg:col-span-2 space-y-8">
-          {/* Playlist Controls */}
-          {songs.length > 0 && (
-            <PlaylistControls 
-              songs={songs}
-              title={trip?.title ? `${trip.title} Album` : 'Trip Album'}
-            />
-          )}
+        {/* Enhanced Layout with Sidebar */}
+        <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Playlist Controls */}
+            {songs.length > 0 && (
+              <PlaylistControls 
+                songs={songs}
+                title={trip?.title ? `${trip.title} Album` : 'Trip Album'}
+              />
+            )}
 
-          {/* View Toggle */}
-          {songs.length > 0 && (
-            <Card className="bg-gradient-card border-border shadow-card">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant={selectedView === 'songs' ? 'default' : 'ghost'}
-                    size="sm"
-                    onClick={() => setSelectedView('songs')}
-                  >
-                    Songs
-                  </Button>
-                  <Button
-                    variant={selectedView === 'queue' ? 'default' : 'ghost'}
-                    size="sm"
-                    onClick={() => setSelectedView('queue')}
-                  >
-                    Queue
-                  </Button>
-                  <Button
-                    variant={selectedView === 'nowplaying' ? 'default' : 'ghost'}
-                    size="sm"
-                    onClick={() => setSelectedView('nowplaying')}
-                  >
-                    <Headphones className="h-4 w-4 mr-2" />
-                    Now Playing
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Content based on selected view */}
-          {selectedView === 'songs' && (
-            <>
-              {showStopForm ? (
-                <TripStopForm 
-                  onSubmit={handleGenerateSong} 
-                  loading={isGenerating} 
-                />
-              ) : songs.length === 0 ? (
-                <EmptyState 
-                  title="No songs yet"
-                  description="Add your first stop to generate a song"
-                  actionLabel="Add Stop"
-                  onAction={() => setShowStopForm(true)}
-                />
-              ) : (
-                <div className="grid gap-6">
-                  {songs.map((song, index) => (
-                    <motion.div
-                      key={song.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1 }}
+            {/* View Toggle */}
+            {songs.length > 0 && (
+              <Card className="bg-gradient-card border-border shadow-card">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant={selectedView === 'songs' ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => setSelectedView('songs')}
                     >
-                      <SongCard
-                        song={song}
-                        onEdit={() => handleEditSong(song)}
-                        onDelete={() => handleDeleteSong(song)}
-                        showTripInfo={false}
-                        actions={
-                          <div className="flex gap-2">
-                            <Button
-                              size="sm"
-                              variant={currentSong?.id === song.id && isPlaying ? "default" : "secondary"}
-                              onClick={() => handlePlaySongAtIndex(index)}
-                              className="gap-2"
-                            >
-                              <Play className="h-4 w-4" />
-                              {currentSong?.id === song.id && isPlaying ? 'Playing' : 'Play'}
-                            </Button>
-                          </div>
-                        }
-                      />
-                    </motion.div>
-                  ))}
-                </div>
-              )}
-            </>
-          )}
+                      Songs
+                    </Button>
+                    <Button
+                      variant={selectedView === 'queue' ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => setSelectedView('queue')}
+                    >
+                      Queue
+                    </Button>
+                    <Button
+                      variant={selectedView === 'nowplaying' ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => setSelectedView('nowplaying')}
+                    >
+                      <Headphones className="h-4 w-4 mr-2" />
+                      Now Playing
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
-          {selectedView === 'queue' && <QueueManager />}
-          
-          {selectedView === 'nowplaying' && (
-            <div className="space-y-6">
-              <NowPlayingCard />
-              <AdvancedPlayerControls />
-            </div>
-          )}
-        </div>
-
-        {/* Sidebar */}
-        <div className="space-y-6">
-          {/* Queue Manager in Sidebar */}
-          {selectedView === 'songs' && <QueueManager />}
-          
-          {/* Trip Info */}
-          {trip && (
-            <Card className="bg-gradient-card border-border shadow-card">
-              <CardHeader>
-                <CardTitle>Trip Details</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {trip.stops && trip.stops.length > 0 && (
-                  <div>
-                    <h4 className="font-medium mb-2">Planned Stops:</h4>
-                    <div className="space-y-2">
-                      {trip.stops.map((stop, index) => (
-                        <div key={index} className="text-sm">
-                          <div className="font-medium">{stop.name}</div>
-                          {stop.description && (
-                            <div className="text-muted-foreground">{stop.description}</div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
+            {/* Content based on selected view */}
+            {selectedView === 'songs' && (
+              <>
+                {showStopForm ? (
+                  <TripStopForm 
+                    onSubmit={handleGenerateSong} 
+                    loading={isGenerating} 
+                  />
+                ) : songs.length === 0 ? (
+                  <EmptyState 
+                    title="No songs yet"
+                    description="Add your first stop to generate a song"
+                    actionLabel="Add Stop"
+                    onAction={() => setShowStopForm(true)}
+                  />
+                ) : (
+                  <div className="grid gap-6">
+                    {songs.map((song, index) => (
+                      <motion.div
+                        key={song.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                      >
+                        <SongCard
+                          song={song}
+                          onEdit={() => handleEditSong(song)}
+                          onDelete={() => handleDeleteSong(song)}
+                          showTripInfo={false}
+                          actions={
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                variant={currentSong?.id === song.id && isPlaying ? "default" : "secondary"}
+                                onClick={() => handlePlaySongAtIndex(index)}
+                                className="gap-2"
+                              >
+                                <Play className="h-4 w-4" />
+                                {currentSong?.id === song.id && isPlaying ? 'Playing' : 'Play'}
+                              </Button>
+                            </div>
+                          }
+                        />
+                      </motion.div>
+                    ))}
                   </div>
                 )}
-                <Separator />
-                <div className="text-sm text-muted-foreground">
-                  <div>Created: {new Date(trip.created_at).toLocaleDateString()}</div>
-                  <div>Last updated: {new Date(trip.updated_at).toLocaleDateString()}</div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+              </>
+            )}
+
+            {selectedView === 'queue' && <QueueManager />}
+            
+            {selectedView === 'nowplaying' && (
+              <div className="space-y-6">
+                <NowPlayingCard />
+                <AdvancedPlayerControls />
+              </div>
+            )}
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Queue Manager in Sidebar */}
+            {selectedView === 'songs' && <QueueManager />}
+            
+            {/* Trip Info */}
+            {trip && (
+              <Card className="bg-gradient-card border-border shadow-card">
+                <CardHeader>
+                  <CardTitle>Trip Details</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {trip.stops && trip.stops.length > 0 && (
+                    <div>
+                      <h4 className="font-medium mb-2">Planned Stops:</h4>
+                      <div className="space-y-2">
+                        {trip.stops.map((stop, index) => (
+                          <div key={index} className="text-sm">
+                            <div className="font-medium">{stop.name}</div>
+                            {stop.description && (
+                              <div className="text-muted-foreground">{stop.description}</div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  <Separator />
+                  <div className="text-sm text-muted-foreground">
+                    <div>Created: {new Date(trip.created_at).toLocaleDateString()}</div>
+                    <div>Last updated: {new Date(trip.updated_at).toLocaleDateString()}</div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
         </div>
+
+        {/* Modals */}
+        {editingSong && (
+          <SongEditModal
+            song={editingSong}
+            onSave={handleSaveEdit}
+            onClose={() => setEditingSong(null)}
+          />
+        )}
+
+        {showReorderModal && (
+          <SongReorderList
+            songs={songs}
+            onReorder={handleReorderSongs}
+            onClose={() => setShowReorderModal(false)}
+          />
+        )}
+
+        {/* Mini Player */}
+        <MiniPlayer />
       </div>
-
-      {/* Modals */}
-      {editingSong && (
-        <SongEditModal
-          song={editingSong}
-          onSave={handleSaveEdit}
-          onClose={() => setEditingSong(null)}
-        />
-      )}
-
-      {showReorderModal && (
-        <SongReorderList
-          songs={songs}
-          onReorder={handleReorderSongs}
-          onClose={() => setShowReorderModal(false)}
-        />
-      )}
-
-      {/* Mini Player */}
-      <MiniPlayer />
     </div>
   );
 }
