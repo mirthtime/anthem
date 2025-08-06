@@ -12,6 +12,8 @@ import { TripWizard } from "./components/TripWizard";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Settings from "./pages/Settings";
+import { SharedTripAlbum } from "./pages/SharedTripAlbum";
+import { SharedSong } from "./pages/SharedSong";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +26,8 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/auth" element={<Auth />} />
+          <Route path="/share/trip/:tripId" element={<SharedTripAlbum />} />
+          <Route path="/share/song/:songId" element={<SharedSong />} />
           <Route path="/*" element={
             <ProtectedRoute>
               <Navigation />
