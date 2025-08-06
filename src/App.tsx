@@ -10,7 +10,7 @@ import { AudioProvider } from "./contexts/AudioContext";
 import { MiniPlayer } from "./components/audio/MiniPlayer";
 import { Dashboard } from "./pages/Dashboard";
 import { TripOnboarding } from "./pages/TripOnboarding";
-import { TripAlbum } from "./pages/TripAlbum";
+import TripAlbum from "./pages/TripAlbum";
 import { TripWizard } from "./components/TripWizard";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";

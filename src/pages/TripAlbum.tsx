@@ -8,7 +8,8 @@ import {
   Plus, 
   Share2, 
   ArrowUpDown,
-  Headphones
+  Headphones,
+  Music2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -259,6 +260,7 @@ export default function TripAlbum() {
                   />
                 ) : songs.length === 0 ? (
                   <EmptyState 
+                    icon={Music2}
                     title="No songs yet"
                     description="Add your first stop to generate a song"
                     actionLabel="Add Stop"
@@ -275,22 +277,8 @@ export default function TripAlbum() {
                       >
                         <SongCard
                           song={song}
-                          onEdit={() => handleEditSong(song)}
-                          onDelete={() => handleDeleteSong(song)}
-                          showTripInfo={false}
-                          actions={
-                            <div className="flex gap-2">
-                              <Button
-                                size="sm"
-                                variant={currentSong?.id === song.id && isPlaying ? "default" : "secondary"}
-                                onClick={() => handlePlaySongAtIndex(index)}
-                                className="gap-2"
-                              >
-                                <Play className="h-4 w-4" />
-                                {currentSong?.id === song.id && isPlaying ? 'Playing' : 'Play'}
-                              </Button>
-                            </div>
-                          }
+                          onPlay={() => handlePlaySongAtIndex(index)}
+                          isPlaying={currentSong?.id === song.id && isPlaying}
                         />
                       </motion.div>
                     ))}
@@ -351,6 +339,7 @@ export default function TripAlbum() {
         {editingSong && (
           <SongEditModal
             song={editingSong}
+            isOpen={!!editingSong}
             onSave={handleSaveEdit}
             onClose={() => setEditingSong(null)}
           />
@@ -359,6 +348,7 @@ export default function TripAlbum() {
         {showReorderModal && (
           <SongReorderList
             songs={songs}
+            isOpen={showReorderModal}
             onReorder={handleReorderSongs}
             onClose={() => setShowReorderModal(false)}
           />
