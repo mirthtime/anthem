@@ -24,7 +24,7 @@ interface CreditPurchaseModalProps {
 const loadStripe = async (): Promise<any> => {
   // You need to replace this with your actual Stripe publishable key
   // Get it from: https://dashboard.stripe.com/apikeys
-  const publishableKey = 'pk_test_YOUR_ACTUAL_PUBLISHABLE_KEY_HERE';
+  const publishableKey = 'pk_live_51QxqKlKLhNTZopXG8x8b4EWTOz9CqAYLJr9qCKOg60MBUoDGZas5GpcgTytw0J9SgBVlOBDqenOeZK6TmPEgz46100mRPrQuYh';
 
   if (typeof window !== 'undefined' && (window as any).Stripe) {
     return (window as any).Stripe(publishableKey);
