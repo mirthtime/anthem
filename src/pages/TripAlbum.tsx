@@ -160,7 +160,7 @@ export const TripAlbum = () => {
     }
   };
 
-  const handlePlaySong = (songIndex: number) => {
+  const handlePlaySongAtIndex = (songIndex: number) => {
     setQueue(songs, songIndex);
   };
 
@@ -221,33 +221,34 @@ export const TripAlbum = () => {
             Add Next Stop
           </Button>
         
-        {songs.length > 0 && (
-          <>
-            <Button 
-              variant="secondary" 
-              size="lg" 
-              className="gap-2"
-              onClick={handlePlayAlbum}
-            >
-              <Play className="h-5 w-5" />
-              Play Album
-            </Button>
-            <Button variant="outline" size="lg" className="gap-2">
-              <Share2 className="h-5 w-5" />
-              Share Album
-            </Button>
-            <Button 
-              variant="outline" 
-              size="lg" 
-              className="gap-2"
-              onClick={() => setShowReorderModal(true)}
-            >
-              <ArrowUpDown className="h-5 w-5" />
-              Reorder Songs
-            </Button>
-          </>
-        )}
-      </div>
+          {songs.length > 0 && (
+            <>
+              <Button 
+                variant="secondary" 
+                size="lg" 
+                className="gap-2"
+                onClick={handlePlayAlbum}
+              >
+                <Play className="h-5 w-5" />
+                Play Album
+              </Button>
+              <Button variant="outline" size="lg" className="gap-2">
+                <Share2 className="h-5 w-5" />
+                Share Album
+              </Button>
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="gap-2"
+                onClick={() => setShowReorderModal(true)}
+              >
+                <ArrowUpDown className="h-5 w-5" />
+                Reorder Songs
+              </Button>
+            </>
+          )}
+        </div>
+      </motion.div>
 
       {/* Enhanced Layout with Sidebar */}
       <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -345,7 +346,7 @@ export const TripAlbum = () => {
                                 <Button
                                   size="sm"
                                   variant={currentSong?.id === song.id && isPlaying ? "default" : "secondary"}
-                                  onClick={() => handlePlaySong(index)}
+                                  onClick={() => handlePlaySongAtIndex(index)}
                                   className="gap-2"
                                 >
                                   <Play className="h-4 w-4" />
