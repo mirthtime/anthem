@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dialog';
 import { useCredits } from '@/hooks/useCredits';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface CreditPurchaseModalProps {
   isOpen: boolean;
@@ -38,7 +39,6 @@ const loadStripe = async (): Promise<any> => {
 };
 
 export const CreditPurchaseModal = ({ isOpen, onClose }: CreditPurchaseModalProps) => {
-  const { purchaseCredits } = useCredits();
   const [loading, setLoading] = useState<string | null>(null);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
@@ -94,35 +94,40 @@ export const CreditPurchaseModal = ({ isOpen, onClose }: CreditPurchaseModalProp
     setCheckoutLoading(true);
     
     try {
-      const response = await fetch('/api/create-checkout-session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('supabase.auth.token')}`,
-        },
-        body: JSON.stringify({ 
+      console.log('Starting purchase for package:', packageType);
+      
+      // Use Supabase function instead of direct API call
+      const { data, error } = await supabase.functions.invoke('purchase-credits', {
+        body: { 
           packageType,
-          mode: 'embedded' // Request embedded mode
-        }),
+          mode: 'embedded'
+        }
       });
 
-      const { clientSecret, error } = await response.json();
+      console.log('Purchase credits response:', data, error);
       
       if (error) {
-        throw new Error(error);
+        console.error('Supabase function error:', error);
+        throw new Error(error.message || 'Failed to create checkout session');
+      }
+      
+      if (data?.error) {
+        throw new Error(data.error);
       }
 
-      if (clientSecret) {
+      if (data?.clientSecret) {
         setShowCheckout(true);
         
         // Initialize embedded checkout
         const checkout = await stripeRef.current.initEmbeddedCheckout({
-          clientSecret,
+          clientSecret: data.clientSecret,
         });
 
         if (checkoutRef.current) {
           checkout.mount(checkoutRef.current);
         }
+      } else {
+        throw new Error('No client secret received from server');
       }
     } catch (error: any) {
       console.error('Purchase failed:', error);
