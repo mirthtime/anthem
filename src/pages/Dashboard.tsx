@@ -62,10 +62,13 @@ export const Dashboard = () => {
             </span>
           </div>
 
-          <Button onClick={handleCreateTrip} size="lg" className="gap-2">
-            <Plus className="h-5 w-5" />
-            Capture a Memory
-          </Button>
+          {/* Only show header CTA when user has trips */}
+          {trips.length > 0 && (
+            <Button onClick={handleCreateTrip} size="lg" className="gap-2">
+              <Plus className="h-5 w-5" />
+              Capture a Memory
+            </Button>
+          )}
         </div>
       </motion.div>
 
