@@ -36,6 +36,9 @@ import { SongEditModal } from '@/components/SongEditModal';
 import { SongReorderList } from '@/components/SongReorderList';
 import { toast } from '@/hooks/use-toast';
 import { Song } from '@/types';
+import { useAudio } from '@/contexts/AudioContext';
+import { QueueManager } from '@/components/audio/QueueManager';
+import { AdvancedPlayerControls } from '@/components/audio/AdvancedPlayerControls';
 
 export const TripAlbum = () => {
   const { tripId } = useParams<{ tripId: string }>();
@@ -52,6 +55,8 @@ export const TripAlbum = () => {
     handleDeleteSong,
     handleReorderSongs
   } = useSongManagement(tripId);
+  
+  const { setQueue, currentSong, isPlaying } = useAudio();
   
   const [trip, setTrip] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -149,8 +154,18 @@ export const TripAlbum = () => {
     );
   }
 
+  const handlePlayAlbum = () => {
+    if (songs.length > 0) {
+      setQueue(songs, 0);
+    }
+  };
+
+  const handlePlaySong = (songIndex: number) => {
+    setQueue(songs, songIndex);
+  };
+
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="max-w-6xl mx-auto px-4 py-8">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -195,7 +210,7 @@ export const TripAlbum = () => {
           </div>
         </div>
 
-        {/* Action Buttons */}
+        {/* Enhanced Action Buttons */}
         <div className="flex flex-wrap gap-3">
           <Button
             onClick={() => setShowAddStop(true)}
@@ -205,161 +220,194 @@ export const TripAlbum = () => {
             <Plus className="h-5 w-5" />
             Add Next Stop
           </Button>
-          
-          {songs.length > 0 && (
-            <>
-              <Button variant="secondary" size="lg" className="gap-2">
-                <Play className="h-5 w-5" />
-                Play Album
-              </Button>
-              <Button variant="outline" size="lg" className="gap-2">
-                <Share2 className="h-5 w-5" />
-                Share Album
-              </Button>
-              <Button 
-                variant="outline" 
-                size="lg" 
-                className="gap-2"
-                onClick={() => setShowReorderModal(true)}
-              >
-                <ArrowUpDown className="h-5 w-5" />
-                Reorder Songs
-              </Button>
-            </>
-          )}
-        </div>
-      </motion.div>
+        
+        {songs.length > 0 && (
+          <>
+            <Button 
+              variant="secondary" 
+              size="lg" 
+              className="gap-2"
+              onClick={handlePlayAlbum}
+            >
+              <Play className="h-5 w-5" />
+              Play Album
+            </Button>
+            <Button variant="outline" size="lg" className="gap-2">
+              <Share2 className="h-5 w-5" />
+              Share Album
+            </Button>
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="gap-2"
+              onClick={() => setShowReorderModal(true)}
+            >
+              <ArrowUpDown className="h-5 w-5" />
+              Reorder Songs
+            </Button>
+          </>
+        )}
+      </div>
 
-      {/* Songs Timeline */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
-        className="mt-12"
-      >
-        {songs.length > 0 ? (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-semibold text-foreground">Your Musical Journey</h2>
-            
-            <div className="space-y-4">
-              {songs.map((song, index) => (
-                <motion.div
-                  key={song.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <Card className="bg-gradient-card border-border shadow-card hover:shadow-button transition-all">
-                    <CardContent className="p-6">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1 space-y-3">
-                          {/* Song Header */}
+      {/* Enhanced Layout with Sidebar */}
+      <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Main Content */}
+        <div className="lg:col-span-2">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            {songs.length > 0 ? (
+              <div className="space-y-6">
+                <h2 className="text-2xl font-semibold text-foreground">Your Musical Journey</h2>
+                
+                <div className="space-y-4">
+                  {songs.map((song, index) => (
+                    <motion.div
+                      key={song.id}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      <Card className={`bg-gradient-card border-border shadow-card hover:shadow-button transition-all cursor-pointer ${
+                        currentSong?.id === song.id ? 'ring-2 ring-primary' : ''
+                      }`}>
+                        <CardContent className="p-6">
                           <div className="flex items-start justify-between">
-                            <div>
-                              <h3 className="text-lg font-semibold text-foreground">
-                                {song.title}
-                              </h3>
-                              <div className="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
-                                <div className="flex items-center gap-1">
-                                  <MapPin className="h-3 w-3" />
-                                  <span>{song.stop_name}</span>
+                            <div className="flex-1 space-y-3">
+                              {/* Song Header */}
+                              <div className="flex items-start justify-between">
+                                <div>
+                                  <h3 className="text-lg font-semibold text-foreground">
+                                    {song.title}
+                                  </h3>
+                                  <div className="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
+                                    <div className="flex items-center gap-1">
+                                      <MapPin className="h-3 w-3" />
+                                      <span>{song.stop_name}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                      <Clock className="h-3 w-3" />
+                                      <span>{formatTime(song.created_at)}</span>
+                                    </div>
+                                  </div>
                                 </div>
-                                <div className="flex items-center gap-1">
-                                  <Clock className="h-3 w-3" />
-                                  <span>{formatTime(song.created_at)}</span>
+
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="sm">
+                                      <MoreVertical className="h-4 w-4" />
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end">
+                                    <DropdownMenuItem onClick={() => handleEditSong(song)}>
+                                      <Edit2 className="h-4 w-4 mr-2" />
+                                      Edit Song
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem>
+                                      <Download className="h-4 w-4 mr-2" />
+                                      Download
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem 
+                                      onClick={() => handleDeleteSong(song)}
+                                      className="text-destructive focus:text-destructive"
+                                    >
+                                      <Trash2 className="h-4 w-4 mr-2" />
+                                      Delete
+                                    </DropdownMenuItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              </div>
+
+                              {/* Song Details */}
+                              <div className="space-y-2">
+                                <div className="flex flex-wrap gap-2">
+                                  <Badge variant="secondary">{song.genre}</Badge>
+                                  {song.people && (
+                                    <Badge variant="outline" className="gap-1">
+                                      <Users className="h-3 w-3" />
+                                      {song.people}
+                                    </Badge>
+                                  )}
+                                </div>
+                                
+                                {song.stories && (
+                                  <p className="text-sm text-muted-foreground italic">
+                                    "{song.stories}"
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* Enhanced Audio Player */}
+                              <div className="flex items-center gap-3 p-3 bg-accent/30 rounded-xl border border-border">
+                                <Button
+                                  size="sm"
+                                  variant={currentSong?.id === song.id && isPlaying ? "default" : "secondary"}
+                                  onClick={() => handlePlaySong(index)}
+                                  className="gap-2"
+                                >
+                                  <Play className="h-4 w-4" />
+                                  {currentSong?.id === song.id && isPlaying ? 'Playing...' : 'Play'}
+                                </Button>
+                                
+                                <div className="flex-1 text-sm text-muted-foreground">
+                                  {song.audio_url ? 'Ready to play' : 'Generating audio...'}
+                                </div>
+                                
+                                <div className="flex gap-1">
+                                  <Button size="sm" variant="ghost">
+                                    <Download className="h-4 w-4" />
+                                  </Button>
+                                  <Button size="sm" variant="ghost">
+                                    <Share2 className="h-4 w-4" />
+                                  </Button>
                                 </div>
                               </div>
                             </div>
-
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="sm">
-                                  <MoreVertical className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => handleEditSong(song)}>
-                                  <Edit2 className="h-4 w-4 mr-2" />
-                                  Edit Song
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                  <Download className="h-4 w-4 mr-2" />
-                                  Download
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem 
-                                  onClick={() => handleDeleteSong(song)}
-                                  className="text-destructive focus:text-destructive"
-                                >
-                                  <Trash2 className="h-4 w-4 mr-2" />
-                                  Delete
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
                           </div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <EmptyState
+                icon={Music}
+                title="No songs yet"
+                description="Start creating your musical journey by capturing your first stop's story and memories."
+                actionLabel="Add Your First Stop"
+                onAction={() => setShowAddStop(true)}
+              />
+            )}
+          </motion.div>
+        </div>
 
-                          {/* Song Details */}
-                          <div className="space-y-2">
-                            <div className="flex flex-wrap gap-2">
-                              <Badge variant="secondary">{song.genre}</Badge>
-                              {song.people && (
-                                <Badge variant="outline" className="gap-1">
-                                  <Users className="h-3 w-3" />
-                                  {song.people}
-                                </Badge>
-                              )}
-                            </div>
-                            
-                            {song.stories && (
-                              <p className="text-sm text-muted-foreground italic">
-                                "{song.stories}"
-                              </p>
-                            )}
-                          </div>
+        {/* Sidebar with Audio Controls and Queue */}
+        <div className="lg:col-span-1 space-y-6">
+          {/* Advanced Player Controls */}
+          {currentSong && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <AdvancedPlayerControls />
+            </motion.div>
+          )}
 
-                          {/* Audio Player Placeholder */}
-                          <div className="flex items-center gap-3 p-3 bg-accent/30 rounded-xl border border-border">
-                            <Button
-                              size="sm"
-                              variant={currentlyPlaying === song.id ? "default" : "secondary"}
-                              onClick={() => handlePlaySong(song.id)}
-                              className="gap-2"
-                            >
-                              <Play className="h-4 w-4" />
-                              {currentlyPlaying === song.id ? 'Playing...' : 'Play'}
-                            </Button>
-                            
-                            <div className="flex-1 text-sm text-muted-foreground">
-                              {song.audio_url ? 'Ready to play' : 'Generating audio...'}
-                            </div>
-                            
-                            <div className="flex gap-1">
-                              <Button size="sm" variant="ghost">
-                                <Download className="h-4 w-4" />
-                              </Button>
-                              <Button size="sm" variant="ghost">
-                                <Share2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <EmptyState
-            icon={Music}
-            title="No songs yet"
-            description="Start creating your musical journey by capturing your first stop's story and memories."
-            actionLabel="Add Your First Stop"
-            onAction={() => setShowAddStop(true)}
-          />
-        )}
-      </motion.div>
+          {/* Queue Manager */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <QueueManager />
+          </motion.div>
+        </div>
+      </div>
 
       {/* Modals */}
       <SongEditModal
