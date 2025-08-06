@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { CreditCard, Check } from 'lucide-react';
+import { CreditCard, Check, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -54,14 +54,28 @@ export const CreditPurchaseModal = ({ isOpen, onClose }: CreditPurchaseModalProp
     setLoading(packageType);
     try {
       await purchaseCredits(packageType);
-      onClose();
-    } catch (error) {
-      console.error('Purchase failed:', error);
       toast({
-        title: "Purchase Failed",
-        description: "Unable to process payment. Please try again.",
-        variant: "destructive",
+        title: "Redirecting to Checkout",
+        description: "Opening Stripe checkout in a new tab...",
       });
+      onClose();
+    } catch (error: any) {
+      console.error('Purchase failed:', error);
+      
+      // Handle specific error cases
+      if (error.message?.includes('Stripe not configured')) {
+        toast({
+          title: "Payment Setup Required",
+          description: "Payment processing is being set up. Please try again later.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Purchase Failed",
+          description: error.message || "Unable to process payment. Please try again.",
+          variant: "destructive",
+        });
+      }
     } finally {
       setLoading(null);
     }
@@ -71,10 +85,22 @@ export const CreditPurchaseModal = ({ isOpen, onClose }: CreditPurchaseModalProp
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold">Choose Your Credit Package</DialogTitle>
-          <DialogDescription>
-            Credits are used to generate AI songs for your road trip memories. Each credit = 1 song.
-          </DialogDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <DialogTitle className="text-2xl font-bold">Choose Your Credit Package</DialogTitle>
+              <DialogDescription>
+                Credits are used to generate AI songs for your road trip memories. Each credit = 1 song.
+              </DialogDescription>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClose}
+              className="h-8 w-8 p-0"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
         </DialogHeader>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
@@ -92,7 +118,9 @@ export const CreditPurchaseModal = ({ isOpen, onClose }: CreditPurchaseModalProp
                 </div>
               )}
               
-              <Card className={`h-full ${pkg.popular ? 'border-primary shadow-lg' : 'border-border'}`}>
+              <Card className={`h-full transition-all hover:shadow-lg ${
+                pkg.popular ? 'border-primary shadow-lg scale-105' : 'border-border'
+              }`}>
                 <CardHeader className="text-center pb-4">
                   <CardTitle className="text-xl">{pkg.name}</CardTitle>
                   <div className="space-y-2">
@@ -119,6 +147,10 @@ export const CreditPurchaseModal = ({ isOpen, onClose }: CreditPurchaseModalProp
                       <Check className="h-4 w-4 text-green-500" />
                       <span>High-quality audio</span>
                     </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-green-500" />
+                      <span>Custom artwork</span>
+                    </div>
                   </div>
                   
                   <Button
@@ -137,7 +169,9 @@ export const CreditPurchaseModal = ({ isOpen, onClose }: CreditPurchaseModalProp
         </div>
 
         <div className="text-center text-sm text-muted-foreground mt-6 pt-4 border-t border-border">
-          <p>Secure payment powered by Stripe • No subscription required</p>
+          <p>✓ Secure payment powered by Stripe</p>
+          <p>✓ No subscription required • One-time purchase</p>
+          <p>✓ Credits never expire</p>
         </div>
       </DialogContent>
     </Dialog>

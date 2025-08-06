@@ -1,6 +1,8 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
+import { toast } from './use-toast';
 
 export interface CreditBalance {
   id: string;
@@ -88,17 +90,37 @@ export const useCredits = () => {
     if (!user) throw new Error('User not authenticated');
 
     try {
+      console.log('Starting credit purchase for package:', packageType);
+      
       const { data, error } = await supabase.functions.invoke('purchase-credits', {
         body: { packageType }
       });
 
-      if (error) throw error;
-      
-      // Redirect to Stripe checkout
-      if (data?.url) {
-        window.open(data.url, '_blank');
+      if (error) {
+        console.error('Purchase credits error:', error);
+        throw error;
       }
-    } catch (error) {
+      
+      console.log('Purchase credits response:', data);
+      
+      // Handle different response scenarios
+      if (data?.error) {
+        throw new Error(data.error);
+      }
+      
+      if (data?.url) {
+        // Open Stripe checkout in a new tab
+        window.open(data.url, '_blank');
+        
+        // Show success message
+        toast({
+          title: "Redirecting to Checkout",
+          description: "Opening Stripe checkout in a new tab...",
+        });
+      } else {
+        throw new Error('No checkout URL received');
+      }
+    } catch (error: any) {
       console.error('Error purchasing credits:', error);
       throw error;
     }
@@ -117,10 +139,24 @@ export const useCredits = () => {
       
       // Refresh balance after consumption
       await fetchBalance();
+      
+      toast({
+        title: "Credits Used",
+        description: `${amount} credit${amount > 1 ? 's' : ''} used for ${description}`,
+      });
     } catch (error) {
       console.error('Error consuming credits:', error);
       throw error;
     }
+  };
+
+  // Auto-refresh balance when returning from Stripe checkout
+  const handlePurchaseSuccess = async () => {
+    await Promise.all([fetchBalance(), fetchTransactions()]);
+    toast({
+      title: "Purchase Successful!",
+      description: "Your credits have been added to your account.",
+    });
   };
 
   useEffect(() => {
@@ -133,6 +169,16 @@ export const useCredits = () => {
     }
   }, [user]);
 
+  // Check for purchase success on page load
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('purchase') === 'success') {
+      handlePurchaseSuccess();
+      // Clean up URL
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, []);
+
   return {
     balance,
     transactions,
@@ -140,6 +186,7 @@ export const useCredits = () => {
     purchaseCredits,
     consumeCredits,
     refreshBalance: fetchBalance,
-    refreshTransactions: fetchTransactions
+    refreshTransactions: fetchTransactions,
+    handlePurchaseSuccess
   };
 };
