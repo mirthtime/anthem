@@ -23,7 +23,12 @@ export const useTrips = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setTrips(data || []);
+      // Cast the data to match our Trip interface
+      const typedTrips = (data || []).map(trip => ({
+        ...trip,
+        stops: Array.isArray(trip.stops) ? trip.stops as unknown as TripStop[] : []
+      })) as unknown as Trip[];
+      setTrips(typedTrips);
     } catch (error) {
       console.error('Error fetching trips:', error);
     } finally {
@@ -31,12 +36,14 @@ export const useTrips = () => {
     }
   };
 
-  const createTrip = async (trip: Omit<Trip, 'id' | 'created_at' | 'updated_at'>) => {
+  const createTrip = async (tripData: Omit<Trip, 'id' | 'created_at' | 'updated_at'>) => {
     try {
       const { data, error } = await supabase
         .from('trips')
         .insert([{
-          ...trip,
+          title: tripData.title,
+          description: tripData.description,
+          stops: tripData.stops as any, // Cast to Json type for Supabase
           user_id: user?.id || null
         }])
         .select()
@@ -53,9 +60,14 @@ export const useTrips = () => {
 
   const updateTrip = async (id: string, updates: Partial<Trip>) => {
     try {
+      const updateData: any = { ...updates };
+      if (updates.stops) {
+        updateData.stops = updates.stops as any; // Cast to Json type for Supabase
+      }
+      
       const { data, error } = await supabase
         .from('trips')
-        .update(updates)
+        .update(updateData)
         .eq('id', id)
         .select()
         .single();
@@ -88,8 +100,7 @@ export const useTrips = () => {
     const duplicatedTrip = {
       title: `${trip.title} (Copy)`,
       description: trip.description,
-      stops: trip.stops,
-      user_id: user?.id || null
+      stops: trip.stops
     };
 
     return createTrip(duplicatedTrip);
@@ -104,7 +115,12 @@ export const useTrips = () => {
         .single();
 
       if (error) throw error;
-      return data;
+      // Cast the data to match our Trip interface
+      const typedTrip = data ? {
+        ...data,
+        stops: Array.isArray(data.stops) ? data.stops as unknown as TripStop[] : []
+      } as unknown as Trip : null;
+      return typedTrip;
     } catch (error) {
       console.error('Error fetching trip:', error);
       return null;

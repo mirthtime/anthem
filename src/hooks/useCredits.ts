@@ -3,9 +3,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 
 export interface CreditBalance {
+  id: string;
+  user_id: string;
   available_credits: number;
   total_purchased: number;
   total_used: number;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface CreditTransaction {
@@ -14,6 +18,7 @@ export interface CreditTransaction {
   amount: number;
   type: 'purchase' | 'usage';
   description: string;
+  stripe_session_id?: string;
   created_at: string;
 }
 
@@ -27,11 +32,12 @@ export const useCredits = () => {
     if (!user) return;
     
     try {
-      const { data, error } = await supabase
+      // Use any type to bypass TypeScript restrictions until types are updated
+      const { data, error } = await (supabase as any)
         .from('user_credits')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (error && error.code !== 'PGRST116') {
         throw error;
@@ -41,7 +47,7 @@ export const useCredits = () => {
         setBalance(data);
       } else {
         // Create initial balance record
-        const { data: newBalance, error: createError } = await supabase
+        const { data: newBalance, error: createError } = await (supabase as any)
           .from('user_credits')
           .insert([{
             user_id: user.id,
@@ -64,7 +70,7 @@ export const useCredits = () => {
     if (!user) return;
 
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('credit_transactions')
         .select('*')
         .eq('user_id', user.id)

@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      credit_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string
+          id: string
+          stripe_session_id: string | null
+          type: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          description: string
+          id?: string
+          stripe_session_id?: string | null
+          type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string
+          id?: string
+          stripe_session_id?: string | null
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       songs: {
         Row: {
           audio_url: string | null
@@ -97,6 +127,36 @@ export type Database = {
           title?: string
           updated_at?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      user_credits: {
+        Row: {
+          available_credits: number
+          created_at: string
+          id: string
+          total_purchased: number
+          total_used: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          available_credits?: number
+          created_at?: string
+          id?: string
+          total_purchased?: number
+          total_used?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          available_credits?: number
+          created_at?: string
+          id?: string
+          total_purchased?: number
+          total_used?: number
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
