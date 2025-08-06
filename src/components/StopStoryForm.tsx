@@ -8,11 +8,13 @@ import { InputField } from '@/components/ui/input-field';
 import { TextareaField } from '@/components/ui/textarea-field';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { GenreStylePicker } from '@/components/GenreStylePicker';
+import { LyricsControl } from '@/components/LyricsControl';
 import { useTrips } from '@/hooks/useTrips';
 import { useSongs } from '@/hooks/useSongs';
 import { useCredits } from '@/hooks/useCredits';
 import { toast } from '@/hooks/use-toast';
-import { GENRES, DURATIONS } from '@/types';
+import { DURATIONS } from '@/types';
 
 interface StopStoryFormProps {
   onComplete?: (tripId: string) => void;
@@ -32,8 +34,11 @@ export const StopStoryForm = ({ onComplete, existingTripId }: StopStoryFormProps
     whoWasThere: '',
     whatHappened: '',
     genre: '',
+    customStyle: '',
     duration: 30,
-    mood: ''
+    mood: '',
+    customLyrics: '',
+    useCustomLyrics: false
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -71,9 +76,18 @@ export const StopStoryForm = ({ onComplete, existingTripId }: StopStoryFormProps
   };
 
   const generatePrompt = () => {
-    const { stopName, whoWasThere, whatHappened, mood, genre } = formData;
+    const { stopName, whoWasThere, whatHappened, mood, genre, customStyle } = formData;
     
-    let prompt = `Create a ${genre.toLowerCase()} song about our stop in ${stopName}. `;
+    let prompt = '';
+    
+    // Use custom style if it's a Custom genre, otherwise use the selected genre
+    if (genre === 'Custom' && customStyle.trim()) {
+      prompt = `Create a song with these styles: ${customStyle}. `;
+    } else {
+      prompt = `Create a ${genre.toLowerCase()} song `;
+    }
+    
+    prompt += `about our stop in ${stopName}. `;
     
     if (whoWasThere.trim()) {
       prompt += `The people there were: ${whoWasThere}. `;
@@ -125,11 +139,12 @@ export const StopStoryForm = ({ onComplete, existingTripId }: StopStoryFormProps
       const songData = {
         title: `${formData.stopName} Memories`,
         stop_name: formData.stopName,
-        genre: formData.genre,
+        genre: formData.genre === 'Custom' ? 'Custom' : formData.genre,
         prompt: generatePrompt(),
         duration: formData.duration,
         people: formData.whoWasThere,
         stories: formData.whatHappened,
+        lyrics: formData.useCustomLyrics ? formData.customLyrics : undefined,
         trip_id: tripId
       };
 
@@ -285,52 +300,46 @@ export const StopStoryForm = ({ onComplete, existingTripId }: StopStoryFormProps
               </div>
             </div>
 
-            {/* Genre & Duration */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground flex items-center gap-2">
-                  <Music className="h-4 w-4" />
-                  Genre *
-                </label>
-                <Select value={formData.genre} onValueChange={(value) => setFormData({ ...formData, genre: value })}>
-                  <SelectTrigger className={errors.genre ? 'border-destructive' : ''}>
-                    <SelectValue placeholder="Pick a genre" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {GENRES.map((genre) => (
-                      <SelectItem key={genre} value={genre}>
-                        {genre}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {errors.genre && (
-                  <p className="text-sm text-destructive">{errors.genre}</p>
-                )}
-              </div>
+            {/* Genre & Style Selection */}
+            <GenreStylePicker
+              selectedGenre={formData.genre}
+              customStyle={formData.customStyle}
+              onGenreChange={(genre) => setFormData({ ...formData, genre })}
+              onStyleChange={(style) => setFormData({ ...formData, customStyle: style })}
+              error={errors.genre}
+            />
 
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground flex items-center gap-2">
-                  <Clock className="h-4 w-4" />
-                  Length
-                </label>
-                <Select 
-                  value={formData.duration.toString()} 
-                  onValueChange={(value) => setFormData({ ...formData, duration: parseInt(value) })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {DURATIONS.map((duration) => (
-                      <SelectItem key={duration} value={duration.toString()}>
-                        {duration} seconds
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+            {/* Duration */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground flex items-center gap-2">
+                <Clock className="h-4 w-4" />
+                Song Length
+              </label>
+              <Select 
+                value={formData.duration.toString()} 
+                onValueChange={(value) => setFormData({ ...formData, duration: parseInt(value) })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-background border-border shadow-lg z-50">
+                  {DURATIONS.map((duration) => (
+                    <SelectItem key={duration} value={duration.toString()}>
+                      {duration} seconds
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
+
+            {/* Lyrics Control */}
+            <LyricsControl
+              customLyrics={formData.customLyrics}
+              useCustomLyrics={formData.useCustomLyrics}
+              onLyricsChange={(lyrics) => setFormData({ ...formData, customLyrics: lyrics })}
+              onToggleCustom={(useCustom) => setFormData({ ...formData, useCustomLyrics: useCustom })}
+              generatedStory={formData.whatHappened}
+            />
 
             {/* Generate Button */}
             <div className="pt-4">
@@ -381,6 +390,7 @@ export const StopStoryForm = ({ onComplete, existingTripId }: StopStoryFormProps
               <li>• Include emotions: "we couldn't stop laughing when..."</li>
               <li>• Mention unique details: weird things you saw, inside jokes</li>
               <li>• Names make it personal: real people create better stories</li>
+              <li>• Try custom genres: "acoustic guitar with harmonica" vs just "country"</li>
             </ul>
           </CardContent>
         </Card>

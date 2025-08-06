@@ -37,11 +37,28 @@ export interface Song {
 
 export const GENRES = [
   'Rock',
-  'Country',
+  'Country', 
   'Pop',
   'Hip-Hop',
   'Electronic',
+  'Folk',
+  'Jazz',
+  'Blues',
+  'Indie',
   'Custom'
+] as const;
+
+export const STYLE_SUGGESTIONS = [
+  // Popular combinations
+  'acoustic guitar', 'electric guitar', 'piano ballad', 'upbeat drums',
+  // Genres/Subgenres  
+  'folk rock', 'country pop', 'indie rock', 'blues rock', 'jazz fusion',
+  'synthwave', 'lo-fi hip hop', 'trap beats', 'acoustic folk',
+  // Instruments
+  'harmonica', 'banjo', 'saxophone', 'violin', 'synthesizer', 'bass guitar',
+  // Vibes/Styles
+  'nostalgic', 'uplifting', 'melancholic', 'energetic', 'chill vibes',
+  'road trip anthem', 'campfire song', 'driving beat', 'sunset mood'
 ] as const;
 
 export type Genre = typeof GENRES[number];
