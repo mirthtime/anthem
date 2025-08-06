@@ -11,7 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Song } from '@/types';
 import { toast } from '@/hooks/use-toast';
 
-export const SharedSong = () => {
+const SharedSong = () => {
   const { songId } = useParams<{ songId: string }>();
   const [song, setSong] = useState<Song | null>(null);
   const [loading, setLoading] = useState(true);
@@ -255,3 +255,5 @@ export const SharedSong = () => {
     </div>
   );
 };
+
+export default SharedSong;

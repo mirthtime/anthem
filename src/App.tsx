@@ -12,8 +12,8 @@ import { TripWizard } from "./components/TripWizard";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Settings from "./pages/Settings";
-import { SharedTripAlbum } from "./pages/SharedTripAlbum";
-import { SharedSong } from "./pages/SharedSong";
+import SharedTripAlbum from "./pages/SharedTripAlbum";
+import SharedSong from "./pages/SharedSong";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();

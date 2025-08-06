@@ -12,7 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Song, Trip, TripStop } from '@/types';
 import { toast } from '@/hooks/use-toast';
 
-export const SharedTripAlbum = () => {
+const SharedTripAlbum = () => {
   const { tripId } = useParams<{ tripId: string }>();
   const [trip, setTrip] = useState<Trip | null>(null);
   const [songs, setSongs] = useState<Song[]>([]);
@@ -322,3 +322,5 @@ export const SharedTripAlbum = () => {
     </div>
   );
 };
+
+export default SharedTripAlbum;
