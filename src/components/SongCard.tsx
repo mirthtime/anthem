@@ -1,11 +1,12 @@
+
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Song } from '@/types';
-import { Play, Pause, Download, Share2, Music, Copy, ExternalLink, ImageIcon, Loader2 } from 'lucide-react';
+import { Play, Pause, Music, ImageIcon, Loader2 } from 'lucide-react';
 import { useState } from 'react';
-import { useSharing } from '@/hooks/useSharing';
 import { useArtwork } from '@/hooks/useArtwork';
+import { SongSharingDropdown } from '@/components/sharing/SongSharingDropdown';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,13 +28,6 @@ export const SongCard = ({
   isPlaying = false 
 }: SongCardProps) => {
   const [audioLoaded, setAudioLoaded] = useState(false);
-  const { 
-    generateShareableUrl, 
-    copyToClipboard, 
-    downloadAudio, 
-    shareToTwitter, 
-    generateSongCaption 
-  } = useSharing();
   const { generateSongArtwork, loading: artworkLoading } = useArtwork();
 
   const handlePlayPause = () => {
@@ -42,34 +36,6 @@ export const SongCard = ({
     } else {
       onPlay?.();
     }
-  };
-
-  const handleDownload = () => {
-    if (song.audio_url) {
-      downloadAudio(song.audio_url, `${song.title} - ${song.stop_name}`);
-    }
-  };
-
-  const handleCopyLink = () => {
-    const shareUrl = generateShareableUrl('song', song.id);
-    copyToClipboard(shareUrl, 'Song link copied!');
-  };
-
-  const handleCopyCaption = () => {
-    const caption = generateSongCaption(song.title, song.stop_name, song.genre);
-    copyToClipboard(caption, 'Caption copied!');
-  };
-
-  const handleShareToTwitter = () => {
-    const shareUrl = generateShareableUrl('song', song.id);
-    const description = generateSongCaption(song.title, song.stop_name, song.genre);
-    shareToTwitter({
-      title: song.title,
-      description,
-      url: shareUrl,
-      audioUrl: song.audio_url || undefined,
-      type: 'song'
-    });
   };
 
   const handleGenerateArtwork = async () => {
@@ -158,29 +124,15 @@ export const SongCard = ({
                   )}
                 </Button>
                 
-                <Button size="sm" variant="outline" onClick={handleDownload}>
-                  <Download className="h-4 w-4" />
-                </Button>
+                <SongSharingDropdown song={song} />
                 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button size="sm" variant="outline">
-                      <Share2 className="h-4 w-4" />
+                      <ImageIcon className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={handleCopyLink}>
-                      <Copy className="h-4 w-4 mr-2" />
-                      Copy Link
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleCopyCaption}>
-                      <Copy className="h-4 w-4 mr-2" />
-                      Copy Caption
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleShareToTwitter}>
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      Share to Twitter
-                    </DropdownMenuItem>
                     <DropdownMenuItem 
                       onClick={handleGenerateArtwork}
                       disabled={artworkLoading || song.artwork_generating}
