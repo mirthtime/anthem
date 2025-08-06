@@ -11,6 +11,7 @@ import { TripAlbum } from "./pages/TripAlbum";
 import { TripWizard } from "./components/TripWizard";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const App = () => (
                 <Route path="/trip/new" element={<TripOnboarding />} />
                 <Route path="/trip/plan" element={<TripWizard />} />
                 <Route path="/trip/:tripId" element={<TripAlbum />} />
+                <Route path="/settings" element={<Settings />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </ProtectedRoute>
