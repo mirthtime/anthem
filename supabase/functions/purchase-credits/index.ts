@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
@@ -31,11 +32,11 @@ serve(async (req) => {
 
     const { packageType } = await req.json();
     
-    // Define credit packages
+    // Define new credit packages with updated pricing
     const packages = {
-      starter: { credits: 10, price: 999, name: "Starter Pack" }, // $9.99
-      popular: { credits: 25, price: 1999, name: "Popular Pack" }, // $19.99
-      premium: { credits: 50, price: 3499, name: "Premium Pack" }, // $34.99
+      starter: { credits: 3, price: 599, name: "Starter Pack" }, // $5.99
+      popular: { credits: 5, price: 999, name: "Popular Pack" }, // $9.99
+      premium: { credits: 10, price: 1999, name: "Premium Pack" }, // $19.99
     };
 
     const selectedPackage = packages[packageType as keyof typeof packages];
@@ -43,19 +44,20 @@ serve(async (req) => {
       throw new Error("Invalid package type");
     }
 
-    // Initialize Stripe (will be added when user provides key)
-    // For now, return a mock response
-    return new Response(JSON.stringify({ 
-      url: "#",
-      message: "Stripe integration pending - API key needed"
-    }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 200,
-    });
-    
-    // TODO: Uncomment when Stripe key is available
-    /*
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
+    // Check if Stripe secret key is available
+    const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY");
+    if (!stripeSecretKey) {
+      return new Response(JSON.stringify({ 
+        error: "Stripe not configured",
+        message: "Please add your Stripe Secret Key to continue with payments"
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 400,
+      });
+    }
+
+    // Initialize Stripe
+    const stripe = new Stripe(stripeSecretKey, {
       apiVersion: "2023-10-16",
     });
 
@@ -97,7 +99,6 @@ serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
-    */
   } catch (error) {
     console.error('Error in purchase-credits:', error);
     return new Response(JSON.stringify({ error: error.message }), {
