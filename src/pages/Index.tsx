@@ -87,9 +87,29 @@ const Index = () => {
                 </span>
               </h1>
               
-               <p className="text-xl lg:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed">
-                 You've probably had that experience of listening to a song and being instantly transported back in time—to the exact place, people, and mood when you first heard it. What if you could intentionally create that magic for your next adventure?
-               </p>
+              <p className="text-xl lg:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed">
+                You've probably had that experience of listening to a song and being instantly transported back in time—to the exact place, people, and mood when you first heard it. What if you could intentionally create that magic for your next adventure?
+              </p>
+              
+              <div className="bg-card/50 backdrop-blur border border-border rounded-2xl p-6 mb-12 max-w-2xl mx-auto">
+                <p className="text-lg text-foreground mb-4 font-medium">
+                  Tell us your story, we'll turn it into a personalized song:
+                </p>
+                <div className="space-y-3 text-left">
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0"></div>
+                    <p className="text-muted-foreground">"We drove through Colorado, stopped at that diner in Denver where Jake spilled coffee all over himself..."</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0"></div>
+                    <p className="text-muted-foreground">"Sarah's graduation party in her backyard, everyone singing around the fire pit until 3am..."</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0"></div>
+                    <p className="text-muted-foreground">"That weekend camping trip where it rained the whole time but we didn't care..."</p>
+                  </div>
+                </div>
+              </div>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
                 <Link to="/auth">
