@@ -29,23 +29,46 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
+            <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/share/trip/:tripId" element={<SharedTripAlbum />} />
             <Route path="/share/song/:songId" element={<SharedSong />} />
-            <Route path="/*" element={
+            <Route path="/dashboard" element={
               <ProtectedRoute>
                 <Navigation />
-                <Routes>
-                  <Route path="/" element={<Dashboard />} />
-                  <Route path="/trip/new" element={<TripOnboarding />} />
-                  <Route path="/trip/plan" element={<TripWizard />} />
-                  <Route path="/trip/:tripId" element={<TripAlbum />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
+                <Dashboard />
                 <MiniPlayer />
               </ProtectedRoute>
             } />
+            <Route path="/trip/new" element={
+              <ProtectedRoute>
+                <Navigation />
+                <TripOnboarding />
+                <MiniPlayer />
+              </ProtectedRoute>
+            } />
+            <Route path="/trip/plan" element={
+              <ProtectedRoute>
+                <Navigation />
+                <TripWizard />
+                <MiniPlayer />
+              </ProtectedRoute>
+            } />
+            <Route path="/trip/:tripId" element={
+              <ProtectedRoute>
+                <Navigation />
+                <TripAlbum />
+                <MiniPlayer />
+              </ProtectedRoute>
+            } />
+            <Route path="/settings" element={
+              <ProtectedRoute>
+                <Navigation />
+                <Settings />
+                <MiniPlayer />
+              </ProtectedRoute>
+            } />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
       </AudioProvider>
