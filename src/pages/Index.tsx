@@ -88,8 +88,8 @@ const Index = () => {
               </h1>
               
                <p className="text-xl lg:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed">
-                 Every stop. Every memory. Every moment becomes a personalized song. 
-                 Create an unforgettable soundtrack that magically captures your unique journey.
+                 Lock in the feeling forever. Every song becomes a time machine that instantly 
+                 transports you back to that exact moment, that laugh, that sunset.
                </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
@@ -117,10 +117,10 @@ const Index = () => {
               transition={{ delay: 0.2, duration: 0.6 }}
               className="text-center mb-16"
             >
-              <h2 className="text-3xl lg:text-4xl font-bold mb-4">How It Works</h2>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                Three simple steps to transform your travels into music
-              </p>
+               <h2 className="text-3xl lg:text-4xl font-bold mb-4">Turn Moments Into Memories</h2>
+               <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                 Create songs that will instantly take you back to exactly how you felt
+               </p>
             </motion.div>
 
             <div className="grid md:grid-cols-3 gap-8">
@@ -128,20 +128,20 @@ const Index = () => {
                 {
                   step: "01",
                   icon: MapPin,
-                  title: "Add Your Stops",
-                  description: "Share the places you've been, the people you met, and the stories that happened"
+                  title: "Capture The Feeling",
+                  description: "Share the places you've been, the people you met, and the emotions you felt in that moment"
                 },
                 {
                   step: "02", 
                   icon: Sparkles,
-                  title: "Magic Happens",
-                  description: "Our intelligent system transforms your memories into personalized songs that capture the moment"
+                  title: "Create Your Time Machine",
+                  description: "We compose a unique song that locks in the exact feeling and atmosphere of your experience"
                 },
                 {
                   step: "03",
                   icon: Music,
-                  title: "Your Musical Album",
-                  description: "Get a complete soundtrack of your journey that you can share and treasure forever"
+                  title: "Relive It Forever",
+                  description: "Years from now, one note will instantly transport you back to that exact moment and feeling"
                 }
               ].map((feature, index) => (
                 <motion.div
@@ -207,10 +207,10 @@ const Index = () => {
               transition={{ delay: 0.5, duration: 0.6 }}
               className="text-center mb-12"
             >
-              <h2 className="text-3xl lg:text-4xl font-bold mb-4">Hear The Magic</h2>
-              <p className="text-xl text-muted-foreground">
-                Real songs created from real road trip memories
-              </p>
+               <h2 className="text-3xl lg:text-4xl font-bold mb-4">Hear The Magic</h2>
+               <p className="text-xl text-muted-foreground">
+                 Real songs that take travelers back to their favorite moments
+               </p>
             </motion.div>
 
             <div className="space-y-4">
@@ -261,12 +261,12 @@ const Index = () => {
             >
               <Card className="bg-gradient-card border-border shadow-card-hover">
                 <CardContent className="p-12">
-                  <h2 className="text-3xl lg:text-4xl font-bold mb-4">
-                    Ready to Create Your Soundtrack?
-                  </h2>
-                  <p className="text-xl text-muted-foreground mb-8">
-                    Start with 3 free songs. No credit card required.
-                  </p>
+                   <h2 className="text-3xl lg:text-4xl font-bold mb-4">
+                     Ready to Lock In Your Memories?
+                   </h2>
+                   <p className="text-xl text-muted-foreground mb-8">
+                     Create songs that will take you back to these moments for years to come. Start with 3 free songs.
+                   </p>
                   <Link to="/auth">
                     <Button size="lg" className="text-lg px-12 py-6 shine-button">
                       <Play className="h-5 w-5 mr-2" />
