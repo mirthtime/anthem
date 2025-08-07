@@ -178,8 +178,8 @@ const Index = () => {
                   step: "02", 
                   icon: Sparkles,
                   title: "Build Your Soundtrack",
-                  description: "We transform each stop into a unique song that captures the exact vibe, mood, and energy of that moment in your journey",
-                  image: null,
+                  description: "We transform each stop into a unique song that captures the exact story, mood, and energy of that moment in your journey",
+                  image: heroImage,
                   emotional: false
                 },
                 {
