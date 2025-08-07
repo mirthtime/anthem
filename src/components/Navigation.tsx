@@ -61,7 +61,7 @@ export const Navigation = () => {
               <div className="p-2 rounded-full bg-gradient-primary">
                 <Music className="h-6 w-6 text-white" />
               </div>
-              <span className="text-xl font-bold text-foreground">TripTunes AI</span>
+              <span className="text-xl font-bold text-foreground">TripTunes</span>
             </Link>
 
             {/* Nav Items */}

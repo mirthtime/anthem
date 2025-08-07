@@ -56,7 +56,7 @@ const Index = () => {
               <div className="p-2 rounded-full bg-gradient-primary shadow-glow">
                 <Music className="h-6 w-6 text-white" />
               </div>
-              <span className="text-xl font-bold text-foreground">TripTunes AI</span>
+              <span className="text-xl font-bold text-foreground">TripTunes</span>
             </div>
             <Link to="/auth">
               <Button variant="outline" className="border-border/50 hover:border-primary/50">
@@ -77,7 +77,7 @@ const Index = () => {
             >
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-8">
                 <Sparkles className="h-4 w-4 text-primary" />
-                <span className="text-sm font-medium text-primary">AI-Powered Music Generation</span>
+                <span className="text-sm font-medium text-primary">Intelligent Music Generation</span>
               </div>
               
               <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-tight">
@@ -87,10 +87,10 @@ const Index = () => {
                 </span>
               </h1>
               
-              <p className="text-xl lg:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed">
-                Every stop. Every memory. Every moment becomes a personalized song. 
-                Create an unforgettable soundtrack with AI that captures your unique journey.
-              </p>
+               <p className="text-xl lg:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed">
+                 Every stop. Every memory. Every moment becomes a personalized song. 
+                 Create an unforgettable soundtrack that magically captures your unique journey.
+               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
                 <Link to="/auth">
@@ -134,8 +134,8 @@ const Index = () => {
                 {
                   step: "02", 
                   icon: Sparkles,
-                  title: "AI Creates Magic",
-                  description: "Our AI transforms your memories into personalized songs that capture the moment"
+                  title: "Magic Happens",
+                  description: "Our intelligent system transforms your memories into personalized songs that capture the moment"
                 },
                 {
                   step: "03",
