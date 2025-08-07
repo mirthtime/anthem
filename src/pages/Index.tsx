@@ -103,32 +103,32 @@ const Index = () => {
               </div>
               
               <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold mb-4 sm:mb-6 leading-tight text-white drop-shadow-2xl px-2">
-                You Know That Song That
+                Build Your Trip's
                 <span className="block text-transparent bg-clip-text bg-gradient-sunset animate-shimmer mt-2">
-                  Takes You Back?
+                  Soundtrack
                 </span>
               </h1>
               
               <p className="text-lg sm:text-xl lg:text-2xl text-white/90 mb-6 sm:mb-8 max-w-3xl mx-auto leading-relaxed drop-shadow-lg px-4">
-                You've probably had that experience of listening to a song and being instantly transported back in time—to the exact place, people, and mood when you first heard it. <span className="text-primary font-medium heartbeat">What if you could intentionally create that magic</span> for your next adventure?
+                Every road trip deserves its own soundtrack. <span className="text-primary font-medium heartbeat">Capture each stop, each adventure, each magical moment</span> and turn them into songs that bring you right back to mile marker one.
               </p>
               
               <div className="bg-card/70 sm:bg-card/60 backdrop-blur-md border border-border/50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 mb-8 sm:mb-12 max-w-2xl mx-auto shadow-card-hover">
                 <p className="text-base sm:text-lg text-foreground mb-3 sm:mb-4 font-medium">
-                  Tell us your story, we'll turn it into a personalized song:
+                  Document your journey, one song per stop:
                 </p>
                 <div className="space-y-2 sm:space-y-3 text-left">
                   <div className="flex items-start gap-2 sm:gap-3">
                     <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-primary mt-2 flex-shrink-0"></div>
-                    <p className="text-sm sm:text-base text-muted-foreground">"That <span className="text-accent font-medium">first road trip</span> after graduation, windows down, singing off-key to our favorite song..."</p>
+                    <p className="text-sm sm:text-base text-muted-foreground">"We stopped in <span className="text-accent font-medium">Austin</span>, explored 6th Street until 3am, and Jake somehow convinced a street musician to let him play drums..."</p>
                   </div>
                   <div className="flex items-start gap-2 sm:gap-3">
                     <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-primary mt-2 flex-shrink-0"></div>
-                    <p className="text-sm sm:text-base text-muted-foreground">"The night we got <span className="text-accent font-medium">engaged</span> on that beach in Santorini, dancing under the stars..."</p>
+                    <p className="text-sm sm:text-base text-muted-foreground">"<span className="text-accent font-medium">Grand Canyon sunrise</span> with my best friend, coffee in hand, realizing this moment was worth the 6-hour drive..."</p>
                   </div>
                   <div className="flex items-start gap-2 sm:gap-3">
                     <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-primary mt-2 flex-shrink-0"></div>
-                    <p className="text-sm sm:text-base text-muted-foreground">"Dad's <span className="text-accent font-medium heartbeat">last camping trip</span> with us, telling stories around the fire until dawn..."</p>
+                    <p className="text-sm sm:text-base text-muted-foreground">"Got lost outside <span className="text-accent font-medium heartbeat">Nashville</span>, ended up at a dive bar where the locals taught us to line dance until our sides hurt..."</p>
                   </div>
                 </div>
               </div>
@@ -158,9 +158,9 @@ const Index = () => {
               transition={{ delay: 0.2, duration: 0.6 }}
               className="text-center mb-16"
             >
-               <h2 className="text-3xl lg:text-4xl font-bold mb-4">Turn <span className="text-transparent bg-clip-text bg-gradient-sunset heartbeat">Fleeting Moments</span> Into Forever Memories</h2>
+               <h2 className="text-3xl lg:text-4xl font-bold mb-4">Turn Every <span className="text-transparent bg-clip-text bg-gradient-sunset heartbeat">Mile Into Music</span></h2>
                <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                 Create songs that capture the exact feeling of <span className="text-primary font-medium">first love, last goodbyes, wild adventures, and quiet moments</span> that matter most
+                 Document your journey one stop at a time. Create songs that capture <span className="text-primary font-medium">roadside diners, sunrise views, getting lost, and finding yourself</span> along the way.
                </p>
             </motion.div>
 
@@ -169,24 +169,24 @@ const Index = () => {
                 {
                   step: "01",
                   icon: MapPin,
-                  title: "Capture The Feeling",
-                  description: "Share the places you've been, the people you met, and the emotions you felt—whether it's the butterflies of first love or the bittersweet joy of saying goodbye",
+                  title: "Document Each Stop",
+                  description: "Share the quirky roadside diners, breathtaking overlooks, and unexpected detours that made your trip unforgettable",
                   image: campfireImage,
                   emotional: true
                 },
                 {
                   step: "02", 
                   icon: Sparkles,
-                  title: "Create Your Time Machine",
-                  description: "We compose a unique song that locks in the exact atmosphere, emotions, and energy of your most precious moments",
+                  title: "Build Your Soundtrack",
+                  description: "We transform each stop into a unique song that captures the exact vibe, mood, and energy of that moment in your journey",
                   image: null,
                   emotional: false
                 },
                 {
                   step: "03",
                   icon: Music,
-                  title: "Relive It Forever",
-                  description: "Years from now, one note will instantly transport you back—feeling 22 again, or remembering exactly how your heart felt in that perfect moment",
+                  title: "Your Trip Album",
+                  description: "Years later, your playlist will instantly transport you back to the open road—mile by mile, memory by memory",
                   image: highwayImage,
                   emotional: true
                 }
