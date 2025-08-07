@@ -196,10 +196,10 @@ const Index = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 + index * 0.1, duration: 0.6 }}
-                  className="parallax-element"
+                  className="parallax-element scroll-scale-in"
                   data-speed={0.5 + index * 0.1}
                 >
-                  <Card className={`relative h-full bg-gradient-card border-border shadow-card hover:shadow-card-hover transition-all duration-500 floating-card overflow-hidden group ${feature.emotional ? 'hover:shadow-glow' : ''}`}>
+                  <Card className={`relative h-full bg-gradient-card border-border shadow-card hover:shadow-card-hover interactive-card overflow-hidden group ${feature.emotional ? 'hover:shadow-glow' : ''}`}>
                     {feature.image && (
                       <div className="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity duration-500">
                         <img 
@@ -268,7 +268,7 @@ const Index = () => {
               ].map((item, index) => (
                 <motion.div 
                   key={index} 
-                  className="text-center scroll-fade-in enhanced-glow rounded-2xl p-6 bg-card/50 backdrop-blur border border-border"
+                  className="text-center scroll-scale-in enhanced-glow rounded-2xl p-6 bg-card/50 backdrop-blur border border-border interactive-card"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5 + index * 0.1, duration: 0.6 }}
@@ -313,19 +313,19 @@ const Index = () => {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.6 + index * 0.1, duration: 0.6 }}
-                >
-                  <Card className="bg-gradient-card border-border hover:border-primary/30 transition-all duration-300 cursor-pointer group">
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-4">
-                        <div className="flex-shrink-0">
-                          <div className="w-12 h-12 rounded-lg bg-gradient-primary flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                            <Play className="h-5 w-5 text-white" />
+                  >
+                    <Card className="bg-gradient-card border-border hover:border-primary/30 interactive-card cursor-pointer group">
+                      <CardContent className="p-4">
+                        <div className="flex items-center gap-4">
+                          <div className="flex-shrink-0">
+                            <div className="w-12 h-12 rounded-lg bg-gradient-sunset flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                              <Play className="h-5 w-5 text-white" />
+                            </div>
                           </div>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-foreground truncate">{song.title}</h3>
-                          <p className="text-sm text-muted-foreground truncate">{song.subtitle}</p>
-                        </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-foreground truncate group-hover:text-primary transition-colors duration-300">{song.title}</h3>
+                            <p className="text-sm text-muted-foreground truncate">{song.subtitle}</p>
+                          </div>
                         <div className="flex items-center gap-3 text-sm text-muted-foreground">
                           <Volume2 className="h-4 w-4" />
                           <span>{song.duration}</span>

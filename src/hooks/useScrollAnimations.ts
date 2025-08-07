@@ -11,12 +11,12 @@ export const useScrollAnimations = () => {
     };
 
     const observer = new IntersectionObserver(observerCallback, {
-      threshold: 0.1,
-      rootMargin: '0px 0px -50px 0px',
+      threshold: 0.15,
+      rootMargin: '0px 0px -100px 0px',
     });
 
-    // Observe all scroll-fade-in elements
-    const elements = document.querySelectorAll('.scroll-fade-in');
+    // Observe all scroll animation elements
+    const elements = document.querySelectorAll('.scroll-fade-in, .scroll-scale-in');
     elements.forEach((el) => observer.observe(el));
 
     // Parallax effect
