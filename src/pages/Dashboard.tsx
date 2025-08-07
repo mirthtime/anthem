@@ -4,8 +4,10 @@ import { Plus, MapPin, Heart, Music, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { TripCard } from '@/components/TripCard';
+import { SongCard } from '@/components/SongCard';
 import { EmptyState } from '@/components/EmptyState';
 import { useTrips } from '@/hooks/useTrips';
+import { useSongs } from '@/hooks/useSongs';
 import { useCredits } from '@/hooks/useCredits';
 import { Skeleton } from '@/components/ui/skeleton';
 import { FloatingMusicNotes } from '@/components/FloatingMusicNotes';
@@ -15,6 +17,7 @@ export const Dashboard = () => {
   const navigate = useNavigate();
   const { trips, loading } = useTrips();
   const { balance } = useCredits();
+  const { songs: standaloneSongs, loading: songsLoading } = useSongs(); // Get all user's standalone songs
 
   // Initialize scroll animations
   useScrollAnimations();
@@ -23,7 +26,10 @@ export const Dashboard = () => {
     navigate('/trip/new');
   };
 
-  if (loading) {
+  // Filter songs that don't belong to any trip (standalone songs)
+  const unassignedSongs = standaloneSongs.filter(song => !song.trip_id);
+
+  if (loading || songsLoading) {
     return (
       <div className="min-h-screen bg-background relative">
         <FloatingMusicNotes />
@@ -140,27 +146,59 @@ export const Dashboard = () => {
           </motion.div>
         )}
 
-        {/* Trips Grid */}
-        {trips.length > 0 ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4, duration: 0.8 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-          >
-            {trips.map((trip, index) => (
+        {/* Show Trips and Standalone Songs */}
+        {trips.length > 0 || unassignedSongs.length > 0 ? (
+          <div className="space-y-12">
+            {/* Trips Section */}
+            {trips.length > 0 && (
               <motion.div
-                key={trip.id}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 * index, duration: 0.6 }}
-                className="scroll-scale-in"
-                style={{ animationDelay: `${index * 0.1}s` }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4, duration: 0.8 }}
               >
-                <TripCard trip={trip} />
+                <h2 className="text-2xl font-bold mb-6 text-center">Your Trip Albums</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {trips.map((trip, index) => (
+                    <motion.div
+                      key={trip.id}
+                      initial={{ opacity: 0, y: 30 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 * index, duration: 0.6 }}
+                      className="scroll-scale-in"
+                      style={{ animationDelay: `${index * 0.1}s` }}
+                    >
+                      <TripCard trip={trip} />
+                    </motion.div>
+                  ))}
+                </div>
               </motion.div>
-            ))}
-          </motion.div>
+            )}
+            
+            {/* Standalone Songs Section */}
+            {unassignedSongs.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6, duration: 0.8 }}
+              >
+                <h2 className="text-2xl font-bold mb-6 text-center">Your Memories</h2>
+                <div className="grid gap-6">
+                  {unassignedSongs.map((song, index) => (
+                    <motion.div
+                      key={song.id}
+                      initial={{ opacity: 0, y: 30 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 * index, duration: 0.6 }}
+                      className="scroll-scale-in"
+                      style={{ animationDelay: `${index * 0.1}s` }}
+                    >
+                      <SongCard song={song} />
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </div>
         ) : (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
