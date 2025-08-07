@@ -20,6 +20,15 @@ export const GenreStylePicker = ({
   error 
 }: GenreStylePickerProps) => {
   const isCustomGenre = selectedGenre === 'Custom';
+  
+  // Debug logging
+  console.log('GenreStylePicker Debug:', {
+    selectedGenre,
+    selectedGenreType: typeof selectedGenre,
+    selectedGenreLength: selectedGenre?.length,
+    isCustomGenre,
+    customStyle
+  });
 
   const handleSuggestionClick = (suggestion: string) => {
     const currentValue = customStyle || '';
@@ -53,8 +62,8 @@ export const GenreStylePicker = ({
       </div>
 
       {/* Custom Style Input - Show when Custom is selected */}
-      {isCustomGenre && (
-        <div className="space-y-4 p-4 rounded-xl border border-border bg-accent/20">
+      {true && (
+        <div className={`space-y-4 p-4 rounded-xl border border-border ${isCustomGenre ? 'bg-accent/20' : 'bg-red-500/20'}`}>
           <div className="flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-primary" />
             <h3 className="font-medium text-foreground">Custom Style & Instruments</h3>
