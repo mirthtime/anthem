@@ -13,6 +13,7 @@ import campfireImage from '@/assets/campfire-memories.jpg';
 import highwayImage from '@/assets/highway-dance.jpg';
 import { FloatingMusicNotes } from '@/components/FloatingMusicNotes';
 import { useScrollAnimations } from '@/hooks/useScrollAnimations';
+import { ExampleSongPlayer } from '@/components/ExampleSongPlayer';
 
 const Index = () => {
   const { user, signOut } = useAuth();
@@ -359,33 +360,14 @@ const Index = () => {
                   audioUrl: "https://gicplztxvichoksdivlu.supabase.co/storage/v1/object/public/audio-files/Corpus%20Christi.wav"
                 }
               ].map((song, index) => (
-                <motion.div
+                <ExampleSongPlayer
                   key={index}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.6 + index * 0.1, duration: 0.6 }}
-                  >
-                    <Card className="bg-gradient-card border-border hover:border-primary/30 interactive-card cursor-pointer group">
-                      <CardContent className="p-4">
-                        <div className="flex items-center gap-4">
-                          <div className="flex-shrink-0">
-                            <div className="w-12 h-12 rounded-lg bg-gradient-sunset flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                              <Play className="h-5 w-5 text-white" />
-                            </div>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold text-foreground truncate group-hover:text-primary transition-colors duration-300">{song.title}</h3>
-                            <p className="text-sm text-muted-foreground truncate">{song.subtitle}</p>
-                          </div>
-                        <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                          <Volume2 className="h-4 w-4" />
-                          <span>{song.duration}</span>
-                          <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
+                  title={song.title}
+                  subtitle={song.subtitle}
+                  duration={song.duration}
+                  audioUrl={song.audioUrl}
+                  index={index}
+                />
               ))}
             </div>
           </div>
