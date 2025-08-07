@@ -105,7 +105,7 @@ export const TripStopForm = ({ onSubmit, loading = false }: TripStopFormProps) =
                       <SelectItem 
                         key={genre} 
                         value={genre}
-                        className="hover:bg-muted/50 focus:bg-muted/50 rounded-lg mx-2"
+                        className="hover:bg-muted/30 focus:bg-muted/30 data-[highlighted]:bg-muted/30 rounded-lg mx-2 text-foreground hover:text-foreground focus:text-foreground data-[highlighted]:text-foreground"
                       >
                         {genre}
                       </SelectItem>
