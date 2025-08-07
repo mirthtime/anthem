@@ -77,19 +77,18 @@ const Index = () => {
             >
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-8">
                 <Sparkles className="h-4 w-4 text-primary" />
-                <span className="text-sm font-medium text-primary">Intelligent Music Generation</span>
+                <span className="text-sm font-medium text-primary">Every Adventure Needs A Soundtrack</span>
               </div>
               
               <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-tight">
-                Turn Your Road Trip Into A
+                You Know That Song That
                 <span className="block text-transparent bg-clip-text bg-gradient-primary animate-shimmer">
-                  Musical Album
+                  Takes You Back?
                 </span>
               </h1>
               
                <p className="text-xl lg:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed">
-                 Lock in the feeling forever. Every song becomes a time machine that instantly 
-                 transports you back to that exact moment, that laugh, that sunset.
+                 You've probably had that experience of listening to a song and being instantly transported back in time—to the exact place, people, and mood when you first heard it. What if you could intentionally create that magic for your next adventure?
                </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
