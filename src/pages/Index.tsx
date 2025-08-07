@@ -69,70 +69,73 @@ const Index = () => {
           </div>
         </nav>
 
-        {/* Hero Section with Background Image */}
-        <section className="relative px-6 py-20 lg:py-32 overflow-hidden">
-          {/* Background Image */}
+        {/* Hero Section with Mobile-Optimized Background */}
+        <section className="relative px-4 sm:px-6 py-16 sm:py-20 lg:py-32 overflow-hidden min-h-[90vh] flex items-center">
+          {/* Background Image with Mobile Optimization */}
           <div className="absolute inset-0 z-0">
+            {/* Desktop/Tablet Hero Image */}
             <img 
               src={heroImage} 
               alt="Friends on a road trip" 
-              className="w-full h-full object-cover"
+              className="hidden sm:block w-full h-full object-cover object-center"
             />
-            <div className="absolute inset-0 hero-overlay"></div>
+            {/* Mobile: Darker gradient overlay for better text readability */}
+            <div className="sm:hidden absolute inset-0 bg-gradient-to-b from-background via-background/80 to-background"></div>
+            <div className="hidden sm:block absolute inset-0 hero-overlay"></div>
           </div>
           
-          <div className="relative z-10 max-w-7xl mx-auto">
+          <div className="relative z-10 max-w-7xl mx-auto w-full">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
               className="text-center max-w-4xl mx-auto"
             >
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/20 border border-primary/30 backdrop-blur-sm mb-8">
-                <Heart className="h-4 w-4 text-primary" />
-                <span className="text-sm font-medium text-primary">Every Adventure Needs A Soundtrack</span>
+              <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full bg-primary/20 border border-primary/30 backdrop-blur-sm mb-6 sm:mb-8">
+                <Heart className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
+                <span className="text-xs sm:text-sm font-medium text-primary">Every Adventure Needs A Soundtrack</span>
               </div>
               
-              <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-tight text-white drop-shadow-2xl">
+              <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold mb-4 sm:mb-6 leading-tight text-white drop-shadow-2xl px-2">
                 You Know That Song That
-                <span className="block text-transparent bg-clip-text bg-gradient-sunset animate-shimmer">
+                <span className="block text-transparent bg-clip-text bg-gradient-sunset animate-shimmer mt-2">
                   Takes You Back?
                 </span>
               </h1>
               
-              <p className="text-xl lg:text-2xl text-white/90 mb-8 max-w-3xl mx-auto leading-relaxed drop-shadow-lg">
+              <p className="text-lg sm:text-xl lg:text-2xl text-white/90 mb-6 sm:mb-8 max-w-3xl mx-auto leading-relaxed drop-shadow-lg px-4">
                 You've probably had that experience of listening to a song and being instantly transported back in time—to the exact place, people, and mood when you first heard it. What if you could intentionally create that magic for your next adventure?
               </p>
               
-              <div className="bg-card/60 backdrop-blur-md border border-border/50 rounded-3xl p-6 mb-12 max-w-2xl mx-auto shadow-card-hover">
-                <p className="text-lg text-foreground mb-4 font-medium">
+              <div className="bg-card/70 sm:bg-card/60 backdrop-blur-md border border-border/50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 mb-8 sm:mb-12 max-w-2xl mx-auto shadow-card-hover">
+                <p className="text-base sm:text-lg text-foreground mb-3 sm:mb-4 font-medium">
                   Tell us your story, we'll turn it into a personalized song:
                 </p>
-                <div className="space-y-3 text-left">
-                  <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0"></div>
-                    <p className="text-muted-foreground">"We drove through Colorado, stopped at that diner in Denver where Jake spilled coffee all over himself..."</p>
+                <div className="space-y-2 sm:space-y-3 text-left">
+                  <div className="flex items-start gap-2 sm:gap-3">
+                    <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-primary mt-2 flex-shrink-0"></div>
+                    <p className="text-sm sm:text-base text-muted-foreground">"We drove through Colorado, stopped at that diner in Denver where Jake spilled coffee all over himself..."</p>
                   </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0"></div>
-                    <p className="text-muted-foreground">"Sarah's graduation party in her backyard, everyone singing around the fire pit until 3am..."</p>
+                  <div className="flex items-start gap-2 sm:gap-3">
+                    <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-primary mt-2 flex-shrink-0"></div>
+                    <p className="text-sm sm:text-base text-muted-foreground">"Sarah's graduation party in her backyard, everyone singing around the fire pit until 3am..."</p>
                   </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0"></div>
-                    <p className="text-muted-foreground">"That weekend camping trip where it rained the whole time but we didn't care..."</p>
+                  <div className="flex items-start gap-2 sm:gap-3">
+                    <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-primary mt-2 flex-shrink-0"></div>
+                    <p className="text-sm sm:text-base text-muted-foreground">"That weekend camping trip where it rained the whole time but we didn't care..."</p>
                   </div>
                 </div>
               </div>
               
-              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-                <Link to="/auth">
-                  <Button size="lg" className="text-lg px-8 py-6 shine-button shadow-glow">
-                    <Play className="h-5 w-5 mr-2" />
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-12 sm:mb-16 px-4">
+                <Link to="/auth" className="w-full sm:w-auto">
+                  <Button size="lg" className="w-full sm:w-auto text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 shine-button shadow-glow">
+                    <Play className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                     Start Creating Music
                   </Button>
                 </Link>
-                <Button variant="outline" size="lg" className="text-lg px-8 py-6 border-white/30 text-white hover:bg-white/10 backdrop-blur-sm">
-                  <Headphones className="h-5 w-5 mr-2" />
+                <Button variant="outline" size="lg" className="w-full sm:w-auto text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 border-white/30 text-white hover:bg-white/10 backdrop-blur-sm">
+                  <Headphones className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                   Listen to Examples
                 </Button>
               </div>
