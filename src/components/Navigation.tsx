@@ -17,19 +17,25 @@ export const Navigation = () => {
   const [isCreditModalOpen, setIsCreditModalOpen] = useState(false);
 
   const navItems = [
-    { path: '/', label: 'Dashboard', icon: Home },
+    { path: '/dashboard', label: 'Dashboard', icon: Home },
     { path: '/settings', label: 'Settings', icon: Settings },
   ];
 
   const isActivePath = (path: string) => {
-    if (path === '/') return location.pathname === '/';
+    if (path === '/dashboard') return location.pathname === '/dashboard';
     return location.pathname.startsWith(path);
   };
 
   const handleSignOut = async () => {
-    await signOut();
-    navigate('/auth');
-    setIsMobileMenuOpen(false);
+    try {
+      await signOut();
+      navigate('/');
+      setIsMobileMenuOpen(false);
+    } catch (error) {
+      // Even if sign out fails, navigate to landing page
+      navigate('/');
+      setIsMobileMenuOpen(false);
+    }
   };
 
   const handleCreateTrip = () => {
@@ -51,7 +57,7 @@ export const Navigation = () => {
         <div className="w-full max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <Link to="/dashboard" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
               <div className="p-2 rounded-full bg-gradient-primary">
                 <Music className="h-6 w-6 text-white" />
               </div>
@@ -111,7 +117,7 @@ export const Navigation = () => {
         <div className="px-4 py-3">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-2">
+            <Link to="/dashboard" className="flex items-center gap-2">
               <div className="p-1.5 rounded-full bg-gradient-primary">
                 <Music className="h-5 w-5 text-white" />
               </div>

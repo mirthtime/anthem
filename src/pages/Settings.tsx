@@ -35,13 +35,18 @@ const Settings = () => {
   };
 
   const handleSignOut = async () => {
-    const { error } = await signOut();
-    if (error) {
-      toast({
-        title: "Error",
-        description: "Failed to sign out. Please try again.",
-        variant: "destructive",
-      });
+    try {
+      const { error } = await signOut();
+      if (error) {
+        console.warn('Sign out error:', error);
+        // Don't show error toast, just continue with navigation
+      }
+      // Navigate to landing page regardless of any error
+      window.location.href = '/';
+    } catch (error) {
+      console.warn('Sign out failed:', error);
+      // Navigate to landing page even if sign out completely fails
+      window.location.href = '/';
     }
   };
 
