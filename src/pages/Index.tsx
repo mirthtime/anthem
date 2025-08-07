@@ -11,12 +11,17 @@ import { toast } from '@/hooks/use-toast';
 import heroImage from '@/assets/hero-road-trip.jpg';
 import campfireImage from '@/assets/campfire-memories.jpg';
 import highwayImage from '@/assets/highway-dance.jpg';
+import { FloatingMusicNotes } from '@/components/FloatingMusicNotes';
+import { useScrollAnimations } from '@/hooks/useScrollAnimations';
 
 const Index = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [showStopForm, setShowStopForm] = useState(false);
   const [generatingAudio, setGeneratingAudio] = useState(false);
+
+  // Initialize scroll animations
+  useScrollAnimations();
 
   const handleSignOut = async () => {
     const { error } = await signOut();
@@ -52,6 +57,7 @@ const Index = () => {
   if (!user) {
     return (
       <div className="min-h-screen bg-background">
+        <FloatingMusicNotes />
         {/* Navigation */}
         <nav className="relative z-10 px-6 py-4">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -104,7 +110,7 @@ const Index = () => {
               </h1>
               
               <p className="text-lg sm:text-xl lg:text-2xl text-white/90 mb-6 sm:mb-8 max-w-3xl mx-auto leading-relaxed drop-shadow-lg px-4">
-                You've probably had that experience of listening to a song and being instantly transported back in time—to the exact place, people, and mood when you first heard it. What if you could intentionally create that magic for your next adventure?
+                You've probably had that experience of listening to a song and being instantly transported back in time—to the exact place, people, and mood when you first heard it. <span className="text-primary font-medium heartbeat">What if you could intentionally create that magic</span> for your next adventure?
               </p>
               
               <div className="bg-card/70 sm:bg-card/60 backdrop-blur-md border border-border/50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 mb-8 sm:mb-12 max-w-2xl mx-auto shadow-card-hover">
@@ -114,15 +120,15 @@ const Index = () => {
                 <div className="space-y-2 sm:space-y-3 text-left">
                   <div className="flex items-start gap-2 sm:gap-3">
                     <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-primary mt-2 flex-shrink-0"></div>
-                    <p className="text-sm sm:text-base text-muted-foreground">"We drove through Colorado, stopped at that diner in Denver where Jake spilled coffee all over himself..."</p>
+                    <p className="text-sm sm:text-base text-muted-foreground">"That <span className="text-accent font-medium">first road trip</span> after graduation, windows down, singing off-key to our favorite song..."</p>
                   </div>
                   <div className="flex items-start gap-2 sm:gap-3">
                     <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-primary mt-2 flex-shrink-0"></div>
-                    <p className="text-sm sm:text-base text-muted-foreground">"Sarah's graduation party in her backyard, everyone singing around the fire pit until 3am..."</p>
+                    <p className="text-sm sm:text-base text-muted-foreground">"The night we got <span className="text-accent font-medium">engaged</span> on that beach in Santorini, dancing under the stars..."</p>
                   </div>
                   <div className="flex items-start gap-2 sm:gap-3">
                     <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-primary mt-2 flex-shrink-0"></div>
-                    <p className="text-sm sm:text-base text-muted-foreground">"That weekend camping trip where it rained the whole time but we didn't care..."</p>
+                    <p className="text-sm sm:text-base text-muted-foreground">"Dad's <span className="text-accent font-medium heartbeat">last camping trip</span> with us, telling stories around the fire until dawn..."</p>
                   </div>
                 </div>
               </div>
@@ -152,9 +158,9 @@ const Index = () => {
               transition={{ delay: 0.2, duration: 0.6 }}
               className="text-center mb-16"
             >
-               <h2 className="text-3xl lg:text-4xl font-bold mb-4">Turn Moments Into Memories</h2>
+               <h2 className="text-3xl lg:text-4xl font-bold mb-4">Turn <span className="text-transparent bg-clip-text bg-gradient-sunset heartbeat">Fleeting Moments</span> Into Forever Memories</h2>
                <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                 Create songs that will instantly take you back to exactly how you felt
+                 Create songs that capture the exact feeling of <span className="text-primary font-medium">first love, last goodbyes, wild adventures, and quiet moments</span> that matter most
                </p>
             </motion.div>
 
@@ -164,22 +170,25 @@ const Index = () => {
                   step: "01",
                   icon: MapPin,
                   title: "Capture The Feeling",
-                  description: "Share the places you've been, the people you met, and the emotions you felt in that moment",
-                  image: campfireImage
+                  description: "Share the places you've been, the people you met, and the emotions you felt—whether it's the butterflies of first love or the bittersweet joy of saying goodbye",
+                  image: campfireImage,
+                  emotional: true
                 },
                 {
                   step: "02", 
                   icon: Sparkles,
                   title: "Create Your Time Machine",
-                  description: "We compose a unique song that locks in the exact feeling and atmosphere of your experience",
-                  image: null
+                  description: "We compose a unique song that locks in the exact atmosphere, emotions, and energy of your most precious moments",
+                  image: null,
+                  emotional: false
                 },
                 {
                   step: "03",
                   icon: Music,
                   title: "Relive It Forever",
-                  description: "Years from now, one note will instantly transport you back to that exact moment and feeling",
-                  image: highwayImage
+                  description: "Years from now, one note will instantly transport you back—feeling 22 again, or remembering exactly how your heart felt in that perfect moment",
+                  image: highwayImage,
+                  emotional: true
                 }
               ].map((feature, index) => (
                 <motion.div
@@ -187,8 +196,10 @@ const Index = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 + index * 0.1, duration: 0.6 }}
+                  className="parallax-element"
+                  data-speed={0.5 + index * 0.1}
                 >
-                  <Card className="relative h-full bg-gradient-card border-border shadow-card hover:shadow-card-hover transition-all duration-500 floating-card overflow-hidden group">
+                  <Card className={`relative h-full bg-gradient-card border-border shadow-card hover:shadow-card-hover transition-all duration-500 floating-card overflow-hidden group ${feature.emotional ? 'hover:shadow-glow' : ''}`}>
                     {feature.image && (
                       <div className="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity duration-500">
                         <img 
@@ -207,7 +218,7 @@ const Index = () => {
                           <feature.icon className="h-8 w-8 text-primary" />
                         </div>
                       </div>
-                      <h3 className="text-xl font-semibold mb-4 text-center">{feature.title}</h3>
+                      <h3 className={`text-xl font-semibold mb-4 text-center ${feature.emotional ? 'heartbeat' : ''}`}>{feature.title}</h3>
                       <p className="text-muted-foreground text-center leading-relaxed">{feature.description}</p>
                     </CardContent>
                   </Card>
@@ -217,31 +228,62 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Social Proof */}
-        <section className="px-6 py-20">
+        {/* Emotional Testimonials Section */}
+        <section className="px-6 py-20 scroll-fade-in">
           <div className="max-w-7xl mx-auto text-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.6 }}
-              className="grid md:grid-cols-3 gap-8"
+              className="mb-16"
             >
+              <h2 className="text-3xl lg:text-4xl font-bold mb-6">
+                Real Stories, <span className="text-transparent bg-clip-text bg-gradient-sunset heartbeat">Real Emotions</span>
+              </h2>
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                Every song tells a story. Here's how music has helped others capture their most precious moments.
+              </p>
+            </motion.div>
+
+            <div className="grid md:grid-cols-3 gap-8">
               {[
-                { icon: Users, stat: "10K+", label: "Travelers Creating Music" },
-                { icon: Music, stat: "50K+", label: "Songs Generated" }, 
-                { icon: Star, stat: "4.9★", label: "Average Rating" }
+                { 
+                  icon: Users, 
+                  stat: "10K+", 
+                  label: "Travelers Creating Music",
+                  story: "From first dates to last goodbyes"
+                },
+                { 
+                  icon: Music, 
+                  stat: "50K+", 
+                  label: "Songs Generated",
+                  story: "Each one a unique memory time capsule"
+                }, 
+                { 
+                  icon: Star, 
+                  stat: "4.9★", 
+                  label: "Average Rating",
+                  story: "\"It perfectly captured how I felt that day\""
+                }
               ].map((item, index) => (
-                <div key={index} className="text-center">
+                <motion.div 
+                  key={index} 
+                  className="text-center scroll-fade-in enhanced-glow rounded-2xl p-6 bg-card/50 backdrop-blur border border-border"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 + index * 0.1, duration: 0.6 }}
+                >
                   <div className="flex justify-center mb-4">
                     <div className="p-3 rounded-full bg-primary/10 border border-primary/20">
                       <item.icon className="h-6 w-6 text-primary" />
                     </div>
                   </div>
-                  <div className="text-3xl font-bold text-foreground mb-2">{item.stat}</div>
-                  <div className="text-muted-foreground">{item.label}</div>
-                </div>
+                  <div className="text-3xl font-bold text-foreground mb-2 heartbeat">{item.stat}</div>
+                  <div className="text-muted-foreground mb-2">{item.label}</div>
+                  <div className="text-sm text-primary italic">{item.story}</div>
+                </motion.div>
               ))}
-            </motion.div>
+            </div>
           </div>
         </section>
 
@@ -252,19 +294,19 @@ const Index = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.6 }}
-              className="text-center mb-12"
+              className="text-center mb-12 scroll-fade-in"
             >
-               <h2 className="text-3xl lg:text-4xl font-bold mb-4">Hear The Magic</h2>
+               <h2 className="text-3xl lg:text-4xl font-bold mb-4">Hear The <span className="text-transparent bg-clip-text bg-gradient-sunset">Magic</span></h2>
                <p className="text-xl text-muted-foreground">
-                 Real songs that take travelers back to their favorite moments
+                 Real songs that take travelers back to their <span className="text-primary font-medium heartbeat">most cherished moments</span>
                </p>
             </motion.div>
 
-            <div className="space-y-4">
+            <div className="space-y-4 scroll-fade-in">
               {[
-                { title: "Sunset at Grand Canyon", subtitle: "Rock • Arizona • Sarah & Mike", duration: "3:42" },
-                { title: "Coffee Shop in Portland", subtitle: "Indie Folk • Oregon • Solo Journey", duration: "2:58" },
-                { title: "Beach Bonfire Memories", subtitle: "Pop • California • Friends Trip", duration: "4:15" }
+                { title: "First Kiss in Paris", subtitle: "Acoustic • France • The night everything changed", duration: "3:42" },
+                { title: "Graduation Road Trip", subtitle: "Indie Folk • Route 66 • Freedom & friendship", duration: "2:58" },
+                { title: "Wedding Sunrise", subtitle: "Orchestral • Tuscany • Forever starts here", duration: "4:15" }
               ].map((song, index) => (
                 <motion.div
                   key={index}
@@ -309,10 +351,10 @@ const Index = () => {
               <Card className="bg-gradient-card border-border shadow-card-hover">
                 <CardContent className="p-12">
                    <h2 className="text-3xl lg:text-4xl font-bold mb-4">
-                     Ready to Lock In Your Memories?
+                     Ready to <span className="text-transparent bg-clip-text bg-gradient-sunset heartbeat">Lock In Your Memories?</span>
                    </h2>
                    <p className="text-xl text-muted-foreground mb-8">
-                     Create songs that will take you back to these moments for years to come. Start with 3 free songs.
+                     Create songs that will take you back to <span className="text-primary font-medium">these moments of pure joy, love, and adventure</span> for years to come. Start with 3 free songs.
                    </p>
                   <Link to="/auth">
                     <Button size="lg" className="text-lg px-12 py-6 shine-button">
