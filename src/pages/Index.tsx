@@ -115,11 +115,12 @@ const Index = () => {
         <section className="relative px-4 sm:px-6 py-16 sm:py-20 lg:py-32 overflow-hidden min-h-[90vh] flex items-center">
           {/* Background Image with Mobile Optimization */}
           <div className="absolute inset-0 z-0">
-            {/* Desktop/Tablet Hero Image */}
+            {/* Desktop/Tablet Hero Image with Parallax */}
             <img 
               src={heroImage} 
               alt="Friends on a road trip" 
-              className="hidden sm:block w-full h-full object-cover object-center"
+              className="hidden sm:block w-full h-full object-cover object-center parallax-element"
+              data-speed="0.5"
             />
             {/* Mobile: Darker gradient overlay for better text readability */}
             <div className="sm:hidden absolute inset-0 bg-gradient-to-b from-background via-background/80 to-background"></div>
