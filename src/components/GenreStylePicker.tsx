@@ -39,7 +39,7 @@ export const GenreStylePicker = ({
           <SelectTrigger className={error ? 'border-destructive' : ''}>
             <SelectValue placeholder="Pick a genre" />
           </SelectTrigger>
-          <SelectContent className="bg-background border-border shadow-lg z-50">
+          <SelectContent className="bg-background border-border shadow-lg z-50 max-h-[200px] overflow-y-auto">
             {GENRES.map((genre) => (
               <SelectItem key={genre} value={genre}>
                 {genre}
