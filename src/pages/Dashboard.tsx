@@ -1,6 +1,6 @@
 
 import { motion } from 'framer-motion';
-import { Plus, MapPin } from 'lucide-react';
+import { Plus, MapPin, Heart, Music, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { TripCard } from '@/components/TripCard';
@@ -8,11 +8,16 @@ import { EmptyState } from '@/components/EmptyState';
 import { useTrips } from '@/hooks/useTrips';
 import { useCredits } from '@/hooks/useCredits';
 import { Skeleton } from '@/components/ui/skeleton';
+import { FloatingMusicNotes } from '@/components/FloatingMusicNotes';
+import { useScrollAnimations } from '@/hooks/useScrollAnimations';
 
 export const Dashboard = () => {
   const navigate = useNavigate();
   const { trips, loading } = useTrips();
   const { balance } = useCredits();
+
+  // Initialize scroll animations
+  useScrollAnimations();
 
   const handleCreateTrip = () => {
     navigate('/trip/new');
@@ -20,106 +25,158 @@ export const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header Skeleton */}
-        <div className="mb-8">
-          <Skeleton className="h-8 w-64 mb-2" />
-          <Skeleton className="h-5 w-96" />
-        </div>
+      <div className="min-h-screen bg-background relative">
+        <FloatingMusicNotes />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
+          {/* Header Skeleton */}
+          <div className="mb-12 text-center">
+            <Skeleton className="h-12 w-80 mx-auto mb-4" />
+            <Skeleton className="h-6 w-96 mx-auto" />
+          </div>
 
-        {/* Grid Skeleton */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-64 w-full" />
-          ))}
+          {/* Grid Skeleton */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-80 w-full rounded-2xl" />
+            ))}
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8"
-      >
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">
-            Your Road Trip Adventures
-          </h1>
-          <p className="text-muted-foreground mt-2">
-            Create, manage, and enjoy AI-generated soundtracks for your journeys
-          </p>
-        </div>
+    <div className="min-h-screen bg-background relative">
+      <FloatingMusicNotes />
+      
+      {/* Background Elements */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute top-32 left-20 w-40 h-40 bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-40 right-32 w-56 h-56 bg-accent/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-2/3 left-1/4 w-32 h-32 bg-primary-glow/10 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+      </div>
 
-        {/* Only show header CTA when user has trips */}
-        {trips.length > 0 && (
-          <Button onClick={handleCreateTrip} size="lg" className="gap-2">
-            <Plus className="h-5 w-5" />
-            Capture a Memory
-          </Button>
-        )}
-      </motion.div>
-
-      {/* Quick Stats */}
-      {trips.length > 0 && (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
+        {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8"
+          transition={{ duration: 0.8 }}
+          className="text-center mb-16 scroll-fade-in"
         >
-          <div className="bg-gradient-card border border-border rounded-xl p-4">
-            <div className="text-2xl font-bold text-foreground">{trips.length}</div>
-            <div className="text-sm text-muted-foreground">Total Trips</div>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/20 border border-primary/30 backdrop-blur-sm mb-6">
+            <Heart className="h-4 w-4 text-primary" />
+            <span className="text-sm font-medium text-primary">Your Musical Journey</span>
           </div>
           
-          <div className="bg-gradient-card border border-border rounded-xl p-4">
-            <div className="text-2xl font-bold text-foreground">
-              {trips.reduce((total, trip) => total + trip.stops.length, 0)}
-            </div>
-            <div className="text-sm text-muted-foreground">Total Stops</div>
-          </div>
-          
-          <div className="bg-gradient-card border border-border rounded-xl p-4">
-            <div className="text-2xl font-bold text-foreground">
-              {balance?.total_used || 0}
-            </div>
-            <div className="text-sm text-muted-foreground">Songs Generated</div>
-          </div>
+          <h1 className="text-4xl lg:text-6xl font-bold mb-6">
+            Your <span className="text-transparent bg-clip-text bg-gradient-sunset heartbeat">Musical</span> Adventures
+          </h1>
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            Every adventure tells a story. Create, manage, and enjoy AI-generated soundtracks that capture the exact feeling of your most <span className="text-primary font-medium">precious moments</span>
+          </p>
         </motion.div>
-      )}
 
-      {/* Trips Grid */}
-      {trips.length > 0 ? (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-        >
-          {trips.map((trip, index) => (
-            <motion.div
-              key={trip.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 * index }}
+        {/* Quick Stats */}
+        {trips.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.6 }}
+            className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12 scroll-scale-in"
+          >
+            <div className="premium-card interactive-card p-6 text-center">
+              <div className="flex justify-center mb-4">
+                <div className="p-3 rounded-full bg-primary/20 border border-primary/30">
+                  <MapPin className="h-6 w-6 text-primary" />
+                </div>
+              </div>
+              <div className="text-3xl font-bold text-foreground mb-2 heartbeat">{trips.length}</div>
+              <div className="text-sm text-muted-foreground">Musical Adventures</div>
+            </div>
+            
+            <div className="premium-card interactive-card p-6 text-center">
+              <div className="flex justify-center mb-4">
+                <div className="p-3 rounded-full bg-primary/20 border border-primary/30">
+                  <Music className="h-6 w-6 text-primary" />
+                </div>
+              </div>
+              <div className="text-3xl font-bold text-foreground mb-2 heartbeat">
+                {trips.reduce((total, trip) => total + trip.stops.length, 0)}
+              </div>
+              <div className="text-sm text-muted-foreground">Captured Moments</div>
+            </div>
+            
+            <div className="premium-card interactive-card p-6 text-center">
+              <div className="flex justify-center mb-4">
+                <div className="p-3 rounded-full bg-primary/20 border border-primary/30">
+                  <Star className="h-6 w-6 text-primary" />
+                </div>
+              </div>
+              <div className="text-3xl font-bold text-foreground mb-2 heartbeat">
+                {balance?.total_used || 0}
+              </div>
+              <div className="text-sm text-muted-foreground">Songs Created</div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Action Button for existing trips */}
+        {trips.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+            className="flex justify-center mb-12"
+          >
+            <Button 
+              onClick={handleCreateTrip} 
+              size="lg" 
+              className="shine-button text-lg px-8 py-6 shadow-glow gap-3"
             >
-              <TripCard trip={trip} />
-            </motion.div>
-          ))}
-        </motion.div>
-      ) : (
-        <EmptyState
-          icon={MapPin}
-          title="No musical memories yet"
-          description="Start capturing your adventures! Each stop becomes a unique song that tells your story."
-          actionLabel="Capture Your First Memory"
-          onAction={handleCreateTrip}
-        />
-      )}
+              <Plus className="h-6 w-6" />
+              Capture Another Memory
+            </Button>
+          </motion.div>
+        )}
+
+        {/* Trips Grid */}
+        {trips.length > 0 ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          >
+            {trips.map((trip, index) => (
+              <motion.div
+                key={trip.id}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 * index, duration: 0.6 }}
+                className="scroll-scale-in"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <TripCard trip={trip} />
+              </motion.div>
+            ))}
+          </motion.div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2, duration: 0.8 }}
+          >
+            <EmptyState
+              icon={MapPin}
+              title="Your first musical adventure awaits"
+              description="Every memory deserves a soundtrack. Start capturing your adventures - each moment becomes a unique song that tells your story and takes you back to exactly how you felt."
+              actionLabel="Capture Your First Memory"
+              onAction={handleCreateTrip}
+            />
+          </motion.div>
+        )}
+      </div>
     </div>
   );
 };

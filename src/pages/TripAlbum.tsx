@@ -9,7 +9,9 @@ import {
   Share2, 
   ArrowUpDown,
   Headphones,
-  Music2
+  Music2,
+  Heart,
+  Sparkles
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,6 +31,8 @@ import { AdvancedPlayerControls } from '@/components/audio/AdvancedPlayerControl
 import { QueueManager } from '@/components/audio/QueueManager';
 import { NowPlayingCard } from '@/components/audio/NowPlayingCard';
 import { PlaylistControls } from '@/components/audio/PlaylistControls';
+import { FloatingMusicNotes } from '@/components/FloatingMusicNotes';
+import { useScrollAnimations } from '@/hooks/useScrollAnimations';
 import { toast } from '@/hooks/use-toast';
 
 export default function TripAlbum() {
@@ -50,8 +54,9 @@ export default function TripAlbum() {
 
   const { setQueue, currentSong, isPlaying } = useAudio();
   
-  // Enable keyboard shortcuts
+  // Enable keyboard shortcuts and scroll animations
   useKeyboardShortcuts();
+  useScrollAnimations();
 
   const [showStopForm, setShowStopForm] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -113,167 +118,235 @@ export default function TripAlbum() {
 
   if (tripsLoading) {
     return (
-      <div className="min-h-screen bg-gradient-bg flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <div className="min-h-screen bg-background relative flex items-center justify-center">
+        <FloatingMusicNotes />
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+          className="w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full"
+        />
       </div>
     );
   }
 
   if (!trip && tripId !== 'new') {
     return (
-      <div className="min-h-screen bg-gradient-bg flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-4">Trip not found</h1>
-          <Button onClick={() => navigate('/dashboard')}>
+      <div className="min-h-screen bg-background relative flex items-center justify-center">
+        <FloatingMusicNotes />
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center"
+        >
+          <h1 className="text-3xl font-bold text-foreground mb-4">Trip not found</h1>
+          <p className="text-muted-foreground mb-6">This musical adventure doesn't exist or has been removed.</p>
+          <Button onClick={() => navigate('/dashboard')} className="shine-button">
             Back to Dashboard
           </Button>
-        </div>
+        </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-bg">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-background relative">
+      <FloatingMusicNotes />
+      
+      {/* Background Elements */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute top-32 left-20 w-40 h-40 bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-40 right-32 w-56 h-56 bg-accent/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+      </div>
+
+      <div className="container mx-auto px-4 py-8 relative z-10">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex items-center justify-between mb-8"
+          transition={{ duration: 0.8 }}
+          className="scroll-fade-in"
         >
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 mb-8">
             <Button 
               variant="ghost" 
               size="sm" 
               onClick={() => navigate('/dashboard')}
-              className="gap-2"
+              className="gap-2 hover:bg-primary/10 transition-colors"
             >
               <ArrowLeft className="h-4 w-4" />
-              Back
+              Back to Adventures
             </Button>
-            <div>
-              <h1 className="text-3xl font-bold bg-gradient-text bg-clip-text text-transparent">
-                {trip?.title || 'New Trip Album'}
-              </h1>
-              {trip?.description && (
-                <p className="text-muted-foreground mt-1">{trip.description}</p>
-              )}
-              <div className="flex items-center gap-4 mt-2">
-                <Badge variant="secondary">{songs.length} songs</Badge>
-                {trip?.stops && (
-                  <Badge variant="outline">{trip.stops.length} stops</Badge>
-                )}
-              </div>
-            </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <Button 
-              onClick={() => setShowStopForm(true)} 
-              size="lg"
-              className="gap-2 bg-gradient-primary hover:bg-gradient-primary/90"
-            >
-              <Plus className="h-5 w-5" />
-              Add Next Stop
-            </Button>
-          
-            {songs.length > 0 && (
-              <>
-                <Button 
-                  variant="secondary" 
-                  size="lg" 
-                  className="gap-2"
-                  onClick={handlePlayAlbum}
-                >
-                  <Play className="h-5 w-5" />
-                  Play Album
-                </Button>
-                <Button variant="outline" size="lg" className="gap-2">
-                  <Share2 className="h-5 w-5" />
-                  Share Album
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  className="gap-2"
-                  onClick={() => setShowReorderModal(true)}
-                >
-                  <ArrowUpDown className="h-5 w-5" />
-                  Reorder Songs
-                </Button>
-              </>
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/20 border border-primary/30 backdrop-blur-sm mb-6">
+              <Music2 className="h-4 w-4 text-primary" />
+              <span className="text-sm font-medium text-primary">Musical Album</span>
+            </div>
+            
+            <h1 className="text-4xl lg:text-6xl font-bold mb-4">
+              {trip?.title ? (
+                <>
+                  <span className="text-transparent bg-clip-text bg-gradient-sunset heartbeat">{trip.title}</span> Album
+                </>
+              ) : (
+                'New <span className="text-transparent bg-clip-text bg-gradient-sunset heartbeat">Musical</span> Adventure'
+              )}
+            </h1>
+            
+            {trip?.description && (
+              <p className="text-xl text-muted-foreground mb-6 max-w-2xl mx-auto">{trip.description}</p>
             )}
+            
+            <div className="flex items-center justify-center gap-4 mb-8">
+              <Badge variant="secondary" className="text-sm px-3 py-1">
+                <Heart className="h-3 w-3 mr-1" />
+                {songs.length} songs
+              </Badge>
+              {trip?.stops && (
+                <Badge variant="outline" className="text-sm px-3 py-1">
+                  <Sparkles className="h-3 w-3 mr-1" />
+                  {trip.stops.length} memories
+                </Badge>
+              )}
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Button 
+                onClick={() => setShowStopForm(true)} 
+                size="lg"
+                className="shine-button text-lg px-8 py-6 shadow-glow gap-3"
+              >
+                <Plus className="h-6 w-6" />
+                Capture Next Memory
+              </Button>
+            
+              {songs.length > 0 && (
+                <>
+                  <Button 
+                    variant="secondary" 
+                    size="lg" 
+                    className="gap-3 text-lg px-8 py-6 interactive-card"
+                    onClick={handlePlayAlbum}
+                  >
+                    <Play className="h-6 w-6" />
+                    Play Album
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="lg" 
+                    className="gap-3 text-lg px-8 py-6 border-border/50 hover:border-primary/50"
+                    onClick={() => setShowReorderModal(true)}
+                  >
+                    <ArrowUpDown className="h-6 w-6" />
+                    Reorder
+                  </Button>
+                </>
+              )}
+            </div>
           </div>
         </motion.div>
 
         {/* Enhanced Layout with Sidebar */}
-        <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="mt-16 grid grid-cols-1 lg:grid-cols-3 gap-12">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
             {/* Playlist Controls */}
             {songs.length > 0 && (
-              <PlaylistControls 
-                songs={songs}
-                title={trip?.title ? `${trip.title} Album` : 'Trip Album'}
-              />
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2, duration: 0.6 }}
+                className="scroll-scale-in"
+              >
+                <PlaylistControls 
+                  songs={songs}
+                  title={trip?.title ? `${trip.title} Album` : 'Trip Album'}
+                />
+              </motion.div>
             )}
 
             {/* View Toggle */}
             {songs.length > 0 && (
-              <Card className="bg-gradient-card border-border shadow-card">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant={selectedView === 'songs' ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => setSelectedView('songs')}
-                    >
-                      Songs
-                    </Button>
-                    <Button
-                      variant={selectedView === 'queue' ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => setSelectedView('queue')}
-                    >
-                      Queue
-                    </Button>
-                    <Button
-                      variant={selectedView === 'nowplaying' ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => setSelectedView('nowplaying')}
-                    >
-                      <Headphones className="h-4 w-4 mr-2" />
-                      Now Playing
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.6 }}
+              >
+                <Card className="premium-card border-border/30">
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-3">
+                      <Button
+                        variant={selectedView === 'songs' ? 'default' : 'ghost'}
+                        size="sm"
+                        onClick={() => setSelectedView('songs')}
+                        className="gap-2"
+                      >
+                        <Music2 className="h-4 w-4" />
+                        Songs
+                      </Button>
+                      <Button
+                        variant={selectedView === 'queue' ? 'default' : 'ghost'}
+                        size="sm"
+                        onClick={() => setSelectedView('queue')}
+                        className="gap-2"
+                      >
+                        <Play className="h-4 w-4" />
+                        Queue
+                      </Button>
+                      <Button
+                        variant={selectedView === 'nowplaying' ? 'default' : 'ghost'}
+                        size="sm"
+                        onClick={() => setSelectedView('nowplaying')}
+                        className="gap-2"
+                      >
+                        <Headphones className="h-4 w-4" />
+                        Now Playing
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
             )}
 
             {/* Content based on selected view */}
             {selectedView === 'songs' && (
               <>
                 {showStopForm ? (
-                  <TripStopForm 
-                    onSubmit={handleGenerateSong} 
-                    loading={isGenerating} 
-                  />
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.6 }}
+                  >
+                    <TripStopForm 
+                      onSubmit={handleGenerateSong} 
+                      loading={isGenerating} 
+                    />
+                  </motion.div>
                 ) : songs.length === 0 ? (
-                  <EmptyState 
-                    icon={Music2}
-                    title="No songs yet"
-                    description="Add your first stop to generate a song"
-                    actionLabel="Add Stop"
-                    onAction={() => setShowStopForm(true)}
-                  />
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.8 }}
+                  >
+                    <EmptyState 
+                      icon={Music2}
+                      title="Your musical story awaits"
+                      description="Add your first memory to create a song that captures exactly how this moment felt. Each song becomes a time machine back to your most precious experiences."
+                      actionLabel="Capture First Memory"
+                      onAction={() => setShowStopForm(true)}
+                    />
+                  </motion.div>
                 ) : (
-                  <div className="grid gap-6">
+                  <div className="grid gap-8">
                     {songs.map((song, index) => (
                       <motion.div
                         key={song.id}
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.1 }}
+                        transition={{ delay: index * 0.1, duration: 0.6 }}
+                        className="scroll-scale-in"
+                        style={{ animationDelay: `${index * 0.1}s` }}
                       >
                         <SongCard
                           song={song}
@@ -287,52 +360,77 @@ export default function TripAlbum() {
               </>
             )}
 
-            {selectedView === 'queue' && <QueueManager />}
+            {selectedView === 'queue' && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+              >
+                <QueueManager />
+              </motion.div>
+            )}
             
             {selectedView === 'nowplaying' && (
-              <div className="space-y-6">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="space-y-6"
+              >
                 <NowPlayingCard />
                 <AdvancedPlayerControls />
-              </div>
+              </motion.div>
             )}
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
+          <motion.div 
+            className="space-y-8"
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+          >
             {/* Queue Manager in Sidebar */}
-            {selectedView === 'songs' && <QueueManager />}
+            {selectedView === 'songs' && (
+              <div className="scroll-scale-in">
+                <QueueManager />
+              </div>
+            )}
             
             {/* Trip Info */}
             {trip && (
-              <Card className="bg-gradient-card border-border shadow-card">
+              <Card className="premium-card border-border/30 shadow-elegant">
                 <CardHeader>
-                  <CardTitle>Trip Details</CardTitle>
+                  <CardTitle className="flex items-center gap-2">
+                    <Heart className="h-5 w-5 text-primary" />
+                    Trip Details
+                  </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-6">
                   {trip.stops && trip.stops.length > 0 && (
                     <div>
-                      <h4 className="font-medium mb-2">Planned Stops:</h4>
-                      <div className="space-y-2">
+                      <h4 className="font-medium mb-3 text-primary">Planned Memories:</h4>
+                      <div className="space-y-3">
                         {trip.stops.map((stop, index) => (
-                          <div key={index} className="text-sm">
-                            <div className="font-medium">{stop.name}</div>
+                          <div key={index} className="p-3 rounded-lg bg-muted/50 border border-border/30">
+                            <div className="font-medium text-foreground">{stop.name}</div>
                             {stop.description && (
-                              <div className="text-muted-foreground">{stop.description}</div>
+                              <div className="text-sm text-muted-foreground mt-1">{stop.description}</div>
                             )}
                           </div>
                         ))}
                       </div>
                     </div>
                   )}
-                  <Separator />
-                  <div className="text-sm text-muted-foreground">
+                  <Separator className="bg-border/50" />
+                  <div className="text-sm text-muted-foreground space-y-1">
                     <div>Created: {new Date(trip.created_at).toLocaleDateString()}</div>
                     <div>Last updated: {new Date(trip.updated_at).toLocaleDateString()}</div>
                   </div>
                 </CardContent>
               </Card>
             )}
-          </div>
+          </motion.div>
         </div>
 
         {/* Modals */}
