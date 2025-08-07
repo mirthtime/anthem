@@ -41,12 +41,13 @@ export const useSongs = (tripId?: string) => {
 
   const generateSong = async (songData: Omit<Song, 'id' | 'created_at' | 'audio_url' | 'lyrics' | 'artwork_url' | 'artwork_generating'>) => {
     try {
-      // First create the song record
+      // First create the song record with placeholder audio
       const { data: song, error: songError } = await supabase
         .from('songs')
         .insert([{
           ...songData,
-          user_id: user?.id || null
+          user_id: user?.id || null,
+          audio_url: 'https://gicplztxvichoksdivlu.supabase.co/storage/v1/object/public/audio-files/Corpus%20Christi.wav'
         }])
         .select()
         .single();
@@ -54,7 +55,7 @@ export const useSongs = (tripId?: string) => {
       if (songError) throw songError;
 
       // TODO: When ElevenLabs is ready, call the generation function
-      // For now, just return the created song record
+      // For now, just return the created song record with placeholder audio
       await fetchSongs();
       
       // Generate artwork for the song

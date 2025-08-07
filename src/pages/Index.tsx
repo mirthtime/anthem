@@ -303,9 +303,24 @@ const Index = () => {
 
             <div className="space-y-4 scroll-fade-in">
               {[
-                { title: "First Kiss in Paris", subtitle: "Acoustic • France • The night everything changed", duration: "3:42" },
-                { title: "Graduation Road Trip", subtitle: "Indie Folk • Route 66 • Freedom & friendship", duration: "2:58" },
-                { title: "Wedding Sunrise", subtitle: "Orchestral • Tuscany • Forever starts here", duration: "4:15" }
+                { 
+                  title: "Corpus Christi", 
+                  subtitle: "Road Trip Rock • Texas • Scooters, late night adventures, and memories with Clint & Brad", 
+                  duration: "3:28",
+                  audioUrl: "https://gicplztxvichoksdivlu.supabase.co/storage/v1/object/public/audio-files/Corpus%20Christi.wav"
+                },
+                { 
+                  title: "Graduation Road Trip", 
+                  subtitle: "Indie Folk • Route 66 • Freedom & friendship", 
+                  duration: "2:58",
+                  audioUrl: "https://gicplztxvichoksdivlu.supabase.co/storage/v1/object/public/audio-files/Corpus%20Christi.wav"
+                },
+                { 
+                  title: "Wedding Sunrise", 
+                  subtitle: "Orchestral • Tuscany • Forever starts here", 
+                  duration: "4:15",
+                  audioUrl: "https://gicplztxvichoksdivlu.supabase.co/storage/v1/object/public/audio-files/Corpus%20Christi.wav"
+                }
               ].map((song, index) => (
                 <motion.div
                   key={index}
