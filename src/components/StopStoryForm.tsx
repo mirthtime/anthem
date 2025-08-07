@@ -358,14 +358,17 @@ export const StopStoryForm = ({ onComplete, existingTripId }: StopStoryFormProps
         {/* Tips */}
         <Card className="bg-accent/30 border-border">
           <CardContent className="p-4">
-            <h3 className="font-medium text-foreground mb-2">💡 Pro Tips for Better Songs:</h3>
+            <h3 className="font-medium text-foreground mb-2">💡 Pro Tips for Amazing Songs:</h3>
             <ul className="text-sm text-muted-foreground space-y-1">
-              <li>• Be specific: "Brad's legendary BBQ" vs "we had food"</li>
-              <li>• Include emotions: "we couldn't stop laughing when..."</li>
-              <li>• Mention unique details: weird things you saw, inside jokes</li>
-              <li>• Names make it personal: real people create better stories</li>
-              <li>• Try custom genres: "acoustic guitar with harmonica" vs just "country"</li>
+              <li>• <strong>Be specific:</strong> "Brad made his legendary BBQ ribs" vs "we had food"</li>
+              <li>• <strong>Include emotions:</strong> "we couldn't stop laughing when Sarah fell off the dock"</li>
+              <li>• <strong>Add details:</strong> weird things you saw, inside jokes, funny moments</li>
+              <li>• <strong>Use real names:</strong> personal stories create way better songs</li>
+              <li>• <strong>Get creative with genres:</strong> try "acoustic with harmonica and storytelling vocals"</li>
             </ul>
+            <div className="mt-3 p-3 bg-primary/10 rounded-lg border border-primary/20">
+              <p className="text-xs text-primary font-medium">✨ Remember: The more specific and personal your story, the more unique and emotional your song will be!</p>
+            </div>
           </CardContent>
         </Card>
       </motion.div>
