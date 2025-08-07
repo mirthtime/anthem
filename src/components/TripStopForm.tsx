@@ -96,25 +96,31 @@ export const TripStopForm = ({ onSubmit, loading = false }: TripStopFormProps) =
                 Genre *
               </label>
               <Select value={selectedGenre} onValueChange={setSelectedGenre}>
-                <SelectTrigger className="rounded-full">
+                <SelectTrigger className="rounded-full bg-input border-border">
                   <SelectValue placeholder="Pick a genre" />
                 </SelectTrigger>
-                <SelectContent className="bg-background border-border shadow-lg z-50 max-h-[200px] overflow-y-auto">
-                  {GENRES.map((genre) => (
-                    <SelectItem key={genre} value={genre}>
-                      {genre}
-                    </SelectItem>
-                  ))}
+                <SelectContent className="bg-card border-border shadow-card z-50 max-h-[300px] rounded-2xl">
+                  <div className="max-h-[250px] overflow-y-auto scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent scrollbar-thumb-rounded-full">
+                    {GENRES.map((genre) => (
+                      <SelectItem 
+                        key={genre} 
+                        value={genre}
+                        className="hover:bg-muted/50 focus:bg-muted/50 rounded-lg mx-2"
+                      >
+                        {genre}
+                      </SelectItem>
+                    ))}
+                  </div>
                 </SelectContent>
               </Select>
             </div>
 
             {/* Custom Style Input - Show when Custom is selected */}
             {isCustomGenre && (
-              <div className="space-y-4 p-4 rounded-xl border border-border bg-accent/20">
+              <div className="space-y-4 p-6 rounded-2xl border border-border bg-card/30 backdrop-blur-sm">
                 <div className="flex items-center gap-2">
                   <Sparkles className="h-4 w-4 text-primary" />
-                  <h3 className="font-medium text-foreground">Custom Style & Instruments</h3>
+                  <h3 className="font-medium text-card-foreground">Custom Style & Instruments</h3>
                 </div>
                 
                 {/* Style Prompt Input */}
@@ -124,22 +130,22 @@ export const TripStopForm = ({ onSubmit, loading = false }: TripStopFormProps) =
                     value={customStyle}
                     onChange={(e) => setCustomStyle(e.target.value)}
                     rows={3}
-                    className="resize-none"
+                    className="resize-none bg-input/50 border-border"
                   />
                 </div>
 
                 {/* Suggested Tags */}
-                <div className="space-y-2">
+                <div className="space-y-3">
                   <p className="text-xs text-muted-foreground">
                     Click to add popular styles to your prompt:
                   </p>
-                  <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                  <div className="flex gap-2 flex-wrap max-h-24 overflow-y-auto scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent scrollbar-thumb-rounded-full pr-2">
                     {STYLE_SUGGESTIONS.map((suggestion, index) => (
                       <button
                         key={index}
                         type="button"
                         onClick={() => handleSuggestionClick(suggestion)}
-                        className="px-3 py-1 text-xs rounded-full border transition-all border-border hover:border-primary hover:bg-primary/10 text-muted-foreground hover:text-primary cursor-pointer whitespace-nowrap flex-shrink-0"
+                        className="px-3 py-1.5 text-xs rounded-full border border-border/50 transition-all hover:border-primary/50 hover:bg-primary/10 text-muted-foreground hover:text-primary cursor-pointer whitespace-nowrap bg-card/50 backdrop-blur-sm"
                       >
                         {suggestion}
                       </button>
@@ -147,8 +153,8 @@ export const TripStopForm = ({ onSubmit, loading = false }: TripStopFormProps) =
                   </div>
                 </div>
 
-                <p className="text-xs text-muted-foreground">
-                  Tip: Be specific! "Acoustic guitar with harmonica and nostalgic vibes" works better than just "country"
+                <p className="text-xs text-muted-foreground bg-muted/20 p-3 rounded-lg border border-border/30">
+                  💡 Tip: Be specific! "Acoustic guitar with harmonica and nostalgic vibes" works better than just "country"
                 </p>
               </div>
             )}
