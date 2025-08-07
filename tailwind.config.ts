@@ -125,7 +125,7 @@ export default {
 			},
 			backgroundImage: {
 				"gradient-primary": "var(--gradient-primary)",
-				"gradient-dark": "var(--gradient-dark)",
+				"gradient-sunset": "var(--gradient-sunset)",
 				"gradient-card": "var(--gradient-card)",
 				"gradient-premium": "var(--gradient-premium)",
 			},
@@ -133,6 +133,7 @@ export default {
 				elegant: "var(--shadow-elegant)",
 				glow: "var(--shadow-glow)",
 				card: "var(--shadow-card)",
+				"card-hover": "var(--shadow-card-hover)",
 				intense: "var(--shadow-intense)",
 			},
 		}

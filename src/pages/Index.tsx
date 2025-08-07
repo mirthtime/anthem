@@ -6,8 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { TripStopForm } from '@/components/TripStopForm';
 import { PWAInstallPrompt } from '@/components/PWAInstallPrompt';
-import { Music, MapPin, LogOut, Plus, History, Play, Headphones, Sparkles, Star, Users, ChevronRight, Volume2 } from 'lucide-react';
+import { Music, MapPin, LogOut, Plus, History, Play, Headphones, Sparkles, Star, Users, ChevronRight, Volume2, Heart } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import heroImage from '@/assets/hero-road-trip.jpg';
+import campfireImage from '@/assets/campfire-memories.jpg';
+import highwayImage from '@/assets/highway-dance.jpg';
 
 const Index = () => {
   const { user, signOut } = useAuth();
@@ -66,32 +69,42 @@ const Index = () => {
           </div>
         </nav>
 
-        {/* Hero Section */}
-        <section className="relative px-6 py-20 lg:py-32">
-          <div className="max-w-7xl mx-auto">
+        {/* Hero Section with Background Image */}
+        <section className="relative px-6 py-20 lg:py-32 overflow-hidden">
+          {/* Background Image */}
+          <div className="absolute inset-0 z-0">
+            <img 
+              src={heroImage} 
+              alt="Friends on a road trip" 
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 hero-overlay"></div>
+          </div>
+          
+          <div className="relative z-10 max-w-7xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
               className="text-center max-w-4xl mx-auto"
             >
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-8">
-                <Sparkles className="h-4 w-4 text-primary" />
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/20 border border-primary/30 backdrop-blur-sm mb-8">
+                <Heart className="h-4 w-4 text-primary" />
                 <span className="text-sm font-medium text-primary">Every Adventure Needs A Soundtrack</span>
               </div>
               
-              <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-tight">
+              <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-tight text-white drop-shadow-2xl">
                 You Know That Song That
-                <span className="block text-transparent bg-clip-text bg-gradient-primary animate-shimmer">
+                <span className="block text-transparent bg-clip-text bg-gradient-sunset animate-shimmer">
                   Takes You Back?
                 </span>
               </h1>
               
-              <p className="text-xl lg:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-xl lg:text-2xl text-white/90 mb-8 max-w-3xl mx-auto leading-relaxed drop-shadow-lg">
                 You've probably had that experience of listening to a song and being instantly transported back in time—to the exact place, people, and mood when you first heard it. What if you could intentionally create that magic for your next adventure?
               </p>
               
-              <div className="bg-card/50 backdrop-blur border border-border rounded-2xl p-6 mb-12 max-w-2xl mx-auto">
+              <div className="bg-card/60 backdrop-blur-md border border-border/50 rounded-3xl p-6 mb-12 max-w-2xl mx-auto shadow-card-hover">
                 <p className="text-lg text-foreground mb-4 font-medium">
                   Tell us your story, we'll turn it into a personalized song:
                 </p>
@@ -113,12 +126,12 @@ const Index = () => {
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
                 <Link to="/auth">
-                  <Button size="lg" className="text-lg px-8 py-6 shine-button">
+                  <Button size="lg" className="text-lg px-8 py-6 shine-button shadow-glow">
                     <Play className="h-5 w-5 mr-2" />
                     Start Creating Music
                   </Button>
                 </Link>
-                <Button variant="outline" size="lg" className="text-lg px-8 py-6 border-border/50 hover:border-primary/50">
+                <Button variant="outline" size="lg" className="text-lg px-8 py-6 border-white/30 text-white hover:bg-white/10 backdrop-blur-sm">
                   <Headphones className="h-5 w-5 mr-2" />
                   Listen to Examples
                 </Button>
@@ -127,7 +140,7 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Features Grid */}
+        {/* Features Grid with Images */}
         <section className="px-6 py-20">
           <div className="max-w-7xl mx-auto">
             <motion.div
@@ -148,19 +161,22 @@ const Index = () => {
                   step: "01",
                   icon: MapPin,
                   title: "Capture The Feeling",
-                  description: "Share the places you've been, the people you met, and the emotions you felt in that moment"
+                  description: "Share the places you've been, the people you met, and the emotions you felt in that moment",
+                  image: campfireImage
                 },
                 {
                   step: "02", 
                   icon: Sparkles,
                   title: "Create Your Time Machine",
-                  description: "We compose a unique song that locks in the exact feeling and atmosphere of your experience"
+                  description: "We compose a unique song that locks in the exact feeling and atmosphere of your experience",
+                  image: null
                 },
                 {
                   step: "03",
                   icon: Music,
                   title: "Relive It Forever",
-                  description: "Years from now, one note will instantly transport you back to that exact moment and feeling"
+                  description: "Years from now, one note will instantly transport you back to that exact moment and feeling",
+                  image: highwayImage
                 }
               ].map((feature, index) => (
                 <motion.div
@@ -169,13 +185,22 @@ const Index = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 + index * 0.1, duration: 0.6 }}
                 >
-                  <Card className="relative h-full bg-gradient-card border-border shadow-card hover:shadow-card-hover transition-all duration-300 floating-card">
-                    <div className="absolute -top-3 -left-3 w-12 h-12 rounded-full bg-gradient-primary text-white text-lg font-bold flex items-center justify-center shadow-glow">
+                  <Card className="relative h-full bg-gradient-card border-border shadow-card hover:shadow-card-hover transition-all duration-500 floating-card overflow-hidden group">
+                    {feature.image && (
+                      <div className="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity duration-500">
+                        <img 
+                          src={feature.image} 
+                          alt={feature.title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                    <div className="absolute -top-3 -left-3 w-12 h-12 rounded-full bg-gradient-sunset text-white text-lg font-bold flex items-center justify-center shadow-glow z-10">
                       {feature.step}
                     </div>
-                    <CardContent className="p-8 pt-12">
+                    <CardContent className="relative z-10 p-8 pt-12">
                       <div className="flex justify-center mb-6">
-                        <div className="p-4 rounded-full bg-primary/10 border border-primary/20">
+                        <div className="p-4 rounded-full bg-primary/20 border border-primary/30 backdrop-blur-sm">
                           <feature.icon className="h-8 w-8 text-primary" />
                         </div>
                       </div>
