@@ -139,13 +139,13 @@ export const TripStopForm = ({ onSubmit, loading = false }: TripStopFormProps) =
                   <p className="text-xs text-muted-foreground">
                     Click to add popular styles to your prompt:
                   </p>
-                  <div className="flex gap-2 flex-wrap max-h-24 overflow-y-auto scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent scrollbar-thumb-rounded-full pr-2">
+                  <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent scrollbar-thumb-rounded-full">
                     {STYLE_SUGGESTIONS.map((suggestion, index) => (
                       <button
                         key={index}
                         type="button"
                         onClick={() => handleSuggestionClick(suggestion)}
-                        className="px-3 py-1.5 text-xs rounded-full border border-border/50 transition-all hover:border-primary/50 hover:bg-primary/10 text-muted-foreground hover:text-primary cursor-pointer whitespace-nowrap bg-card/50 backdrop-blur-sm"
+                        className="px-3 py-1.5 text-xs rounded-full border border-border/50 transition-all hover:border-primary/50 hover:bg-primary/10 text-muted-foreground hover:text-primary cursor-pointer whitespace-nowrap flex-shrink-0 bg-card/50 backdrop-blur-sm"
                       >
                         {suggestion}
                       </button>
