@@ -44,6 +44,7 @@ export const SongCard = ({
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+  const [internalPlaying, setInternalPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   const { generateSongArtwork, loading: artworkLoading } = useArtwork();
 
@@ -53,23 +54,40 @@ export const SongCard = ({
 
     const updateTime = () => setCurrentTime(audio.currentTime);
     const updateDuration = () => setDuration(audio.duration);
+    const handleEnd = () => setInternalPlaying(false);
     
     audio.addEventListener('timeupdate', updateTime);
     audio.addEventListener('loadedmetadata', updateDuration);
+    audio.addEventListener('ended', handleEnd);
 
     return () => {
       audio.removeEventListener('timeupdate', updateTime);
       audio.removeEventListener('loadedmetadata', updateDuration);
+      audio.removeEventListener('ended', handleEnd);
     };
   }, []);
 
-  const handlePlayPause = () => {
-    if (isPlaying) {
-      onPause?.();
-    } else {
-      onPlay?.();
+  const handlePlayPause = async () => {
+    if (!audioRef.current || !song.audio_url) return;
+
+    try {
+      if (currentlyPlaying) {
+        audioRef.current.pause();
+        setInternalPlaying(false);
+        onPause?.();
+      } else {
+        await audioRef.current.play();
+        setInternalPlaying(true);
+        onPlay?.();
+      }
+    } catch (error) {
+      console.error('Error playing audio:', error);
+      setInternalPlaying(false);
     }
   };
+
+  // Use internal playing state if no external isPlaying prop is provided
+  const currentlyPlaying = isPlaying !== undefined ? isPlaying : internalPlaying;
 
   const handleGenerateArtwork = async () => {
     await generateSongArtwork(song);
@@ -137,7 +155,7 @@ export const SongCard = ({
                     onClick={handlePlayPause}
                     className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/90 hover:bg-white text-black hover:text-black shadow-lg backdrop-blur-sm border-0 touch-manipulation"
                   >
-                    {isPlaying ? (
+                    {currentlyPlaying ? (
                       <Pause className="h-4 w-4 sm:h-5 sm:w-5" />
                     ) : (
                       <Play className="h-4 w-4 sm:h-5 sm:w-5 ml-0.5" />
@@ -275,7 +293,7 @@ export const SongCard = ({
                     size="lg"
                     className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all duration-300 border-0 touch-manipulation"
                   >
-                    {isPlaying ? (
+                    {currentlyPlaying ? (
                       <Pause className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                     ) : (
                       <Play className="h-5 w-5 sm:h-6 sm:w-6 ml-0.5 text-white" />
