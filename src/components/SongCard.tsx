@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Song } from '@/types';
-import { Play, Pause, Music, ImageIcon, Loader2 } from 'lucide-react';
+import { Play, Pause, Music, ImageIcon, Loader2, RotateCcw } from 'lucide-react';
 import { useState } from 'react';
 import { useArtwork } from '@/hooks/useArtwork';
 import { SongSharingDropdown } from '@/components/sharing/SongSharingDropdown';
@@ -18,6 +18,7 @@ interface SongCardProps {
   song: Song;
   onPlay?: () => void;
   onPause?: () => void;
+  onRegenerate?: (song: Song) => void;
   isPlaying?: boolean;
 }
 
@@ -25,6 +26,7 @@ export const SongCard = ({
   song, 
   onPlay, 
   onPause, 
+  onRegenerate,
   isPlaying = false 
 }: SongCardProps) => {
   const [audioLoaded, setAudioLoaded] = useState(false);
@@ -125,6 +127,18 @@ export const SongCard = ({
                 </Button>
                 
                 <SongSharingDropdown song={song} />
+                
+                {onRegenerate && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => onRegenerate(song)}
+                    className="gap-2"
+                  >
+                    <RotateCcw className="h-4 w-4" />
+                    Regenerate
+                  </Button>
+                )}
                 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>

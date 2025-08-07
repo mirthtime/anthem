@@ -40,18 +40,54 @@ const Index = () => {
     stories: string;
     genre: string;
   }) => {
+    if (!user) {
+      // Redirect to auth if not logged in
+      navigate('/auth');
+      return;
+    }
+
     setGeneratingAudio(true);
     
-    // TODO: Call ElevenLabs API to generate song
-    toast({
-      title: "Coming Soon!",
-      description: "Song generation will be implemented with ElevenLabs API",
-    });
-    
-    setTimeout(() => {
+    try {
+      // Import the useSongs hook here for song generation
+      const { supabase } = await import('@/integrations/supabase/client');
+      
+      // Create song record with placeholder audio
+      const { data: song, error } = await supabase
+        .from('songs')
+        .insert([{
+          title: `${data.stopName} Memory`,
+          stop_name: data.stopName,
+          people: data.people,
+          stories: data.stories,
+          genre: data.genre,
+          prompt: `A ${data.genre} song about ${data.stories} at ${data.stopName}${data.people ? ` with ${data.people}` : ''}`,
+          audio_url: 'https://gicplztxvichoksdivlu.supabase.co/storage/v1/object/public/audio-files/Corpus%20Christi.wav',
+          user_id: user.id
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      toast({
+        title: "Song Created!",
+        description: `Created a ${data.genre} song for ${data.stopName}. Check it out on your dashboard!`,
+      });
+      
+      // Redirect to dashboard where user can see and play their new song
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Error creating song:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create song. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
       setGeneratingAudio(false);
       setShowStopForm(false);
-    }, 2000);
+    }
   };
 
   if (!user) {

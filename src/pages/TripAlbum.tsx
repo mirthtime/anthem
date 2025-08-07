@@ -20,6 +20,7 @@ import { Separator } from '@/components/ui/separator';
 import { useTrips } from '@/hooks/useTrips';
 import { useSongManagement } from '@/hooks/useSongManagement';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
+import { useAuth } from '@/hooks/useAuth';
 import { useAudio } from '@/contexts/AudioContext';
 import { SongCard } from '@/components/SongCard';
 import { TripStopForm } from '@/components/TripStopForm';
@@ -34,10 +35,12 @@ import { PlaylistControls } from '@/components/audio/PlaylistControls';
 import { FloatingMusicNotes } from '@/components/FloatingMusicNotes';
 import { useScrollAnimations } from '@/hooks/useScrollAnimations';
 import { toast } from '@/hooks/use-toast';
+import { Song } from '@/types';
 
 export default function TripAlbum() {
   const { tripId } = useParams<{ tripId: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { trips, loading: tripsLoading } = useTrips();
   
   const {
@@ -87,19 +90,84 @@ export default function TripAlbum() {
 
     setIsGenerating(true);
     try {
-      // This would integrate with the song generation service
-      await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate API call
+      // Import the useSongs hook functionality
+      const { supabase } = await import('@/integrations/supabase/client');
+      
+      // Create song record with placeholder audio
+      const { data: song, error } = await supabase
+        .from('songs')
+        .insert([{
+          title: `${data.stopName} Memory`,
+          stop_name: data.stopName,
+          people: data.people,
+          stories: data.stories,
+          genre: data.genre,
+          prompt: `A ${data.genre} song about ${data.stories} at ${data.stopName}${data.people ? ` with ${data.people}` : ''}`,
+          audio_url: 'https://gicplztxvichoksdivlu.supabase.co/storage/v1/object/public/audio-files/Corpus%20Christi.wav',
+          trip_id: tripId,
+          user_id: user?.id || null
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
       
       toast({
         title: "Song Generated!",
-        description: `Created a ${data.genre} song for ${data.stopName}`,
+        description: `Created a ${data.genre} song for ${data.stopName}. You can regenerate if you want a different style!`,
       });
       
+      // Refresh the songs list
+      window.location.reload(); // Simple refresh for now
       setShowStopForm(false);
     } catch (error) {
+      console.error('Error generating song:', error);
       toast({
         title: "Generation Failed",
         description: "Unable to generate song. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleRegenerateSong = async (songToRegenerate: Song) => {
+    setIsGenerating(true);
+    try {
+      const { supabase } = await import('@/integrations/supabase/client');
+      
+      // Create a new song with the same parameters but regenerated audio
+      const { data: newSong, error } = await supabase
+        .from('songs')
+        .insert([{
+          title: `${songToRegenerate.stop_name} Memory (v2)`,
+          stop_name: songToRegenerate.stop_name,
+          people: songToRegenerate.people,
+          stories: songToRegenerate.stories,
+          genre: songToRegenerate.genre,
+          prompt: songToRegenerate.prompt,
+          audio_url: 'https://gicplztxvichoksdivlu.supabase.co/storage/v1/object/public/audio-files/Corpus%20Christi.wav',
+          trip_id: tripId,
+          user_id: user?.id || null
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      toast({
+        title: "Song Regenerated!",
+        description: `Created a new version of ${songToRegenerate.stop_name}. Both versions are available.`,
+      });
+      
+      // Refresh the songs list
+      window.location.reload();
+    } catch (error) {
+      console.error('Error regenerating song:', error);
+      toast({
+        title: "Regeneration Failed",
+        description: "Unable to regenerate song. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -351,6 +419,7 @@ export default function TripAlbum() {
                         <SongCard
                           song={song}
                           onPlay={() => handlePlaySongAtIndex(index)}
+                          onRegenerate={handleRegenerateSong}
                           isPlaying={currentSong?.id === song.id && isPlaying}
                         />
                       </motion.div>
