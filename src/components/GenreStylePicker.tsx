@@ -54,7 +54,7 @@ export const GenreStylePicker = ({
 
       {/* Custom Style Input - Show when Custom is selected */}
       {isCustomGenre && (
-        <div className="space-y-4 p-4 rounded-xl border border-border bg-accent/20 max-h-screen overflow-y-auto">
+        <div className="space-y-4 p-4 rounded-xl border border-border bg-accent/20">
           <div className="flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-primary" />
             <h3 className="font-medium text-foreground">Custom Style & Instruments</h3>
