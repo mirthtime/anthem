@@ -164,7 +164,7 @@ const Index = () => {
                </p>
             </motion.div>
 
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
               {[
                 {
                   step: "01",
@@ -196,8 +196,7 @@ const Index = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 + index * 0.1, duration: 0.6 }}
-                  className="parallax-element scroll-scale-in"
-                  data-speed={0.5 + index * 0.1}
+                  className="scroll-scale-in"
                 >
                   <Card className={`relative h-full bg-gradient-card border-border shadow-card hover:shadow-card-hover interactive-card overflow-hidden group ${feature.emotional ? 'hover:shadow-glow' : ''}`}>
                     {feature.image && (
@@ -209,10 +208,10 @@ const Index = () => {
                         />
                       </div>
                     )}
-                    <div className="absolute -top-3 -left-3 w-12 h-12 rounded-full bg-gradient-sunset text-white text-lg font-bold flex items-center justify-center shadow-glow z-10">
+                    <div className="absolute top-4 left-4 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-sunset text-white text-sm sm:text-lg font-bold flex items-center justify-center shadow-glow z-10">
                       {feature.step}
                     </div>
-                    <CardContent className="relative z-10 p-8 pt-12">
+                    <CardContent className="relative z-10 p-6 sm:p-8 pt-16 sm:pt-20">
                       <div className="flex justify-center mb-6">
                         <div className="p-4 rounded-full bg-primary/20 border border-primary/30 backdrop-blur-sm">
                           <feature.icon className="h-8 w-8 text-primary" />
