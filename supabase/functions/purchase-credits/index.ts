@@ -2,13 +2,12 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import { getCorsHeaders } from '../_shared/cors.ts';
+import { validateCreditPurchaseRequest } from '../_shared/validation.ts';
 
 serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+  
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -30,7 +29,19 @@ serve(async (req) => {
       throw new Error("User not authenticated or email not available");
     }
 
-    const { packageType, mode = 'payment' } = await req.json();
+    const requestData = await req.json();
+    
+    // Validate input
+    const validation = validateCreditPurchaseRequest(requestData);
+    if (!validation.isValid) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid input', details: validation.errors }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      );
+    }
+    
+    const packageType = requestData.packageType;
+    const mode = requestData.mode || 'payment';
     
     // Define credit packages with updated pricing
     const packages = {

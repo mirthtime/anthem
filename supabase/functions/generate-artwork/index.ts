@@ -1,38 +1,49 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { getCorsHeaders } from '../_shared/cors.ts';
+import { validateArtworkGenerationRequest, sanitizeString } from '../_shared/validation.ts';
 
 serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+  
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Use Google Gemini API key
-    const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY') || 'AIzaSyB_FOQ5x8P5gLe3wWLNDeYKT5PNqZ36eyU';
-    
-    const { prompt, width = 1024, height = 1024, type = 'song' } = await req.json();
-    
-    if (!prompt) {
-      return new Response(JSON.stringify({ error: "Prompt is required" }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    // Check for Google Gemini API key
+    const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY');
+    if (!GEMINI_API_KEY) {
+      console.warn('GEMINI_API_KEY not configured, using fallback images');
     }
+    
+    const requestData = await req.json();
+    
+    // Validate input
+    const validation = validateArtworkGenerationRequest(requestData);
+    if (!validation.isValid) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid input', details: validation.errors }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      );
+    }
+    
+    // Sanitize and extract values
+    const prompt = sanitizeString(requestData.prompt);
+    const width = requestData.width || 1024;
+    const height = requestData.height || 1024;
+    const type = requestData.type || 'song';
 
     console.log(`Generating ${type} artwork with prompt:`, prompt);
 
     // Enhanced prompt for better image generation
     const enhancedPrompt = `Create a beautiful album cover artwork: ${prompt}. Style: Professional album cover art, vibrant colors, high quality, artistic, no text or words.`;
 
-    try {
-      // Try using Gemini's image generation API (if available)
-      const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=${GEMINI_API_KEY}`, {
+    if (GEMINI_API_KEY) {
+      try {
+        // Try using Gemini's image generation API
+        const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=${GEMINI_API_KEY}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -96,8 +107,9 @@ serve(async (req) => {
           });
         }
       }
-    } catch (geminiError) {
-      console.log('Gemini image generation not available, falling back to placeholder');
+      } catch (geminiError) {
+        console.log('Gemini image generation not available, falling back to placeholder');
+      }
     }
 
     // Fallback: Generate a placeholder image URL using a free service
