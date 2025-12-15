@@ -89,7 +89,7 @@ serve(async (req) => {
       metadata: {
         user_id: user.id,
         credits: selectedPackage.credits.toString(),
-        package_type: packageType
+        packageType: packageType // Changed from package_type to packageType
       }
     };
 

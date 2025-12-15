@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { GenreStylePicker } from '@/components/GenreStylePicker';
 import { LyricsControl } from '@/components/LyricsControl';
+import { SongGenerationLoader } from '@/components/SongGenerationLoader';
 import { useTrips } from '@/hooks/useTrips';
 import { useSongs } from '@/hooks/useSongs';
 import { useCredits } from '@/hooks/useCredits';
@@ -178,6 +179,12 @@ export const StopStoryForm = ({ onComplete, existingTripId }: StopStoryFormProps
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
+      <SongGenerationLoader 
+        isVisible={isGenerating}
+        songName={`${formData.stopName} Memories`}
+        genre={formData.genre || 'Pop'}
+      />
+      
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

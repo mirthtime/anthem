@@ -19,9 +19,11 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useTrips } from '@/hooks/useTrips';
 import { useSongManagement } from '@/hooks/useSongManagement';
+import { useSongs } from '@/hooks/useSongs';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useAuth } from '@/hooks/useAuth';
 import { useAudio } from '@/contexts/AudioContext';
+import { useCredits } from '@/hooks/useCredits';
 import { SongCard } from '@/components/SongCard';
 import { TripStopForm } from '@/components/TripStopForm';
 import { SongEditModal } from '@/components/SongEditModal';
@@ -33,6 +35,7 @@ import { QueueManager } from '@/components/audio/QueueManager';
 import { NowPlayingCard } from '@/components/audio/NowPlayingCard';
 import { PlaylistControls } from '@/components/audio/PlaylistControls';
 import { FloatingMusicNotes } from '@/components/FloatingMusicNotes';
+import { SongGenerationLoader } from '@/components/SongGenerationLoader';
 import { useScrollAnimations } from '@/hooks/useScrollAnimations';
 import { toast } from '@/hooks/use-toast';
 import { Song } from '@/types';
@@ -42,6 +45,8 @@ export default function TripAlbum() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { trips, loading: tripsLoading } = useTrips();
+  const { regenerateSong } = useSongs(tripId);
+  const { balance, consumeCredits } = useCredits();
   
   const {
     songs,
@@ -63,6 +68,7 @@ export default function TripAlbum() {
 
   const [showStopForm, setShowStopForm] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [regeneratingSong, setRegeneratingSong] = useState<Song | null>(null);
   const [selectedView, setSelectedView] = useState<'songs' | 'queue' | 'nowplaying'>('songs');
 
   const trip = trips.find(t => t.id === tripId);
@@ -133,45 +139,43 @@ export default function TripAlbum() {
   };
 
   const handleRegenerateSong = async (songToRegenerate: Song) => {
-    setIsGenerating(true);
-    try {
-      const { supabase } = await import('@/integrations/supabase/client');
-      
-      // Create a new song with the same parameters but regenerated audio
-      const { data: newSong, error } = await supabase
-        .from('songs')
-        .insert([{
-          title: `${songToRegenerate.stop_name} Memory (v2)`,
-          stop_name: songToRegenerate.stop_name,
-          people: songToRegenerate.people,
-          stories: songToRegenerate.stories,
-          genre: songToRegenerate.genre,
-          prompt: songToRegenerate.prompt,
-          audio_url: 'https://gicplztxvichoksdivlu.supabase.co/storage/v1/object/public/audio-files/Corpus%20Christi.wav',
-          trip_id: tripId,
-          user_id: user?.id || null
-        }])
-        .select()
-        .single();
+    // Check credits first
+    if (!balance || balance.available_credits < 1) {
+      toast({
+        title: "Not Enough Credits",
+        description: "You need at least 1 credit to regenerate a song. Purchase more credits in settings.",
+        variant: "destructive",
+      });
+      return;
+    }
 
-      if (error) throw error;
+    // Confirm regeneration
+    const confirmed = window.confirm(
+      `Are you sure you want to regenerate "${songToRegenerate.title}"? This will use 1 credit and replace the current audio.`
+    );
+    
+    if (!confirmed) return;
+
+    setRegeneratingSong(songToRegenerate);
+    try {
+      await regenerateSong(songToRegenerate);
+      
+      // Consume credits
+      await consumeCredits(1, `Song regenerated for ${songToRegenerate.stop_name}`);
       
       toast({
         title: "Song Regenerated!",
-        description: `Created a new version of ${songToRegenerate.stop_name}. Both versions are available.`,
+        description: `Successfully regenerated "${songToRegenerate.title}" with new audio.`,
       });
-      
-      // Refresh the songs list
-      window.location.reload();
     } catch (error) {
       console.error('Error regenerating song:', error);
       toast({
         title: "Regeneration Failed",
-        description: "Unable to regenerate song. Please try again.",
+        description: error.message || "Unable to regenerate song. Please try again.",
         variant: "destructive",
       });
     } finally {
-      setIsGenerating(false);
+      setRegeneratingSong(null);
     }
   };
 
@@ -219,6 +223,13 @@ export default function TripAlbum() {
   return (
     <div className="min-h-screen bg-background relative">
       <FloatingMusicNotes />
+      
+      {/* Song Generation/Regeneration Loader */}
+      <SongGenerationLoader 
+        isVisible={!!regeneratingSong}
+        songName={regeneratingSong?.title}
+        genre={regeneratingSong?.genre}
+      />
       
       {/* Background Elements */}
       <div className="absolute inset-0 z-0">

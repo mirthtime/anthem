@@ -12,6 +12,7 @@ import heroImage from '@/assets/hero-road-trip.jpg';
 import campfireImage from '@/assets/campfire-memories.jpg';
 import highwayImage from '@/assets/highway-dance.jpg';
 import { FloatingMusicNotes } from '@/components/FloatingMusicNotes';
+import { AnimatedBackground } from '@/components/AnimatedBackground';
 import { useScrollAnimations } from '@/hooks/useScrollAnimations';
 import { ExampleSongPlayer } from '@/components/ExampleSongPlayer';
 
@@ -94,6 +95,7 @@ const Index = () => {
   if (!user) {
     return (
       <div className="min-h-screen bg-background">
+        <AnimatedBackground />
         <FloatingMusicNotes />
         {/* Navigation */}
         <nav className="relative z-10 px-6 py-4">
@@ -439,7 +441,9 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background p-4">
-      <div className="max-w-4xl mx-auto pt-8">
+      <AnimatedBackground />
+      <FloatingMusicNotes />
+      <div className="max-w-4xl mx-auto pt-8 relative z-10">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">

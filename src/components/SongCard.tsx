@@ -13,11 +13,14 @@ import {
   Users, 
   Clock,
   Waves,
-  Share2
+  Share2,
+  Download
 } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { useArtwork } from '@/hooks/useArtwork';
 import { SongSharingDropdown } from '@/components/sharing/SongSharingDropdown';
+import { downloadSong } from '@/utils/download';
+import { toast } from '@/hooks/use-toast';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -91,6 +94,31 @@ export const SongCard = ({
 
   const handleGenerateArtwork = async () => {
     await generateSongArtwork(song);
+  };
+
+  const handleDownload = async () => {
+    if (!song.audio_url) {
+      toast({
+        title: "No Audio Available",
+        description: "This song doesn't have audio to download yet.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      await downloadSong(song.audio_url, song.title);
+      toast({
+        title: "Download Started",
+        description: `Downloading "${song.title}"...`,
+      });
+    } catch (error) {
+      toast({
+        title: "Download Failed",
+        description: "Failed to download the song. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const formatTime = (time: number) => {
@@ -196,6 +224,18 @@ export const SongCard = ({
                     >
                       <RotateCcw className="h-4 w-4" />
                       <span className="hidden sm:inline">Regenerate</span>
+                    </Button>
+                  )}
+                  
+                  {song.audio_url && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={handleDownload}
+                      className="gap-2 border-border/50 hover:border-primary/50 hover:bg-primary/5 touch-manipulation min-h-[44px]"
+                    >
+                      <Download className="h-4 w-4" />
+                      <span className="hidden sm:inline">Download</span>
                     </Button>
                   )}
                   

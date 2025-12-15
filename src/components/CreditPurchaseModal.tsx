@@ -1,7 +1,7 @@
 
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { CreditCard, Check, X, Loader2 } from 'lucide-react';
+import { Check, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -11,43 +11,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { useCredits } from '@/hooks/useCredits';
-import { toast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { StripeCheckoutModal } from '@/components/StripeCheckoutModal';
 
 interface CreditPurchaseModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-// Load Stripe.js
-const loadStripe = async (): Promise<any> => {
-  // You need to replace this with your actual Stripe publishable key
-  // Get it from: https://dashboard.stripe.com/apikeys
-  const publishableKey = 'pk_live_51QxqKlKLhNTZopXG8x8b4EWTOz9CqAYLJr9qCKOg60MBUoDGZas5GpcgTytw0J9SgBVlOBDqenOeZK6TmPEgz46100mRPrQuYh';
-
-  if (typeof window !== 'undefined' && (window as any).Stripe) {
-    return (window as any).Stripe(publishableKey);
-  }
-  
-  return new Promise((resolve, reject) => {
-    const script = document.createElement('script');
-    script.src = 'https://js.stripe.com/v3/';
-    script.onload = () => {
-      if ((window as any).Stripe) {
-        const stripe = (window as any).Stripe(publishableKey);
-        resolve(stripe);
-      } else {
-        reject(new Error('Failed to load Stripe'));
-      }
-    };
-    script.onerror = () => reject(new Error('Failed to load Stripe script'));
-    document.head.appendChild(script);
-  });
-};
 
 export const CreditPurchaseModal = ({ isOpen, onClose }: CreditPurchaseModalProps) => {
-  const [loading, setLoading] = useState<string | null>(null);
+  const [selectedPackage, setSelectedPackage] = useState<any>(null);
+  const [showCheckout, setShowCheckout] = useState(false);
 
   const packages = [
     {
@@ -82,82 +56,20 @@ export const CreditPurchaseModal = ({ isOpen, onClose }: CreditPurchaseModalProp
     },
   ];
 
-  const handlePurchase = async (packageType: string) => {
-    setLoading(packageType);
-    
-    try {
-      console.log('Starting purchase for package:', packageType);
-      
-      // Get current session to ensure we're authenticated
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      
-      if (sessionError || !session) {
-        throw new Error('Please log in to purchase credits');
-      }
-      
-      console.log('User authenticated, calling purchase-credits function...');
-      
-      // Use Supabase function to create checkout session
-      const { data, error } = await supabase.functions.invoke('purchase-credits', {
-        body: { 
-          packageType,
-          mode: 'payment'
-        }
-      });
-
-      console.log('Purchase credits response:', { data, error });
-      
-      if (error) {
-        console.error('Supabase function error:', error);
-        throw new Error(error.message || 'Failed to create checkout session');
-      }
-      
-      if (data?.error) {
-        console.error('Server error:', data.error);
-        throw new Error(data.error);
-      }
-
-      if (data?.url) {
-        // Open Stripe checkout in a new tab
-        window.open(data.url, '_blank');
-        toast({
-          title: "Redirecting to Checkout",
-          description: "Opening secure payment in a new tab...",
-        });
-        onClose();
-      } else {
-        throw new Error('No checkout URL received from server');
-      }
-    } catch (error: any) {
-      console.error('Purchase failed:', error);
-      
-      if (error.message?.includes('Stripe not configured')) {
-        toast({
-          title: "Payment Setup Required",
-          description: "Payment processing is being set up. Please try again later.",
-          variant: "destructive",
-        });
-      } else if (error.message?.includes('log in')) {
-        toast({
-          title: "Authentication Required",
-          description: "Please log in to purchase credits.",
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Purchase Failed",
-          description: error.message || "Unable to process payment. Please try again.",
-          variant: "destructive",
-        });
-      }
-    } finally {
-      setLoading(null);
-    }
+  const handlePurchase = (pkg: any) => {
+    setSelectedPackage(pkg);
+    setShowCheckout(true);
   };
 
   const handleClose = () => {
-    setLoading(null);
+    setShowCheckout(false);
+    setSelectedPackage(null);
     onClose();
+  };
+
+  const handleCheckoutClose = () => {
+    setShowCheckout(false);
+    setSelectedPackage(null);
   };
 
   return (
@@ -229,8 +141,7 @@ export const CreditPurchaseModal = ({ isOpen, onClose }: CreditPurchaseModalProp
                       </div>
                       
                        <Button
-                         onClick={() => handlePurchase(pkg.id)}
-                         disabled={loading === pkg.id}
+                         onClick={() => handlePurchase(pkg)}
                          className={`w-full gap-2 font-semibold ${
                            pkg.popular 
                              ? 'premium-button text-white shadow-glow hover:shadow-intense' 
@@ -238,15 +149,8 @@ export const CreditPurchaseModal = ({ isOpen, onClose }: CreditPurchaseModalProp
                          }`}
                          variant={pkg.popular ? 'premium' : 'outline'}
                        >
-                         <CreditCard className="h-4 w-4" />
-                         {loading === pkg.id ? (
-                           <>
-                             <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                             Processing...
-                           </>
-                         ) : (
-                           'Purchase'
-                         )}
+                         <Zap className="h-4 w-4" />
+                         Get Credits
                        </Button>
                     </CardContent>
                   </Card>
@@ -261,6 +165,20 @@ export const CreditPurchaseModal = ({ isOpen, onClose }: CreditPurchaseModalProp
           <p>✓ Credits never expire</p>
         </div>
       </DialogContent>
+      
+      {/* Stripe Checkout Modal */}
+      {selectedPackage && (
+        <StripeCheckoutModal
+          isOpen={showCheckout}
+          onClose={handleCheckoutClose}
+          packageInfo={{
+            id: selectedPackage.id,
+            name: selectedPackage.name,
+            credits: selectedPackage.credits,
+            price: selectedPackage.price,
+          }}
+        />
+      )}
     </Dialog>
   );
 };

@@ -11,6 +11,7 @@ import { useSongs } from '@/hooks/useSongs';
 import { useCredits } from '@/hooks/useCredits';
 import { Skeleton } from '@/components/ui/skeleton';
 import { FloatingMusicNotes } from '@/components/FloatingMusicNotes';
+import { AnimatedBackground } from '@/components/AnimatedBackground';
 import { useScrollAnimations } from '@/hooks/useScrollAnimations';
 
 export const Dashboard = () => {
@@ -32,6 +33,7 @@ export const Dashboard = () => {
   if (loading || songsLoading) {
     return (
       <div className="min-h-screen bg-background relative">
+        <AnimatedBackground />
         <FloatingMusicNotes />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
           {/* Header Skeleton */}
@@ -53,14 +55,8 @@ export const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-background relative">
+      <AnimatedBackground />
       <FloatingMusicNotes />
-      
-      {/* Background Elements */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute top-32 left-20 w-40 h-40 bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-40 right-32 w-56 h-56 bg-accent/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute top-2/3 left-1/4 w-32 h-32 bg-primary-glow/10 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-      </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
         {/* Header */}
