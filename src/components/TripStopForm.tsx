@@ -37,9 +37,9 @@ export const TripStopForm = ({ onSubmit, loading = false }: TripStopFormProps) =
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const finalGenre = isCustomGenre ? 'Custom' : selectedGenre;
-    
+
     onSubmit({
       stopName,
       people,
@@ -55,7 +55,7 @@ export const TripStopForm = ({ onSubmit, loading = false }: TripStopFormProps) =
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <Card className="bg-gradient-card border-border shadow-card">
+      <Card className="glass-panel text-white border-0">
         <CardHeader>
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-full bg-gradient-primary">
@@ -102,8 +102,8 @@ export const TripStopForm = ({ onSubmit, loading = false }: TripStopFormProps) =
                 <SelectContent className="bg-card border-border shadow-card z-50 max-h-[300px] rounded-2xl">
                   <div className="max-h-[250px] overflow-y-auto scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent scrollbar-thumb-rounded-full">
                     {GENRES.map((genre) => (
-                      <SelectItem 
-                        key={genre} 
+                      <SelectItem
+                        key={genre}
                         value={genre}
                         className="hover:bg-muted/30 focus:bg-muted/30 data-[highlighted]:bg-muted/30 rounded-lg mx-2 text-foreground hover:text-foreground focus:text-foreground data-[highlighted]:text-foreground"
                       >
@@ -122,7 +122,7 @@ export const TripStopForm = ({ onSubmit, loading = false }: TripStopFormProps) =
                   <Sparkles className="h-4 w-4 text-primary" />
                   <h3 className="font-medium text-card-foreground">Custom Style & Instruments</h3>
                 </div>
-                
+
                 {/* Style Prompt Input */}
                 <div className="space-y-2">
                   <TextareaField

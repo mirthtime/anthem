@@ -45,7 +45,7 @@ export default function TripAlbum() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { trips, loading: tripsLoading } = useTrips();
-  const { regenerateSong } = useSongs(tripId);
+  const { generateSong, regenerateSong } = useSongs(tripId);
   const { balance, consumeCredits } = useCredits();
   
   const {
@@ -68,6 +68,7 @@ export default function TripAlbum() {
 
   const [showStopForm, setShowStopForm] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [generatingData, setGeneratingData] = useState<{stopName: string, genre: string} | null>(null);
   const [regeneratingSong, setRegeneratingSong] = useState<Song | null>(null);
   const [selectedView, setSelectedView] = useState<'songs' | 'queue' | 'nowplaying'>('songs');
 
@@ -95,36 +96,41 @@ export default function TripAlbum() {
     }
 
     setIsGenerating(true);
+    setGeneratingData({ stopName: data.stopName, genre: data.genre });
     try {
-      // Import the useSongs hook functionality
-      const { supabase } = await import('@/integrations/supabase/client');
-      
-      // Create song record with placeholder audio
-      const { data: song, error } = await supabase
-        .from('songs')
-        .insert([{
-          title: `${data.stopName} Memory`,
-          stop_name: data.stopName,
-          people: data.people,
-          stories: data.stories,
-          genre: data.genre,
-          prompt: `A ${data.genre} song about ${data.stories} at ${data.stopName}${data.people ? ` with ${data.people}` : ''}`,
-          audio_url: 'https://gicplztxvichoksdivlu.supabase.co/storage/v1/object/public/audio-files/Corpus%20Christi.wav',
-          trip_id: tripId,
-          user_id: user?.id || null
-        }])
-        .select()
-        .single();
+      // Check credits first
+      if (!balance || balance.available_credits < 1) {
+        toast({
+          title: "Not Enough Credits",
+          description: "You need at least 1 credit to generate a song. Purchase more credits in settings.",
+          variant: "destructive",
+        });
+        setIsGenerating(false);
+        return;
+      }
 
-      if (error) throw error;
+      // generateSong is already available from the hook at the top
       
-      toast({
-        title: "Song Generated!",
-        description: `Created a ${data.genre} song for ${data.stopName}. You can regenerate if you want a different style!`,
+      // Generate the song (this will handle the actual API call)
+      await generateSong({
+        title: `${data.stopName} Memory`,
+        stop_name: data.stopName,
+        people: data.people || '',
+        stories: data.stories || '',
+        genre: data.genre,
+        prompt: `A ${data.genre} song about ${data.stories} at ${data.stopName}${data.people ? ` with ${data.people}` : ''}`,
+        trip_id: tripId!,
+        user_id: user?.id || null
       });
       
-      // Refresh the songs list
-      window.location.reload(); // Simple refresh for now
+      // Consume credits
+      await consumeCredits(1, `Song generated for ${data.stopName}`);
+      
+      toast({
+        title: "Song Generation Started!",
+        description: `Generating your ${data.genre} song for ${data.stopName}. This may take a minute...`,
+      });
+      
       setShowStopForm(false);
     } catch (error) {
       console.error('Error generating song:', error);
@@ -135,6 +141,7 @@ export default function TripAlbum() {
       });
     } finally {
       setIsGenerating(false);
+      setGeneratingData(null);
     }
   };
 
@@ -534,6 +541,13 @@ export default function TripAlbum() {
 
         {/* Mini Player */}
         <MiniPlayer />
+        
+        {/* Song Generation Loader */}
+        <SongGenerationLoader 
+          isVisible={isGenerating}
+          songName={generatingData?.stopName}
+          genre={generatingData?.genre}
+        />
       </div>
     </div>
   );

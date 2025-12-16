@@ -3,14 +3,14 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Song } from '@/types';
-import { 
-  Play, 
-  Pause, 
-  Music, 
-  ImageIcon, 
-  Loader2, 
-  RotateCcw, 
-  Users, 
+import {
+  Play,
+  Pause,
+  Music,
+  ImageIcon,
+  Loader2,
+  RotateCcw,
+  Users,
   Clock,
   Waves,
   Share2,
@@ -36,12 +36,12 @@ interface SongCardProps {
   isPlaying?: boolean;
 }
 
-export const SongCard = ({ 
-  song, 
-  onPlay, 
-  onPause, 
+export const SongCard = ({
+  song,
+  onPlay,
+  onPause,
   onRegenerate,
-  isPlaying = false 
+  isPlaying = false
 }: SongCardProps) => {
   const [audioLoaded, setAudioLoaded] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -58,7 +58,7 @@ export const SongCard = ({
     const updateTime = () => setCurrentTime(audio.currentTime);
     const updateDuration = () => setDuration(audio.duration);
     const handleEnd = () => setInternalPlaying(false);
-    
+
     audio.addEventListener('timeupdate', updateTime);
     audio.addEventListener('loadedmetadata', updateDuration);
     audio.addEventListener('ended', handleEnd);
@@ -138,26 +138,26 @@ export const SongCard = ({
       onMouseLeave={() => setIsHovered(false)}
       className="group"
     >
-      <Card className="relative overflow-hidden bg-gradient-to-br from-card via-card/95 to-card/90 border-border/50 shadow-xl hover:shadow-2xl transition-all duration-500 backdrop-blur-sm">
+      <Card className="premium-card border-0">
         {/* Background Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-        
+
         {/* Ambient Lighting Effect */}
         <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-accent/20 to-primary/20 rounded-lg blur-xl opacity-0 group-hover:opacity-30 transition-opacity duration-500" />
-        
+
         <CardContent className="relative p-4 sm:p-6 lg:p-8">
           {/* Header Section */}
           <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6 mb-6 sm:mb-8">
             {/* Album Artwork */}
-            <motion.div 
+            <motion.div
               className="relative flex-shrink-0 mx-auto sm:mx-0"
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.2 }}
             >
               <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center relative overflow-hidden shadow-lg group-hover:shadow-xl transition-shadow duration-300">
                 {song.artwork_url ? (
-                  <img 
-                    src={song.artwork_url} 
+                  <img
+                    src={song.artwork_url}
                     alt={`${song.title} artwork`}
                     className="w-full h-full object-cover rounded-2xl"
                   />
@@ -171,9 +171,9 @@ export const SongCard = ({
                     )}
                   </>
                 )}
-                
+
                 {/* Play Button Overlay */}
-                <motion.div 
+                <motion.div
                   className="absolute inset-0 bg-black/40 backdrop-blur-sm rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                   initial={false}
                   animate={{ opacity: isHovered ? 1 : 0 }}
@@ -203,8 +203,8 @@ export const SongCard = ({
                   <p className="text-muted-foreground text-base sm:text-lg font-medium mb-3">
                     {song.stop_name}
                   </p>
-                  <Badge 
-                    variant="secondary" 
+                  <Badge
+                    variant="secondary"
                     className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 transition-colors duration-200"
                   >
                     {song.genre}
@@ -214,7 +214,7 @@ export const SongCard = ({
                 {/* Action Buttons */}
                 <div className="flex items-center justify-center sm:justify-end gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
                   <SongSharingDropdown song={song} />
-                  
+
                   {onRegenerate && (
                     <Button
                       size="sm"
@@ -226,7 +226,7 @@ export const SongCard = ({
                       <span className="hidden sm:inline">Regenerate</span>
                     </Button>
                   )}
-                  
+
                   {song.audio_url && (
                     <Button
                       size="sm"
@@ -238,11 +238,11 @@ export const SongCard = ({
                       <span className="hidden sm:inline">Download</span>
                     </Button>
                   )}
-                  
+
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button 
-                        size="sm" 
+                      <Button
+                        size="sm"
                         variant="outline"
                         className="border-border/50 hover:border-primary/50 hover:bg-primary/5 touch-manipulation min-h-[44px]"
                       >
@@ -250,7 +250,7 @@ export const SongCard = ({
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="bg-card/95 backdrop-blur-sm border-border/50 z-50">
-                      <DropdownMenuItem 
+                      <DropdownMenuItem
                         onClick={handleGenerateArtwork}
                         disabled={artworkLoading || song.artwork_generating}
                         className="hover:bg-primary/10"
@@ -283,7 +283,7 @@ export const SongCard = ({
                   </p>
                 </div>
               )}
-              
+
               {song.people && (
                 <div className="space-y-3">
                   <h4 className="text-sm font-semibold text-primary uppercase tracking-wider flex items-center gap-2">
@@ -303,7 +303,7 @@ export const SongCard = ({
             <div className="space-y-4">
               {/* Waveform Visualization Placeholder */}
               <div className="relative h-12 sm:h-16 bg-gradient-to-r from-muted/20 via-muted/40 to-muted/20 rounded-lg overflow-hidden touch-manipulation">
-                <div 
+                <div
                   className="absolute top-0 left-0 h-full bg-gradient-to-r from-primary/60 to-accent/60 transition-all duration-300 rounded-lg"
                   style={{ width: `${progressPercentage}%` }}
                 />
@@ -312,10 +312,9 @@ export const SongCard = ({
                     {Array.from({ length: window.innerWidth < 640 ? 20 : 40 }).map((_, i) => (
                       <div
                         key={i}
-                        className={`w-0.5 sm:w-1 bg-primary/30 rounded-full transition-all duration-200 ${
-                          i < (progressPercentage / 100) * (window.innerWidth < 640 ? 20 : 40) ? 'bg-primary' : ''
-                        }`}
-                        style={{ 
+                        className={`w-0.5 sm:w-1 bg-primary/30 rounded-full transition-all duration-200 ${i < (progressPercentage / 100) * (window.innerWidth < 640 ? 20 : 40) ? 'bg-primary' : ''
+                          }`}
+                        style={{
                           height: `${Math.random() * 20 + 8}px`,
                           animationDelay: `${i * 50}ms`
                         }}

@@ -90,8 +90,8 @@ export const TripCard = ({ trip }: TripCardProps) => {
       whileHover={{ y: -4 }}
       transition={{ duration: 0.2 }}
     >
-      <Card 
-        className="h-full bg-gradient-card border-border shadow-card hover:shadow-button transition-all duration-200 cursor-pointer group"
+      <Card
+        className="h-full premium-card border-0 cursor-pointer group"
         onClick={handleViewTrip}
       >
         <CardHeader className="pb-3">
@@ -106,10 +106,10 @@ export const TripCard = ({ trip }: TripCardProps) => {
                 </p>
               )}
             </div>
-            
+
             <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
               <TripSharingDropdown trip={trip} songCount={songs.length} />
-              
+
               <DropdownMenu>
                 <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
                   <Button variant="ghost" size="sm">
@@ -125,7 +125,7 @@ export const TripCard = ({ trip }: TripCardProps) => {
                     <Copy className="h-4 w-4 mr-2" />
                     Duplicate
                   </DropdownMenuItem>
-                  <DropdownMenuItem 
+                  <DropdownMenuItem
                     onClick={(e) => { e.stopPropagation(); handleDeleteTrip(); }}
                     className="text-destructive focus:text-destructive"
                     disabled={isDeleting}
@@ -147,12 +147,12 @@ export const TripCard = ({ trip }: TripCardProps) => {
                 <MapPin className="h-4 w-4" />
                 <span>{trip.stops.length} stops</span>
               </div>
-              
+
               <div className="flex items-center gap-1">
                 <Music className="h-4 w-4" />
                 <span>{songs.length} songs</span>
               </div>
-              
+
               <div className="flex items-center gap-1">
                 <Calendar className="h-4 w-4" />
                 <span>{formatDate(trip.created_at)}</span>
@@ -179,9 +179,9 @@ export const TripCard = ({ trip }: TripCardProps) => {
             )}
 
             {/* Action Button */}
-            <Button 
-              variant="secondary" 
-              size="sm" 
+            <Button
+              variant="secondary"
+              size="sm"
               className="w-full"
               onClick={(e) => {
                 e.stopPropagation();
