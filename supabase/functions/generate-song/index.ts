@@ -40,6 +40,9 @@ serve(async (req) => {
     const people = requestData.people ? sanitizeString(requestData.people) : null;
     const stories = requestData.stories ? sanitizeString(requestData.stories) : null;
     const genre = requestData.genre;
+    const mood = requestData.mood ? sanitizeString(requestData.mood) : null;
+    const customStyle = requestData.customStyle ? sanitizeString(requestData.customStyle) : null;
+    const customLyrics = requestData.customLyrics ? sanitizeString(requestData.customLyrics) : null;
     const userId = requestData.userId;
     const songId = requestData.songId;
     
@@ -73,7 +76,7 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     
     // Build ElevenLabs prompt with genre-specific style
-    const genreStyles = {
+    const genreStyles: Record<string, string> = {
       rock: 'energetic rock with electric guitars, powerful drums, and driving bass',
       pop: 'catchy pop with memorable hooks, modern production, and upbeat rhythm',
       country: 'authentic country with acoustic guitar, fiddle, and heartfelt vocals',
@@ -81,14 +84,58 @@ serve(async (req) => {
       folk: 'acoustic folk with storytelling lyrics, gentle guitar, and warm vocals',
       'hip-hop': 'hip-hop with rhythmic flow, strong beats, and creative wordplay',
       jazz: 'smooth jazz with sophisticated harmonies, improvisation, and soulful melody',
-      indie: 'indie alternative with unique vocals, creative instrumentation, and emotional depth'
+      indie: 'indie alternative with unique vocals, creative instrumentation, and emotional depth',
+      blues: 'soulful blues with expressive guitar, walking bass, and emotional vocals'
     };
-    
-    const styleGuide = genreStyles[genre.toLowerCase()] || genreStyles.pop;
-    
-    const prompt = `Create a ${styleGuide} song about "${stories}" at ${stopName}${people ? ` with ${people}` : ''}. 
-    
-The song should capture the adventurous spirit of a road trip, with vivid imagery and emotional connection to the place and moment.
+
+    // Mood descriptions for the AI
+    const moodDescriptions: Record<string, string> = {
+      upbeat: 'upbeat, energetic, and celebratory with a fast tempo',
+      chill: 'relaxed, laid-back, and mellow with a smooth groove',
+      nostalgic: 'nostalgic, reflective, and bittersweet with emotional depth',
+      adventurous: 'bold, exciting, and triumphant with building energy',
+      romantic: 'tender, sweet, and heartfelt with gentle melodies',
+      funny: 'playful, lighthearted, and humorous with a fun vibe'
+    };
+
+    // Use custom style if provided, otherwise use genre preset
+    let styleGuide: string;
+    if (genre.toLowerCase() === 'custom' && customStyle) {
+      styleGuide = customStyle;
+    } else {
+      styleGuide = genreStyles[genre.toLowerCase()] || genreStyles.pop;
+    }
+
+    // Add mood to style guide if provided
+    const moodGuide = mood ? moodDescriptions[mood.toLowerCase()] || mood : null;
+
+    // Build the prompt
+    let prompt = `Create a ${styleGuide} song`;
+
+    if (moodGuide) {
+      prompt += ` that feels ${moodGuide}`;
+    }
+
+    prompt += ` about "${stories}" at ${stopName}`;
+
+    if (people) {
+      prompt += ` with ${people}`;
+    }
+
+    prompt += `. The song should capture the adventurous spirit of a road trip, with vivid imagery and emotional connection to the place and moment.`;
+
+    // If custom lyrics are provided, include them in the prompt
+    if (customLyrics) {
+      prompt += `
+
+IMPORTANT: Use these specific lyrics for the song:
+
+${customLyrics}
+
+Follow this lyric structure exactly, matching the verses, chorus, and bridge as written.`;
+    } else {
+      // Default song structure guidance
+      prompt += `
 
 Song structure:
 - Intro: Set the mood
@@ -97,11 +144,17 @@ Song structure:
 - Verse 2: Tell the story: ${stories}
 - Chorus: Repeat with more emotion
 - Bridge: Reflect on the journey and this moment
-- Final Chorus: Bring it home with the memory that will last
+- Final Chorus: Bring it home with the memory that will last`;
+    }
+
+    prompt += `
 
 Make it authentic, memorable, and emotionally resonant.`;
     
     // Call ElevenLabs Music API
+    // API returns binary audio directly, not JSON
+    console.log('Calling ElevenLabs Music API with prompt:', prompt.substring(0, 100) + '...');
+
     const response = await fetch(ELEVENLABS_MUSIC_API_URL, {
       method: 'POST',
       headers: {
@@ -109,57 +162,43 @@ Make it authentic, memorable, and emotionally resonant.`;
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        text: prompt,
-        duration_seconds: 180, // 3-minute song
-        prompt_influence: 0.3,
+        prompt: prompt,
+        music_length_ms: 180000, // 3-minute song (180 seconds * 1000)
+        output_format: 'mp3_44100_128',
       }),
     });
 
     if (!response.ok) {
       const errorData = await response.text();
-      console.error('ElevenLabs API Error:', errorData);
-      throw new Error(`Music generation failed: ${response.status}`);
+      console.error('ElevenLabs API Error:', response.status, errorData);
+
+      // Parse error message if JSON
+      let errorMessage = `Music generation failed: ${response.status}`;
+      try {
+        const errorJson = JSON.parse(errorData);
+        if (errorJson.detail?.message) {
+          errorMessage = errorJson.detail.message;
+        } else if (errorJson.message) {
+          errorMessage = errorJson.message;
+        }
+      } catch {
+        // Use raw error text if not JSON
+        if (errorData) {
+          errorMessage = errorData;
+        }
+      }
+
+      throw new Error(errorMessage);
     }
 
-    const data = await response.json();
-    
-    // Poll for completion if the API returns a task ID
-    let audioUrl = data.audio_url;
-    
-    if (data.task_id && !audioUrl) {
-      // Poll for completion
-      let attempts = 0;
-      const maxAttempts = 60; // 5 minutes max wait
-      
-      while (attempts < maxAttempts) {
-        await new Promise(resolve => setTimeout(resolve, 5000)); // Wait 5 seconds
-        
-        const statusResponse = await fetch(`${ELEVENLABS_MUSIC_API_URL}/status/${data.task_id}`, {
-          headers: {
-            'xi-api-key': ELEVENLABS_API_KEY,
-          },
-        });
-        
-        const statusData = await statusResponse.json();
-        
-        if (statusData.status === 'completed' && statusData.audio_url) {
-          audioUrl = statusData.audio_url;
-          break;
-        } else if (statusData.status === 'failed') {
-          throw new Error('Music generation failed');
-        }
-        
-        attempts++;
-      }
-      
-      if (!audioUrl) {
-        throw new Error('Music generation timed out');
-      }
+    // ElevenLabs returns binary audio directly
+    const audioBlob = await response.blob();
+
+    if (audioBlob.size === 0) {
+      throw new Error('Received empty audio file from ElevenLabs');
     }
-    
-    // Store the audio file in Supabase storage
-    const audioResponse = await fetch(audioUrl);
-    const audioBlob = await audioResponse.blob();
+
+    console.log('Received audio blob, size:', audioBlob.size, 'bytes');
     const fileName = `${songId}.mp3`;
     
     const { data: uploadData, error: uploadError } = await supabase
@@ -204,24 +243,8 @@ Make it authentic, memorable, and emotionally resonant.`;
     });
   } catch (error) {
     console.error('Error in generate-song function:', error);
-    
-    // Update song status to failed if we have a songId
-    if (req.json && req.json.songId) {
-      try {
-        const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-        const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-        const supabase = createClient(supabaseUrl, supabaseServiceKey);
-        
-        await supabase
-          .from('songs')
-          .update({ status: 'failed', error_message: error.message })
-          .eq('id', req.json.songId);
-      } catch (updateError) {
-        console.error('Failed to update song status:', updateError);
-      }
-    }
-    
-    return new Response(JSON.stringify({ 
+
+    return new Response(JSON.stringify({
       error: error.message,
       details: 'Music generation failed. Please try again.'
     }), {

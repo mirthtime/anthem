@@ -69,6 +69,9 @@ export const useSongs = (tripId?: string) => {
             people: songData.people,
             stories: songData.stories,
             genre: songData.genre,
+            mood: songData.mood,
+            customStyle: songData.custom_style,
+            customLyrics: songData.lyrics,
             userId: user?.id || null,
             songId: song.id
           }
@@ -184,6 +187,9 @@ export const useSongs = (tripId?: string) => {
           people: song.people,
           stories: song.stories,
           genre: song.genre,
+          mood: song.mood,
+          customStyle: song.custom_style,
+          customLyrics: song.lyrics,
           userId: song.user_id || null,
           songId: song.id
         }

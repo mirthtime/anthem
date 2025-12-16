@@ -30,7 +30,6 @@ export const StopStoryForm = ({ onComplete, existingTripId }: StopStoryFormProps
   const [isGenerating, setIsGenerating] = useState(false);
   const [formData, setFormData] = useState({
     stopName: '',
-    tripTitle: '',
     whoWasThere: '',
     whatHappened: '',
     genre: '',
@@ -51,21 +50,59 @@ export const StopStoryForm = ({ onComplete, existingTripId }: StopStoryFormProps
     { value: 'funny', label: 'Funny & Lighthearted', emoji: '😄' }
   ];
 
+  // Generate a creative song title based on the inputs
+  const generateSongTitle = () => {
+    const { stopName, mood, genre, whatHappened } = formData;
+
+    // Title templates based on mood
+    const moodTitles: Record<string, string[]> = {
+      upbeat: ['Good Times in', 'Dancing Through', 'High on', 'The Joy of'],
+      chill: ['Sunset at', 'Easy Days in', 'Drifting Through', 'Lazy Afternoon in'],
+      nostalgic: ['Remember When', 'Back to', 'Memories of', 'Those Days in'],
+      adventurous: ['Wild Night in', 'Chasing Dreams in', 'The Road to', 'Escape to'],
+      romantic: ['Falling for', 'Love Song for', 'Hearts in', 'Sweet Moments in'],
+      funny: ['The Ballad of', 'What Happened in', 'Chaos at', 'The Legend of']
+    };
+
+    // Genre-specific suffixes
+    const genreSuffixes: Record<string, string[]> = {
+      Rock: ['Anthem', 'Blues', 'Nights'],
+      Country: ['Song', 'Story', 'Way'],
+      Pop: ['Vibes', 'Feeling', 'Dreams'],
+      'Hip-Hop': ['Flow', 'Beats', 'Story'],
+      Electronic: ['Waves', 'Pulse', 'Energy'],
+      Folk: ['Tale', 'Ballad', 'Song'],
+      Jazz: ['Groove', 'Notes', 'Session'],
+      Blues: ['Blues', 'Soul', 'Heart'],
+      Indie: ['Days', 'Feeling', 'Moment']
+    };
+
+    // Pick a random template
+    const templates = moodTitles[mood] || moodTitles.nostalgic;
+    const template = templates[Math.floor(Math.random() * templates.length)];
+
+    // Sometimes add a genre suffix
+    const suffixes = genreSuffixes[genre] || ['Memory', 'Story', 'Song'];
+    const useSuffix = Math.random() > 0.5;
+    const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
+
+    if (useSuffix) {
+      return `${stopName} ${suffix}`;
+    }
+    return `${template} ${stopName}`;
+  };
+
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
-    
+
     if (!formData.stopName.trim()) {
       newErrors.stopName = 'Stop name is required';
     }
-    
-    if (!existingTripId && !formData.tripTitle.trim()) {
-      newErrors.tripTitle = 'Trip title is required for your first stop';
-    }
-    
+
     if (!formData.whatHappened.trim()) {
       newErrors.whatHappened = 'Tell us what happened - this makes your song unique!';
     }
-    
+
     if (!formData.genre) {
       newErrors.genre = 'Pick a genre for your song';
     }
@@ -122,8 +159,10 @@ export const StopStoryForm = ({ onComplete, existingTripId }: StopStoryFormProps
       // Create trip if this is the first stop
       let tripId = existingTripId;
       if (!tripId) {
+        // Auto-generate trip title from stop name
+        const autoTripTitle = `${formData.stopName} Adventures`;
         const newTrip = await createTrip({
-          title: formData.tripTitle,
+          title: autoTripTitle,
           description: `Road trip album - started in ${formData.stopName}`,
           stops: [{
             name: formData.stopName,
@@ -134,14 +173,16 @@ export const StopStoryForm = ({ onComplete, existingTripId }: StopStoryFormProps
         tripId = newTrip.id;
       }
 
-      // Generate the song
+      // Generate the song with a creative title
       const songData = {
-        title: `${formData.stopName} Memories`,
+        title: generateSongTitle(),
         stop_name: formData.stopName,
         genre: formData.genre === 'Custom' ? 'Custom' : formData.genre,
         prompt: generatePrompt(),
         people: formData.whoWasThere,
         stories: formData.whatHappened,
+        mood: formData.mood || undefined,
+        custom_style: formData.genre === 'Custom' ? formData.customStyle : undefined,
         lyrics: formData.useCustomLyrics ? formData.customLyrics : undefined,
         trip_id: tripId
       };
@@ -234,18 +275,6 @@ export const StopStoryForm = ({ onComplete, existingTripId }: StopStoryFormProps
               error={errors.stopName}
               required
             />
-
-            {/* Trip Title (only for first stop) */}
-            {!existingTripId && (
-              <InputField
-                label="Trip Title"
-                placeholder="e.g., Summer Road Trip 2024, West Coast Adventure"
-                value={formData.tripTitle}
-                onChange={(e) => setFormData({ ...formData, tripTitle: e.target.value })}
-                error={errors.tripTitle}
-                required
-              />
-            )}
 
             {/* Who Was There */}
             <div className="space-y-2">

@@ -1,24 +1,41 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useReferral } from '@/hooks/useReferral';
 import { InputField } from '@/components/ui/input-field';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Music, Heart, Sparkles } from 'lucide-react';
+import { Music, Heart, Sparkles, Gift } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { FloatingMusicNotes } from '@/components/FloatingMusicNotes';
 import { useScrollAnimations } from '@/hooks/useScrollAnimations';
 
 const Auth = () => {
   const { user, signIn, signUp } = useAuth();
+  const { applyReferralCode } = useReferral();
+  const [searchParams] = useSearchParams();
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [referralCode, setReferralCode] = useState<string | null>(null);
 
   // Initialize scroll animations
   useScrollAnimations();
+
+  // Extract referral code from URL on mount
+  useEffect(() => {
+    const refCode = searchParams.get('ref');
+    if (refCode) {
+      setReferralCode(refCode.toUpperCase());
+      setIsSignUp(true); // Auto-switch to signup mode for referrals
+      toast({
+        title: "🎁 Referral Bonus!",
+        description: "Sign up now to get an extra FREE credit from your friend!",
+      });
+    }
+  }, [searchParams]);
 
   if (user) {
     return <Navigate to="/" replace />;
@@ -29,21 +46,47 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      const { error } = isSignUp 
-        ? await signUp(email, password)
-        : await signIn(email, password);
+      if (isSignUp) {
+        const { data, error } = await signUp(email, password);
 
-      if (error) {
-        toast({
-          title: "Authentication Error",
-          description: error.message,
-          variant: "destructive",
-        });
-      } else if (isSignUp) {
-        toast({
-          title: "Account Created",
-          description: "Please check your email to confirm your account.",
-        });
+        if (error) {
+          toast({
+            title: "Authentication Error",
+            description: error.message,
+            variant: "destructive",
+          });
+        } else {
+          // If there's a referral code and we have a new user, apply it
+          if (referralCode && data?.user?.id) {
+            const applied = await applyReferralCode(referralCode, data.user.id);
+            if (applied) {
+              toast({
+                title: "🎉 Welcome to TripTunes!",
+                description: "Account created! You got a bonus credit from your friend's referral!",
+              });
+            } else {
+              toast({
+                title: "Account Created",
+                description: "Please check your email to confirm your account.",
+              });
+            }
+          } else {
+            toast({
+              title: "Account Created",
+              description: "Please check your email to confirm your account.",
+            });
+          }
+        }
+      } else {
+        const { error } = await signIn(email, password);
+
+        if (error) {
+          toast({
+            title: "Authentication Error",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
       }
     } catch (error) {
       toast({
@@ -99,13 +142,22 @@ const Auth = () => {
                     <>Welcome <span className="text-transparent bg-clip-text bg-gradient-sunset heartbeat">Back</span></>
                   )}
                 </CardTitle>
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/20 border border-primary/30 backdrop-blur-sm mb-4">
-                  <Heart className="h-3 w-3 text-primary" />
-                  <span className="text-xs font-medium text-primary">Your musical journey awaits</span>
-                </div>
+                {referralCode ? (
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/20 border border-green-500/30 backdrop-blur-sm mb-4">
+                    <Gift className="h-3 w-3 text-green-500" />
+                    <span className="text-xs font-medium text-green-500">Referral bonus active! +1 extra credit</span>
+                  </div>
+                ) : (
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/20 border border-primary/30 backdrop-blur-sm mb-4">
+                    <Heart className="h-3 w-3 text-primary" />
+                    <span className="text-xs font-medium text-primary">Your musical journey awaits</span>
+                  </div>
+                )}
                 <CardDescription className="text-base text-muted-foreground leading-relaxed">
-                  {isSignUp 
-                    ? 'Create your account to start generating personalized soundtracks that capture your most precious moments'
+                  {isSignUp
+                    ? referralCode
+                      ? 'Your friend shared TripTunes with you! Sign up to get 2 FREE songs - your welcome credit plus the referral bonus!'
+                      : 'Create your account to start generating personalized soundtracks that capture your most precious moments'
                     : 'Sign in to continue creating songs that turn your adventures into lasting memories'
                   }
                 </CardDescription>

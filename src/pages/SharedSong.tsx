@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Music, MapPin, Users, Calendar, Play, ExternalLink, Download } from 'lucide-react';
+import { Music, MapPin, Users, Calendar, Play, ExternalLink, Download, Copy, Sparkles, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -204,7 +204,7 @@ const SharedSong = () => {
                     Share on Twitter
                   </Button>
                   <Button onClick={handleCopyLink} variant="outline" className="gap-2">
-                    <Download className="h-4 w-4" />
+                    <Copy className="h-4 w-4" />
                     Copy Link
                   </Button>
                 </div>
@@ -246,19 +246,65 @@ const SharedSong = () => {
             </CardContent>
           </Card>
 
+          {/* Conversion CTA Banner */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+          >
+            <Card className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border-primary/20 overflow-hidden">
+              <CardContent className="p-8 relative">
+                {/* Background decoration */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl" />
+
+                <div className="relative z-10 text-center space-y-4">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/20 border border-primary/30">
+                    <Sparkles className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-medium text-primary">Your turn!</span>
+                  </div>
+
+                  <h3 className="text-2xl font-bold text-foreground">
+                    Love this song? Create your own!
+                  </h3>
+
+                  <p className="text-muted-foreground max-w-md mx-auto">
+                    Turn your road trip memories into custom AI-generated songs.
+                    Your first song is <span className="text-primary font-semibold">completely FREE</span>.
+                  </p>
+
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+                    <Link to="/auth">
+                      <Button size="lg" className="gap-2 shadow-lg">
+                        <Music className="h-5 w-5" />
+                        Create My Free Song
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </Link>
+                    <Link to="/">
+                      <Button variant="outline" size="lg">
+                        Learn More
+                      </Button>
+                    </Link>
+                  </div>
+
+                  <p className="text-xs text-muted-foreground pt-2">
+                    No credit card required • Takes 2 minutes
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
           {/* Footer */}
-          <div className="text-center border-t border-border pt-8">
-            <p className="text-muted-foreground">
+          <div className="text-center pt-4">
+            <p className="text-sm text-muted-foreground">
               Created with{' '}
-              <a 
-                href="https://triptunes.ai" 
+              <Link
+                to="/"
                 className="text-primary hover:underline font-medium"
-                target="_blank"
-                rel="noopener noreferrer"
               >
                 TripTunes AI
-              </a>
-              {' '}• Generate your own road trip soundtrack
+              </Link>
             </p>
           </div>
         </motion.div>

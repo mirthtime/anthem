@@ -31,10 +31,15 @@ export interface Song {
   prompt: string;
   audio_url?: string;
   lyrics?: string;
+  mood?: string;
+  custom_style?: string;
   stories: string;
   people: string;
   artwork_url?: string;
   artwork_generating?: boolean;
+  status?: 'generating' | 'completed' | 'failed';
+  error_message?: string;
+  duration?: number;
   created_at: string;
 }
 

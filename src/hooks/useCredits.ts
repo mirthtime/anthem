@@ -48,20 +48,39 @@ export const useCredits = () => {
       if (data) {
         setBalance(data);
       } else {
-        // Create initial balance record
+        // Create initial balance record with 1 FREE welcome credit!
+        const WELCOME_CREDITS = 1;
+
         const { data: newBalance, error: createError } = await (supabase as any)
           .from('user_credits')
           .insert([{
             user_id: user.id,
-            available_credits: 0,
-            total_purchased: 0,
+            available_credits: WELCOME_CREDITS,
+            total_purchased: WELCOME_CREDITS, // Count as "purchased" for tracking
             total_used: 0
           }])
           .select()
           .single();
 
         if (createError) throw createError;
+
+        // Log the welcome bonus transaction
+        await (supabase as any)
+          .from('credit_transactions')
+          .insert([{
+            user_id: user.id,
+            amount: WELCOME_CREDITS,
+            type: 'purchase',
+            description: '🎁 Welcome bonus - Your first song is on us!'
+          }]);
+
         setBalance(newBalance);
+
+        // Show welcome toast
+        toast({
+          title: "🎉 Welcome to TripTunes!",
+          description: "You've got 1 FREE credit to create your first song!",
+        });
       }
     } catch (error) {
       console.error('Error fetching credits:', error);

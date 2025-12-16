@@ -254,7 +254,7 @@ const Index = () => {
             animate={{ opacity: 1, y: 0 }}
             className="text-center mb-16"
           >
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Welcome Back! <span className="text-primary">Ready to verify?</span></h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">Welcome Back! <span className="text-primary">Ready to create?</span></h1>
             <p className="text-xl text-muted-foreground">Continue building your road trip soundtrack.</p>
           </motion.div>
 
@@ -367,7 +367,7 @@ const Index = () => {
             <FeatureCard
               icon={Sparkles}
               title="AI Composition"
-              desc="Our advanced music enginge composes unique melodies and lyrics that match the emotions of your story."
+              desc="Our advanced music engine composes unique melodies and lyrics that match the emotions of your story."
               delay={0.2}
             />
             <FeatureCard
@@ -423,7 +423,7 @@ const Index = () => {
               Start Your <span className="text-gradient-gold">Road Trip</span> Album
             </h2>
             <p className="text-2xl text-muted-foreground mb-12">
-              Your first 3 songs are on us. unparalleled memories await.
+              Your first song is FREE. No credit card required.
             </p>
             <Link to="/auth">
               <button className="shine-button text-xl px-12 py-6">

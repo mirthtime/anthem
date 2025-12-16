@@ -62,30 +62,49 @@ export function sanitizeString(value: string): string {
 // Validation schemas for different endpoints
 export function validateSongGenerationRequest(data: any): ValidationResult {
   const result = new ValidationResult();
-  
+
   validateRequired(data.stopName, 'stopName', result);
   validateString(data.stopName, 'stopName', result, 100);
-  
+
   validateRequired(data.genre, 'genre', result);
-  validateEnum(data.genre, 'genre', 
-    ['rock', 'pop', 'country', 'electronic', 'folk', 'hip-hop', 'jazz', 'indie'], 
+  validateEnum(data.genre, 'genre',
+    ['rock', 'pop', 'country', 'electronic', 'folk', 'hip-hop', 'jazz', 'indie', 'blues', 'custom', 'Custom'],
     result
   );
-  
+
   validateRequired(data.userId, 'userId', result);
   validateUUID(data.userId, 'userId', result);
-  
+
   validateRequired(data.songId, 'songId', result);
   validateUUID(data.songId, 'songId', result);
-  
+
   if (data.stories) {
-    validateString(data.stories, 'stories', result, 500);
+    validateString(data.stories, 'stories', result, 1000);
   }
-  
+
   if (data.people) {
     validateString(data.people, 'people', result, 200);
   }
-  
+
+  // Optional: mood validation
+  if (data.mood) {
+    validateString(data.mood, 'mood', result, 50);
+    validateEnum(data.mood, 'mood',
+      ['upbeat', 'chill', 'nostalgic', 'adventurous', 'romantic', 'funny'],
+      result
+    );
+  }
+
+  // Optional: custom style validation (for Custom genre)
+  if (data.customStyle) {
+    validateString(data.customStyle, 'customStyle', result, 500);
+  }
+
+  // Optional: custom lyrics validation
+  if (data.customLyrics) {
+    validateString(data.customLyrics, 'customLyrics', result, 3000);
+  }
+
   return result;
 }
 
