@@ -26,46 +26,58 @@ export const PlayerControls = ({
   disabled = false
 }: PlayerControlsProps) => {
   return (
-    <div className="flex items-center justify-center gap-4">
+    <div className="flex items-center justify-center gap-3 md:gap-4">
       <Button
         size="sm"
         variant="ghost"
         onClick={onToggleShuffle}
-        className={isShuffle ? 'text-primary' : 'text-muted-foreground'}
+        className={`min-h-[44px] min-w-[44px] ${isShuffle ? 'text-primary' : 'text-muted-foreground'}`}
         disabled={disabled}
       >
-        <Shuffle className="h-4 w-4" />
+        <Shuffle className="h-5 w-5 md:h-4 md:w-4" />
       </Button>
 
-      <Button size="sm" variant="ghost" onClick={onPrevious} disabled={disabled}>
-        <SkipBack className="h-4 w-4" />
+      <Button
+        size="sm"
+        variant="ghost"
+        onClick={onPrevious}
+        disabled={disabled}
+        className="min-h-[44px] min-w-[44px]"
+      >
+        <SkipBack className="h-5 w-5 md:h-4 md:w-4" />
       </Button>
 
       <Button
         size="lg"
         onClick={onTogglePlay}
-        className="h-12 w-12 rounded-full"
+        className="h-14 w-14 md:h-12 md:w-12 rounded-full"
         disabled={disabled}
       >
         {isPlaying ? (
-          <Pause className="h-5 w-5" />
+          <Pause className="h-6 w-6 md:h-5 md:w-5" />
         ) : (
-          <Play className="h-5 w-5" />
+          <Play className="h-6 w-6 md:h-5 md:w-5" />
         )}
       </Button>
 
-      <Button size="sm" variant="ghost" onClick={onNext} disabled={disabled}>
-        <SkipForward className="h-4 w-4" />
+      <Button
+        size="sm"
+        variant="ghost"
+        onClick={onNext}
+        disabled={disabled}
+        className="min-h-[44px] min-w-[44px]"
+      >
+        <SkipForward className="h-5 w-5 md:h-4 md:w-4" />
       </Button>
 
       <Button
         size="sm"
         variant="ghost"
         onClick={onToggleRepeat}
-        className={repeatMode !== 'none' ? 'text-primary' : 'text-muted-foreground'}
+        className={`min-h-[44px] min-w-[44px] ${repeatMode !== 'none' ? 'text-primary' : 'text-muted-foreground'}`}
         disabled={disabled}
       >
-        <Repeat className="h-4 w-4" />
+        <Repeat className="h-5 w-5 md:h-4 md:w-4" />
         {repeatMode === 'one' && (
           <span className="text-xs ml-1">1</span>
         )}

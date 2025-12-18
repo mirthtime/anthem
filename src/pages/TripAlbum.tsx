@@ -267,7 +267,7 @@ export default function TripAlbum() {
         <div className="absolute bottom-40 right-32 w-56 h-56 bg-accent/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
       </div>
 
-      <div className="container mx-auto px-4 py-8 relative z-10">
+      <div className="container mx-auto px-4 py-6 md:py-8 relative z-10">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -30 }}
@@ -275,79 +275,80 @@ export default function TripAlbum() {
           transition={{ duration: 0.8 }}
           className="scroll-fade-in"
         >
-          <div className="flex items-center gap-4 mb-8">
-            <Button 
-              variant="ghost" 
-              size="sm" 
+          <div className="flex items-center gap-3 mb-6 md:mb-8">
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => navigate('/dashboard')}
-              className="gap-2 hover:bg-primary/10 transition-colors"
+              className="gap-2 hover:bg-primary/10 transition-colors min-h-[44px]"
             >
               <ArrowLeft className="h-4 w-4" />
-              Back to Adventures
+              <span className="hidden sm:inline">Back to Adventures</span>
+              <span className="sm:hidden">Back</span>
             </Button>
           </div>
 
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/20 border border-primary/30 backdrop-blur-sm mb-6">
-              <Music2 className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium text-primary">Musical Album</span>
+          <div className="text-center mb-8 md:mb-12">
+            <div className="inline-flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-primary/20 border border-primary/30 backdrop-blur-sm mb-4 md:mb-6">
+              <Music2 className="h-3.5 w-3.5 md:h-4 md:w-4 text-primary" />
+              <span className="text-xs md:text-sm font-medium text-primary">Musical Album</span>
             </div>
-            
-            <h1 className="text-4xl lg:text-6xl font-bold mb-4">
+
+            <h1 className="text-3xl sm:text-4xl lg:text-6xl font-bold mb-3 md:mb-4 px-2">
               {trip?.title ? (
                 <>
                   <span className="text-transparent bg-clip-text bg-gradient-sunset heartbeat">{trip.title}</span> Album
                 </>
               ) : (
-                'New <span className="text-transparent bg-clip-text bg-gradient-sunset heartbeat">Musical</span> Adventure'
+                <>New <span className="text-transparent bg-clip-text bg-gradient-sunset heartbeat">Musical</span> Adventure</>
               )}
             </h1>
-            
+
             {trip?.description && (
-              <p className="text-xl text-muted-foreground mb-6 max-w-2xl mx-auto">{trip.description}</p>
+              <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-4 md:mb-6 max-w-2xl mx-auto px-4">{trip.description}</p>
             )}
-            
-            <div className="flex items-center justify-center gap-4 mb-8">
-              <Badge variant="secondary" className="text-sm px-3 py-1">
+
+            <div className="flex items-center justify-center gap-3 md:gap-4 mb-6 md:mb-8 flex-wrap">
+              <Badge variant="secondary" className="text-xs md:text-sm px-2.5 md:px-3 py-1">
                 <Heart className="h-3 w-3 mr-1" />
                 {songs.length} songs
               </Badge>
               {trip?.stops && (
-                <Badge variant="outline" className="text-sm px-3 py-1">
+                <Badge variant="outline" className="text-xs md:text-sm px-2.5 md:px-3 py-1">
                   <Sparkles className="h-3 w-3 mr-1" />
                   {trip.stops.length} memories
                 </Badge>
               )}
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button 
-                onClick={() => setShowStopForm(true)} 
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 md:gap-4 px-4">
+              <Button
+                onClick={() => setShowStopForm(true)}
                 size="lg"
-                className="shine-button text-lg px-8 py-6 shadow-glow gap-3"
+                className="shine-button text-base md:text-lg px-6 md:px-8 py-5 md:py-6 shadow-glow gap-2 md:gap-3 w-full sm:w-auto"
               >
-                <Plus className="h-6 w-6" />
+                <Plus className="h-5 w-5 md:h-6 md:w-6" />
                 Capture Next Memory
               </Button>
-            
+
               {songs.length > 0 && (
                 <>
-                  <Button 
-                    variant="secondary" 
-                    size="lg" 
-                    className="gap-3 text-lg px-8 py-6 interactive-card"
+                  <Button
+                    variant="secondary"
+                    size="lg"
+                    className="gap-2 md:gap-3 text-base md:text-lg px-6 md:px-8 py-5 md:py-6 interactive-card w-full sm:w-auto"
                     onClick={handlePlayAlbum}
                   >
-                    <Play className="h-6 w-6" />
+                    <Play className="h-5 w-5 md:h-6 md:w-6" />
                     Play Album
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    size="lg" 
-                    className="gap-3 text-lg px-8 py-6 border-border/50 hover:border-primary/50"
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="gap-2 md:gap-3 text-base md:text-lg px-6 md:px-8 py-5 md:py-6 border-border/50 hover:border-primary/50 w-full sm:w-auto"
                     onClick={() => setShowReorderModal(true)}
                   >
-                    <ArrowUpDown className="h-6 w-6" />
+                    <ArrowUpDown className="h-5 w-5 md:h-6 md:w-6" />
                     Reorder
                   </Button>
                 </>
@@ -357,9 +358,9 @@ export default function TripAlbum() {
         </motion.div>
 
         {/* Enhanced Layout with Sidebar */}
-        <div className="mt-16 grid grid-cols-1 lg:grid-cols-3 gap-12">
+        <div className="mt-8 md:mt-12 lg:mt-16 grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 lg:gap-12">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-6 md:space-y-8">
             {/* Playlist Controls */}
             {songs.length > 0 && (
               <motion.div
@@ -383,34 +384,34 @@ export default function TripAlbum() {
                 transition={{ delay: 0.3, duration: 0.6 }}
               >
                 <Card className="premium-card border-border/30">
-                  <CardContent className="p-6">
-                    <div className="flex items-center gap-3">
+                  <CardContent className="p-4 md:p-6">
+                    <div className="flex items-center gap-2 md:gap-3 overflow-x-auto scrollbar-hide">
                       <Button
                         variant={selectedView === 'songs' ? 'default' : 'ghost'}
                         size="sm"
                         onClick={() => setSelectedView('songs')}
-                        className="gap-2"
+                        className="gap-2 min-h-[44px] flex-shrink-0"
                       >
                         <Music2 className="h-4 w-4" />
-                        Songs
+                        <span className="hidden sm:inline">Songs</span>
                       </Button>
                       <Button
                         variant={selectedView === 'queue' ? 'default' : 'ghost'}
                         size="sm"
                         onClick={() => setSelectedView('queue')}
-                        className="gap-2"
+                        className="gap-2 min-h-[44px] flex-shrink-0"
                       >
                         <Play className="h-4 w-4" />
-                        Queue
+                        <span className="hidden sm:inline">Queue</span>
                       </Button>
                       <Button
                         variant={selectedView === 'nowplaying' ? 'default' : 'ghost'}
                         size="sm"
                         onClick={() => setSelectedView('nowplaying')}
-                        className="gap-2"
+                        className="gap-2 min-h-[44px] flex-shrink-0 whitespace-nowrap"
                       >
                         <Headphones className="h-4 w-4" />
-                        Now Playing
+                        <span className="hidden sm:inline">Now Playing</span>
                       </Button>
                     </div>
                   </CardContent>
@@ -447,7 +448,7 @@ export default function TripAlbum() {
                     />
                   </motion.div>
                 ) : (
-                  <div className="grid gap-8">
+                  <div className="grid gap-4 md:gap-6 lg:gap-8">
                     {songs.map((song, index) => (
                       <motion.div
                         key={song.id}
@@ -485,7 +486,7 @@ export default function TripAlbum() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
-                className="space-y-6"
+                className="space-y-4 md:space-y-6"
               >
                 <NowPlayingCard />
                 <AdvancedPlayerControls />
@@ -494,8 +495,8 @@ export default function TripAlbum() {
           </div>
 
           {/* Sidebar */}
-          <motion.div 
-            className="space-y-8"
+          <motion.div
+            className="space-y-6 md:space-y-8"
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4, duration: 0.8 }}
@@ -511,21 +512,21 @@ export default function TripAlbum() {
             {trip && (
               <Card className="premium-card border-border/30 shadow-elegant">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Heart className="h-5 w-5 text-primary" />
+                  <CardTitle className="flex items-center gap-2 text-base md:text-lg">
+                    <Heart className="h-4 w-4 md:h-5 md:w-5 text-primary" />
                     Trip Details
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-6">
+                <CardContent className="space-y-4 md:space-y-6">
                   {trip.stops && trip.stops.length > 0 && (
                     <div>
-                      <h4 className="font-medium mb-3 text-primary">Planned Memories:</h4>
-                      <div className="space-y-3">
+                      <h4 className="font-medium mb-2 md:mb-3 text-primary text-sm md:text-base">Planned Memories:</h4>
+                      <div className="space-y-2 md:space-y-3">
                         {trip.stops.map((stop, index) => (
-                          <div key={index} className="p-3 rounded-lg bg-muted/50 border border-border/30">
-                            <div className="font-medium text-foreground">{stop.name}</div>
+                          <div key={index} className="p-2.5 md:p-3 rounded-lg bg-muted/50 border border-border/30">
+                            <div className="font-medium text-foreground text-sm md:text-base">{stop.name}</div>
                             {stop.description && (
-                              <div className="text-sm text-muted-foreground mt-1">{stop.description}</div>
+                              <div className="text-xs md:text-sm text-muted-foreground mt-1">{stop.description}</div>
                             )}
                           </div>
                         ))}
@@ -533,7 +534,7 @@ export default function TripAlbum() {
                     </div>
                   )}
                   <Separator className="bg-border/50" />
-                  <div className="text-sm text-muted-foreground space-y-1">
+                  <div className="text-xs md:text-sm text-muted-foreground space-y-1">
                     <div>Created: {new Date(trip.created_at).toLocaleDateString()}</div>
                     <div>Last updated: {new Date(trip.updated_at).toLocaleDateString()}</div>
                   </div>

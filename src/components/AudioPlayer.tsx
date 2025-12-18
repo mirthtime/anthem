@@ -87,7 +87,7 @@ export const AudioPlayer = ({ songs, currentSongIndex, onSongChange, className }
 
   return (
     <Card className={`bg-gradient-card border-border shadow-card ${className}`}>
-      <CardContent className="p-6">
+      <CardContent className="p-4 md:p-6">
         <audio
           ref={audioRef}
           src={currentSong.audio_url || undefined}
@@ -100,22 +100,22 @@ export const AudioPlayer = ({ songs, currentSongIndex, onSongChange, className }
             }
           }}
         />
-        
-        <div className="space-y-4">
-          <NowPlayingInfo 
+
+        <div className="space-y-3 md:space-y-4">
+          <NowPlayingInfo
             song={currentSong}
             onDownload={handleDownload}
             onToggleFavorite={toggleFavorite}
             isFavorited={favorites.has(currentSong.id)}
           />
 
-          <ProgressBar 
+          <ProgressBar
             currentTime={currentTime}
             duration={duration}
             onSeek={seek}
           />
 
-          <PlayerControls 
+          <PlayerControls
             isPlaying={isPlaying}
             isShuffle={isShuffle}
             repeatMode={repeatMode}
@@ -127,7 +127,7 @@ export const AudioPlayer = ({ songs, currentSongIndex, onSongChange, className }
             disabled={!currentSong.audio_url}
           />
 
-          <VolumeControl 
+          <VolumeControl
             volume={volume}
             isMuted={isMuted}
             onVolumeChange={changeVolume}

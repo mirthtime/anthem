@@ -89,6 +89,18 @@
       radial-gradient(ellipse at 20% 0%, hsl(38 40% 10% / 0.3), transparent 50%),
       radial-gradient(ellipse at 80% 100%, hsl(15 30% 8% / 0.2), transparent 50%);
     background-attachment: fixed;
+
+    /* Mobile: Prevent zoom and lock viewport */
+    touch-action: pan-y pinch-zoom;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+
+    /* Prevent overscroll bounce on mobile */
+    overscroll-behavior-y: contain;
+
+    /* Optimize for mobile performance */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   /* Typography */
@@ -323,4 +335,172 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(38 95% 55% / 0.5);
+}
+
+/* ============================================
+   MOBILE-FIRST OPTIMIZATIONS
+   ============================================ */
+
+/* Prevent horizontal scroll on all elements */
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
+}
+
+/* Root container should never overflow */
+#root {
+  overflow-x: hidden;
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Mobile: Larger touch targets for better UX */
+@media (max-width: 768px) {
+  /* Minimum touch target size (44px Apple, 48px Material) */
+  button,
+  a,
+  input,
+  select,
+  textarea,
+  [role="button"],
+  [role="link"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Prevent text zoom on input focus (iOS) */
+  input,
+  select,
+  textarea {
+    font-size: 16px !important; /* iOS zooms on <16px inputs */
+  }
+
+  /* Optimize padding for mobile screens */
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Ensure cards don't cause horizontal scroll */
+  .premium-card,
+  .glass-panel,
+  [class*="card"] {
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  /* Mobile-optimized spacing for sections */
+  section,
+  .space-y-8 > *,
+  .space-y-12 > * {
+    scroll-margin-top: 1rem;
+  }
+
+  /* Better mobile grid behavior */
+  .grid {
+    gap: 1rem;
+  }
+
+  /* Reduce animation intensity on mobile to improve performance */
+  @media (prefers-reduced-motion: no-preference) {
+    * {
+      animation-duration: 0.3s !important;
+      transition-duration: 0.2s !important;
+    }
+  }
+}
+
+/* Safe area insets for notched devices */
+@supports (padding: env(safe-area-inset-bottom)) {
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+/* Prevent pull-to-refresh on mobile (Chrome Android) */
+body {
+  overscroll-behavior-y: contain;
+}
+
+/* Disable double-tap zoom on buttons and links */
+button, a {
+  touch-action: manipulation;
+}
+
+/* Smooth scroll behavior for mobile navigation */
+html {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Mobile: Optimize image and media display */
+img, video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Mobile: Better focus states for accessibility */
+@media (max-width: 768px) {
+  *:focus-visible {
+    outline: 2px solid hsl(var(--primary));
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+/* Prevent content shifting during loading */
+* {
+  box-sizing: border-box;
+}
+
+/* Mobile: Stack flex items on small screens */
+@media (max-width: 640px) {
+  .flex-col-mobile {
+    flex-direction: column !important;
+  }
+
+  .gap-mobile-2 {
+    gap: 0.5rem !important;
+  }
+
+  .gap-mobile-4 {
+    gap: 1rem !important;
+  }
+}
+
+/* Performance: Hardware acceleration for animations */
+.premium-card,
+.interactive-card,
+.anthem-button,
+.shine-button {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Mobile: Optimize modal and overlay behavior */
+@media (max-width: 768px) {
+  [role="dialog"],
+  .modal {
+    position: fixed;
+    inset: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Mobile: Improve readability with better line heights */
+@media (max-width: 768px) {
+  p, li, span {
+    line-height: 1.6;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    line-height: 1.2;
+  }
 }

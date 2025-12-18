@@ -21,9 +21,9 @@ export const ProgressBar = ({ currentTime, duration, onSeek }: ProgressBarProps)
         max={duration || 100}
         step={1}
         onValueChange={onSeek}
-        className="w-full"
+        className="w-full cursor-pointer touch-manipulation"
       />
-      <div className="flex justify-between text-xs text-muted-foreground">
+      <div className="flex justify-between text-xs md:text-sm text-muted-foreground">
         <span>{formatTime(currentTime)}</span>
         <span>{formatTime(duration)}</span>
       </div>
