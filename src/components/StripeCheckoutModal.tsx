@@ -98,7 +98,7 @@ const CheckoutForm = ({ packageInfo, onSuccess, onError }: {
             }
           },
           business: {
-            name: 'TripTunes AI'
+            name: 'Anthem'
           }
         }}
       />

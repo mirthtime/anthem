@@ -6,7 +6,7 @@ import { useReferral } from '@/hooks/useReferral';
 import { InputField } from '@/components/ui/input-field';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Music, Heart, Sparkles, Gift } from 'lucide-react';
+import { Disc3, Heart, Sparkles, Gift } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { FloatingMusicNotes } from '@/components/FloatingMusicNotes';
 import { useScrollAnimations } from '@/hooks/useScrollAnimations';
@@ -61,8 +61,8 @@ const Auth = () => {
             const applied = await applyReferralCode(referralCode, data.user.id);
             if (applied) {
               toast({
-                title: "🎉 Welcome to TripTunes!",
-                description: "Account created! You got a bonus credit from your friend's referral!",
+                title: "Welcome to Anthem!",
+                description: "Account created! You got a bonus credit from your friend's referral.",
               });
             } else {
               toast({
@@ -119,15 +119,13 @@ const Auth = () => {
         >
           <Card className="premium-card border-border/30 shadow-elegant backdrop-blur-sm">
             <CardHeader className="text-center pb-6">
-              <motion.div 
+              <motion.div
                 className="flex justify-center mb-6"
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
               >
-                <div className="p-4 rounded-full bg-gradient-sunset shadow-glow">
-                  <Music className="h-8 w-8 text-white" />
-                </div>
+                <Disc3 className="h-12 w-12 text-primary" />
               </motion.div>
               
               <motion.div
@@ -135,11 +133,11 @@ const Auth = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4, duration: 0.6 }}
               >
-                <CardTitle className="text-2xl lg:text-3xl font-bold mb-2">
+                <CardTitle className="text-3xl lg:text-4xl font-bold mb-2 tracking-wider">
                   {isSignUp ? (
-                    <>Join <span className="text-transparent bg-clip-text bg-gradient-sunset heartbeat">TripTunes</span></>
+                    <>JOIN <span className="text-gradient-gold">ANTHEM</span></>
                   ) : (
-                    <>Welcome <span className="text-transparent bg-clip-text bg-gradient-sunset heartbeat">Back</span></>
+                    <>WELCOME <span className="text-gradient-gold">BACK</span></>
                   )}
                 </CardTitle>
                 {referralCode ? (
@@ -156,9 +154,9 @@ const Auth = () => {
                 <CardDescription className="text-base text-muted-foreground leading-relaxed">
                   {isSignUp
                     ? referralCode
-                      ? 'Your friend shared TripTunes with you! Sign up to get 2 FREE songs - your welcome credit plus the referral bonus!'
-                      : 'Create your account to start generating personalized soundtracks that capture your most precious moments'
-                    : 'Sign in to continue creating songs that turn your adventures into lasting memories'
+                      ? 'Your friend shared Anthem with you! Sign up to get 2 FREE anthems - your welcome credit plus the referral bonus!'
+                      : 'Create your account to start turning your memories into songs you\'ll actually listen to again'
+                    : 'Sign in to continue creating anthems that lock in your best moments'
                   }
                 </CardDescription>
               </motion.div>

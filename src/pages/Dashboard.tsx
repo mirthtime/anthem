@@ -30,6 +30,9 @@ export const Dashboard = () => {
   // Filter songs that don't belong to any trip (standalone songs)
   const unassignedSongs = standaloneSongs.filter(song => !song.trip_id);
 
+  // Count completed songs for stats
+  const completedSongsCount = standaloneSongs.filter(song => song.status === 'completed' || (!song.status && song.audio_url)).length;
+
   if (loading || songsLoading) {
     return (
       <div className="min-h-screen bg-background relative">
@@ -116,7 +119,7 @@ export const Dashboard = () => {
                 </div>
               </div>
               <div className="text-3xl font-bold text-foreground mb-2 heartbeat">
-                {balance?.total_used || 0}
+                {completedSongsCount}
               </div>
               <div className="text-sm text-muted-foreground">Songs Created</div>
             </div>

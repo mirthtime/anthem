@@ -46,7 +46,7 @@ export const PWAInstallPrompt = () => {
                   <Download className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-sm">Install TripTunes</h3>
+                  <h3 className="font-semibold text-sm">Install Anthem</h3>
                   <p className="text-xs text-muted-foreground">
                     Get the full native app experience
                   </p>

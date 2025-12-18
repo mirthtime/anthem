@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Music, Home, Settings, CreditCard, Menu, X, Plus } from 'lucide-react';
+import { Disc3, Home, Settings, CreditCard, Menu, X, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { useCredits } from '@/hooks/useCredits';
@@ -58,10 +58,8 @@ export const Navigation = () => {
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link to="/dashboard" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-              <div className="p-2 rounded-full bg-gradient-primary">
-                <Music className="h-6 w-6 text-white" />
-              </div>
-              <span className="text-xl font-bold text-foreground">TripTunes</span>
+              <Disc3 className="h-7 w-7 text-primary" />
+              <span className="text-xl font-bold tracking-wider text-foreground">ANTHEM</span>
             </Link>
 
             {/* Nav Items */}
@@ -118,10 +116,8 @@ export const Navigation = () => {
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link to="/dashboard" className="flex items-center gap-2">
-              <div className="p-1.5 rounded-full bg-gradient-primary">
-                <Music className="h-5 w-5 text-white" />
-              </div>
-              <span className="text-lg font-bold text-foreground">TripTunes</span>
+              <Disc3 className="h-6 w-6 text-primary" />
+              <span className="text-lg font-bold tracking-wider text-foreground">ANTHEM</span>
             </Link>
 
             {/* Credits & Menu */}

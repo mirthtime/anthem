@@ -256,6 +256,39 @@ export const useSongs = (tripId?: string) => {
 
   useEffect(() => {
     fetchSongs();
+
+    // Subscribe to real-time changes on songs table
+    if (user || tripId) {
+      const channel = supabase
+        .channel('songs_changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'songs',
+            filter: tripId ? `trip_id=eq.${tripId}` : `user_id=eq.${user?.id}`
+          },
+          (payload) => {
+            console.log('Song updated:', payload);
+
+            if (payload.eventType === 'INSERT') {
+              setSongs(prev => [payload.new as Song, ...prev]);
+            } else if (payload.eventType === 'UPDATE') {
+              setSongs(prev => prev.map(song =>
+                song.id === (payload.new as Song).id ? payload.new as Song : song
+              ));
+            } else if (payload.eventType === 'DELETE') {
+              setSongs(prev => prev.filter(song => song.id !== (payload.old as Song).id));
+            }
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    }
   }, [user, tripId]);
 
   return {

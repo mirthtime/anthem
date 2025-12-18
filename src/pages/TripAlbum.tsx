@@ -44,10 +44,10 @@ export default function TripAlbum() {
   const { tripId } = useParams<{ tripId: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { trips, loading: tripsLoading } = useTrips();
+  const { trips, loading: tripsLoading, getTripById } = useTrips();
   const { generateSong, regenerateSong } = useSongs(tripId);
   const { balance, consumeCredits } = useCredits();
-  
+
   const {
     songs,
     editingSong,
@@ -61,7 +61,7 @@ export default function TripAlbum() {
   } = useSongManagement(tripId);
 
   const { setQueue, currentSong, isPlaying } = useAudio();
-  
+
   // Enable keyboard shortcuts and scroll animations
   useKeyboardShortcuts();
   useScrollAnimations();
@@ -71,14 +71,37 @@ export default function TripAlbum() {
   const [generatingData, setGeneratingData] = useState<{stopName: string, genre: string} | null>(null);
   const [regeneratingSong, setRegeneratingSong] = useState<Song | null>(null);
   const [selectedView, setSelectedView] = useState<'songs' | 'queue' | 'nowplaying'>('songs');
+  const [directTrip, setDirectTrip] = useState<typeof trips[0] | null>(null);
+  const [directLoading, setDirectLoading] = useState(true);
 
-  const trip = trips.find(t => t.id === tripId);
+  // Try to find trip in cached list first, otherwise fetch directly
+  const tripFromList = trips.find(t => t.id === tripId);
+  const trip = tripFromList || directTrip;
 
+  // Fetch trip directly if not in list
   useEffect(() => {
-    if (!tripsLoading && !trip && tripId !== 'new') {
+    const fetchTrip = async () => {
+      if (tripId && tripId !== 'new' && !tripFromList) {
+        setDirectLoading(true);
+        const fetchedTrip = await getTripById(tripId);
+        setDirectTrip(fetchedTrip);
+        setDirectLoading(false);
+      } else {
+        setDirectLoading(false);
+      }
+    };
+    fetchTrip();
+  }, [tripId, tripFromList, getTripById]);
+
+  const isLoading = tripsLoading || directLoading;
+
+  // Only redirect if we've finished ALL loading and trip still not found
+  useEffect(() => {
+    if (!isLoading && !trip && tripId !== 'new') {
+      console.log('Trip not found after loading, redirecting to dashboard');
       navigate('/dashboard');
     }
-  }, [trip, tripsLoading, navigate, tripId]);
+  }, [trip, isLoading, navigate, tripId]);
 
   const handleGenerateSong = async (data: {
     stopName: string;
@@ -195,7 +218,7 @@ export default function TripAlbum() {
     setQueue(songs, songIndex);
   };
 
-  if (tripsLoading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-background relative flex items-center justify-center">
         <FloatingMusicNotes />

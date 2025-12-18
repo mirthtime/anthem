@@ -69,18 +69,18 @@ export const useSharing = () => {
   };
 
   const shareToTwitter = (content: ShareableContent) => {
-    const hashtags = content.type === 'song' ? 'TripTunesAI,roadtrip,music,AI' : 'TripTunesAI,roadtrip,travel';
+    const hashtags = content.type === 'song' ? 'Anthem,memories,music' : 'Anthem,memories,travel';
     const text = `${content.description} 🎵✨`;
     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(content.url)}&hashtags=${hashtags}`;
     window.open(url, '_blank');
   };
 
   const generateSongCaption = (songTitle: string, stopName: string, genre: string) => {
-    return `Just generated "${songTitle}" - a ${genre} song inspired by ${stopName} with TripTunes AI! 🎵✨ Perfect soundtrack for any adventure. #TripTunesAI #roadtrip #music #AI`;
+    return `Just created "${songTitle}" - a ${genre} anthem inspired by ${stopName}. Made with Anthem. #Anthem #memories #music`;
   };
 
   const generateTripCaption = (tripTitle: string, stopCount: number, songCount: number) => {
-    return `Created an epic ${stopCount}-stop road trip playlist with ${songCount} AI-generated songs using TripTunes AI! 🚗🎵 Ready for the ultimate adventure soundtrack! #TripTunesAI #roadtrip #travel`;
+    return `Created a ${stopCount}-stop memory album with ${songCount} personalized anthems. Made with Anthem. #Anthem #memories #travel`;
   };
 
   return {

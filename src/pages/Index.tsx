@@ -1,282 +1,607 @@
-import { useState, useEffect } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { useState, useEffect, useRef } from 'react';
+import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useSongs } from '@/hooks/useSongs';
+import { useTrips } from '@/hooks/useTrips';
+import { useCredits } from '@/hooks/useCredits';
 import { Button } from '@/components/ui/button';
-// Removed unused imports to fix lint errors
-// import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { TripStopForm } from '@/components/TripStopForm';
 import { PWAInstallPrompt } from '@/components/PWAInstallPrompt';
-import { Music, MapPin, LogOut, Plus, Play, Headphones, Sparkles, Star, Users, ChevronRight, PlayCircle, Radio } from 'lucide-react';
+import { Music, MapPin, LogOut, Plus, Play, ArrowRight, Disc3, Headphones, Quote } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import heroImage from '@/assets/hero-road-trip.jpg';
-import campfireImage from '@/assets/campfire-memories.jpg';
-// Removed unused import: highwayImage
-import { FloatingMusicNotes } from '@/components/FloatingMusicNotes';
-import { AnimatedBackground } from '@/components/AnimatedBackground';
-import { ExampleSongPlayer } from '@/components/ExampleSongPlayer';
+import { SongGenerationLoader } from '@/components/SongGenerationLoader';
 
-// New specialized components for the landing page
-const Nav = ({ user, handleSignOut }: { user: any, handleSignOut: () => void }) => (
-  <nav className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-background/50 backdrop-blur-md border-b border-white/5">
-    <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-      <div className="flex items-center gap-3 group cursor-pointer">
-        <div className="relative">
-          <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full group-hover:bg-primary/40 transition-all duration-500" />
-          <div className="relative p-2.5 rounded-xl bg-white/5 border border-white/10 group-hover:border-primary/30 transition-colors">
-            <Music className="h-6 w-6 text-primary" />
-          </div>
-        </div>
-        <span className="text-xl font-bold font-display tracking-tight text-white group-hover:text-primary transition-colors">
-          TripTunes
-        </span>
-      </div>
+// Cinematic Nav
+const Nav = ({ user, handleSignOut }: { user: any, handleSignOut: () => void }) => {
+  const [scrolled, setScrolled] = useState(false);
 
-      <div className="flex items-center gap-4">
-        {user ? (
-          <>
-            <Link to="/dashboard">
-              <Button variant="ghost" className="text-white hover:text-primary hover:bg-white/5">
-                Dashboard
-              </Button>
-            </Link>
-            <Button variant="ghost" size="icon" onClick={handleSignOut} className="text-white/70 hover:text-white">
-              <LogOut className="h-5 w-5" />
-            </Button>
-          </>
-        ) : (
-          <Link to="/auth">
-            <Button className="glass-button text-white px-6 font-medium bg-transparent hover:bg-white/5">
-              Sign In
-            </Button>
-          </Link>
-        )}
-      </div>
-    </div>
-  </nav>
-);
-
-const Hero = () => {
-  const { scrollY } = useScroll();
-  const y1 = useTransform(scrollY, [0, 500], [0, 200]);
-  const opacity = useTransform(scrollY, [0, 300], [1, 0]);
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
-    <div className="relative min-h-[100vh] flex items-center justify-center overflow-hidden pt-20">
-      {/* Dynamic Background Elements */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/80 to-background z-10" />
-        <motion.div style={{ y: y1 }} className="absolute inset-0 w-full h-[120%]">
-          <img
-            src={heroImage}
-            alt="Road trip adventure"
-            className="w-full h-full object-cover opacity-40"
-          />
-        </motion.div>
-      </div>
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'bg-background/90 backdrop-blur-lg border-b border-white/5' : 'bg-transparent'}`}>
+      <div className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
+        <Link to="/" className="flex items-center gap-3 group">
+          <div className="relative">
+            <Disc3 className="h-8 w-8 text-primary transition-transform duration-500 group-hover:rotate-180" />
+          </div>
+          <span className="text-2xl font-bold tracking-wider">ANTHEM</span>
+        </Link>
 
-      <div className="container relative z-20 px-6 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-          className="max-w-5xl mx-auto"
-        >
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.2, duration: 0.8 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-8 hover:bg-white/10 transition-colors cursor-default"
-          >
-            <Sparkles className="h-4 w-4 text-primary animate-pulse" />
-            <span className="text-sm font-medium text-white/90">AI-Powered Travel Soundtracks</span>
-          </motion.div>
-
-          <h1 className="text-6xl md:text-8xl font-bold font-display leading-[1.1] mb-8 tracking-tight text-balance">
-            Turn Your <span className="text-gradient-gold">Journey</span>
-            <br />
-            Into a <span className="text-gradient-sunset relative inline-block">
-              Symphony
-              <svg className="absolute -bottom-4 left-0 w-full h-3 text-primary/30" viewBox="0 0 100 10" preserveAspectRatio="none">
-                <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="2" fill="none" />
-              </svg>
-            </span>
-          </h1>
-
-          <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed text-balance">
-            Every mile has a melody. TripTunes uses AI to transform your road trip stops into
-            custom songs, keeping your memories alive forever.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+        <div className="flex items-center gap-4">
+          {user ? (
+            <>
+              <Link to="/dashboard">
+                <Button variant="ghost" className="text-white/80 hover:text-white hover:bg-white/5">
+                  Dashboard
+                </Button>
+              </Link>
+              <Button variant="ghost" size="icon" onClick={handleSignOut} className="text-white/60 hover:text-white">
+                <LogOut className="h-5 w-5" />
+              </Button>
+            </>
+          ) : (
             <Link to="/auth">
-              <button className="shine-button text-lg group">
-                <span className="flex items-center gap-2">
-                  Start Creating Free
-                  <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </span>
+              <button className="ghost-button">
+                Sign In
               </button>
             </Link>
-            <button className="px-8 py-4 rounded-xl text-lg font-medium text-white/80 hover:text-white border border-white/10 hover:bg-white/5 transition-all flex items-center gap-2 group">
-              <PlayCircle className="h-5 w-5 group-hover:scale-110 transition-transform text-primary" />
-              Listen to Demo
-            </button>
-          </div>
-
-          {/* Trust Indicators */}
-          <div className="mt-20 flex items-center justify-center gap-8 text-white/40 grayscale hover:grayscale-0 transition-all duration-500 opacity-60">
-            <div className="flex -space-x-4">
-              {[1, 2, 3, 4].map(i => (
-                <div key={i} className="w-10 h-10 rounded-full bg-white/10 border border-white/5 backdrop-blur-sm flex items-center justify-center overflow-hidden">
-                  <div className="w-full h-full bg-gradient-to-br from-white/20 to-transparent" />
-                </div>
-              ))}
-            </div>
-            <p className="text-sm font-medium">Joined by 10,000+ travelers</p>
-          </div>
-        </motion.div>
+          )}
+        </div>
       </div>
-
-      {/* Scroll Indicator */}
-      <motion.div
-        style={{ opacity }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/30"
-        animate={{ y: [0, 10, 0] }}
-        transition={{ duration: 2, repeat: Infinity }}
-      >
-        <span className="text-xs uppercase tracking-widest">Scroll</span>
-        <div className="w-px h-12 bg-gradient-to-b from-white/30 to-transparent" />
-      </motion.div>
-    </div>
+    </nav>
   );
 };
 
-const FeatureCard = ({ icon: Icon, title, desc, delay }: { icon: any, title: string, desc: string, delay: number }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    transition={{ delay, duration: 0.5 }}
-    viewport={{ once: true }}
-    className="premium-card p-8 group"
-  >
-    <div className="mb-6 p-4 rounded-2xl bg-white/5 w-fit border border-white/10 group-hover:border-primary/30 group-hover:bg-primary/10 transition-colors">
-      <Icon className="h-8 w-8 text-white group-hover:text-primary transition-colors" />
+// Hero Section - Cinematic opener with video background
+const Hero = () => {
+  const { scrollY } = useScroll();
+  const y = useTransform(scrollY, [0, 600], [0, 200]);
+  const opacity = useTransform(scrollY, [0, 400], [1, 0]);
+
+  return (
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Video Background with Parallax */}
+      <motion.div style={{ y }} className="absolute inset-0 z-0">
+        <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-background/50 to-background z-10" />
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          poster={heroImage}
+          className="w-full h-[120%] object-cover opacity-60"
+        >
+          <source src="/hero-video.mp4" type="video/mp4" />
+          {/* Fallback to image if video doesn't load */}
+          <img src={heroImage} alt="" className="w-full h-full object-cover" />
+        </video>
+      </motion.div>
+
+      {/* Warm gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 via-transparent to-transparent z-10" />
+
+      <motion.div style={{ opacity }} className="relative z-20 text-center px-6 max-w-5xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+        >
+          {/* Brand Mark */}
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+            className="mb-8"
+          >
+            <Disc3 className="h-16 w-16 text-primary mx-auto mb-4 animate-pulse-slow" />
+          </motion.div>
+
+          {/* Main Headline */}
+          <h1 className="text-7xl md:text-9xl font-bold tracking-wider mb-6 text-shadow-cinematic">
+            ANTHEM
+          </h1>
+
+          <p className="text-xl md:text-2xl text-white/60 mb-4 tracking-wide font-light">
+            Every memory deserves one.
+          </p>
+
+          <div className="cinematic-divider" />
+
+          <p className="text-lg text-white/50 max-w-xl mx-auto mb-12" style={{ fontFamily: 'DM Sans' }}>
+            Turn your moments into hyper-personalized songs you'll actually listen to again.
+            The inside jokes. The people. The places. Locked in forever.
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link to="/auth">
+              <button className="anthem-button text-lg group">
+                <span className="flex items-center gap-2">
+                  Create Your First Anthem
+                  <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                </span>
+              </button>
+            </Link>
+          </div>
+        </motion.div>
+      </motion.div>
+
+      {/* Scroll indicator */}
+      <motion.div
+        style={{ opacity }}
+        className="absolute bottom-12 left-1/2 -translate-x-1/2 text-white/30"
+        animate={{ y: [0, 8, 0] }}
+        transition={{ duration: 2, repeat: Infinity }}
+      >
+        <div className="flex flex-col items-center gap-3">
+          <span className="text-xs uppercase tracking-[0.3em]" style={{ fontFamily: 'DM Sans' }}>The Story</span>
+          <div className="w-px h-12 bg-gradient-to-b from-white/30 to-transparent" />
+        </div>
+      </motion.div>
+    </section>
+  );
+};
+
+// Origin Story Section - The heart of Anthem
+const OriginStory = () => {
+  const containerRef = useRef(null);
+  const isInView = useInView(containerRef, { once: true, margin: "-100px" });
+
+  const paragraphs = [
+    {
+      text: "It started with a road trip.",
+      highlight: false,
+      delay: 0
+    },
+    {
+      text: "Three friends. Austin, Texas. Tesla's new robotaxis had just launched, and we had to see it for ourselves.",
+      highlight: false,
+      delay: 0.2
+    },
+    {
+      text: "Then down to Starbase in Boca Chica to watch rockets being built. A once-in-a-lifetime trip.",
+      highlight: false,
+      delay: 0.4
+    },
+    {
+      text: "Every night, we'd recap the day. The weird stuff. The funny stuff. The moments that made us laugh until we couldn't breathe.",
+      highlight: false,
+      delay: 0.6
+    },
+    {
+      text: "And then we figured out how to bottle it.",
+      highlight: true,
+      delay: 0.8
+    },
+    {
+      text: "We turned those stories into songs. Using AI. Our names in the lyrics. Our inside jokes in the verses. The exact details of what happened.",
+      highlight: false,
+      delay: 1.0
+    },
+    {
+      text: "Months later, we still listen to them.",
+      highlight: true,
+      delay: 1.2
+    },
+    {
+      text: "Not because they're perfect. Because they're ours. They bring back exactly how we felt. Every time.",
+      highlight: false,
+      delay: 1.4
+    }
+  ];
+
+  return (
+    <section className="py-32 md:py-48 relative" ref={containerRef}>
+      <div className="max-w-3xl mx-auto px-6">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ duration: 1 }}
+          className="mb-16"
+        >
+          <Quote className="h-12 w-12 text-primary/30 mb-8" />
+        </motion.div>
+
+        <div className="space-y-8">
+          {paragraphs.map((para, i) => (
+            <motion.p
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: para.delay, duration: 0.8 }}
+              className={`story-text ${para.highlight ? 'text-primary text-2xl md:text-3xl font-medium' : ''}`}
+            >
+              {para.text}
+            </motion.p>
+          ))}
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ delay: 1.6, duration: 1 }}
+          className="mt-16"
+        >
+          <div className="cinematic-divider" />
+          <p className="text-center text-white/40 text-sm uppercase tracking-[0.2em]" style={{ fontFamily: 'DM Sans' }}>
+            That's why we built Anthem
+          </p>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
+// What Makes It Different
+const WhatMakesItDifferent = () => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  const features = [
+    {
+      title: "Hyper-Specific",
+      description: "Not generic travel music. Songs with your names, your inside jokes, the exact details of what happened."
+    },
+    {
+      title: "Actually Revisitable",
+      description: "Songs you'll play months later because they instantly transport you back to that moment."
+    },
+    {
+      title: "Charmingly Imperfect",
+      description: "The AI quirks become part of the memory. That weird lyric? Now it's an inside joke too."
+    }
+  ];
+
+  return (
+    <section className="py-32 bg-secondary/30 relative overflow-hidden" ref={ref}>
+      {/* Warm glow */}
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 blur-[150px] rounded-full" />
+
+      <div className="max-w-5xl mx-auto px-6 relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-20"
+        >
+          <h2 className="text-5xl md:text-6xl font-bold tracking-wider mb-6">
+            NOT JUST <span className="text-gradient-gold">MUSIC</span>
+          </h2>
+          <p className="text-xl text-white/50 max-w-2xl mx-auto" style={{ fontFamily: 'DM Sans' }}>
+            Emotional time capsules you can listen to.
+          </p>
+        </motion.div>
+
+        <div className="grid md:grid-cols-3 gap-8">
+          {features.map((feature, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 30 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: 0.2 + i * 0.15, duration: 0.8 }}
+              className="premium-card p-8 text-center"
+            >
+              <h3 className="text-2xl font-bold tracking-wide mb-4" style={{ fontFamily: 'Bebas Neue' }}>
+                {feature.title}
+              </h3>
+              <p className="text-white/60" style={{ fontFamily: 'DM Sans' }}>
+                {feature.description}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// Use Cases Section
+const UseCases = () => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  const cases = [
+    { emoji: "🚗", title: "Road Trips", desc: "Every stop, every detour, every roadside memory" },
+    { emoji: "🎉", title: "Celebrations", desc: "Bachelor parties, reunions, milestone birthdays" },
+    { emoji: "✈️", title: "Adventures", desc: "That trip you'll never forget (and now never will)" },
+    { emoji: "👨‍👩‍👧‍👦", title: "Family Trips", desc: "Annual traditions, vacations, moments with the people who matter" },
+  ];
+
+  return (
+    <section className="py-32 relative" ref={ref}>
+      <div className="max-w-5xl mx-auto px-6">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-5xl md:text-6xl font-bold tracking-wider mb-6">
+            FOR <span className="text-gradient-gold">ANY MOMENT</span>
+          </h2>
+          <p className="text-xl text-white/50" style={{ fontFamily: 'DM Sans' }}>
+            If it's worth remembering, it's worth an anthem.
+          </p>
+        </motion.div>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {cases.map((c, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={isInView ? { opacity: 1, scale: 1 } : {}}
+              transition={{ delay: 0.1 + i * 0.1, duration: 0.6 }}
+              className="glass-panel rounded-xl p-6 text-center hover:bg-white/5 transition-colors group cursor-default"
+            >
+              <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">{c.emoji}</div>
+              <h3 className="text-xl font-bold tracking-wide mb-2">{c.title}</h3>
+              <p className="text-sm text-white/50" style={{ fontFamily: 'DM Sans' }}>{c.desc}</p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// How It Works
+const HowItWorks = () => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  const steps = [
+    { num: "01", title: "Tell Your Story", desc: "The place, the people, what happened. The more specific, the better." },
+    { num: "02", title: "Pick Your Sound", desc: "Rock anthem? Acoustic ballad? 80s synth? You choose the vibe." },
+    { num: "03", title: "Get Your Anthem", desc: "A full song with your details baked in. Ready to play forever." },
+  ];
+
+  return (
+    <section className="py-32 bg-secondary/30 relative" ref={ref}>
+      <div className="max-w-4xl mx-auto px-6">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-20"
+        >
+          <h2 className="text-5xl md:text-6xl font-bold tracking-wider mb-6">
+            HOW IT <span className="text-gradient-gold">WORKS</span>
+          </h2>
+        </motion.div>
+
+        <div className="space-y-12">
+          {steps.map((step, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, x: i % 2 === 0 ? -30 : 30 }}
+              animate={isInView ? { opacity: 1, x: 0 } : {}}
+              transition={{ delay: 0.2 + i * 0.2, duration: 0.8 }}
+              className="flex items-start gap-8"
+            >
+              <div className="text-6xl md:text-7xl font-bold text-primary/20" style={{ fontFamily: 'Bebas Neue' }}>
+                {step.num}
+              </div>
+              <div className="pt-2">
+                <h3 className="text-2xl md:text-3xl font-bold tracking-wide mb-2">{step.title}</h3>
+                <p className="text-lg text-white/60" style={{ fontFamily: 'DM Sans' }}>{step.desc}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// Final CTA
+const FinalCTA = () => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  return (
+    <section className="py-32 md:py-48 relative overflow-hidden" ref={ref}>
+      {/* Warm glow background */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 blur-[200px] rounded-full" />
+
+      <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={isInView ? { opacity: 1, scale: 1 } : {}}
+          transition={{ duration: 1 }}
+        >
+          <h2 className="text-6xl md:text-8xl font-bold tracking-wider mb-8">
+            YOUR FIRST <span className="text-gradient-gold">ANTHEM</span>
+            <br />IS FREE
+          </h2>
+
+          <p className="text-xl text-white/50 mb-12 max-w-xl mx-auto" style={{ fontFamily: 'DM Sans' }}>
+            No credit card. No catch. Just a song that's actually about your life.
+          </p>
+
+          <Link to="/auth">
+            <button className="anthem-button text-xl px-12 py-5 group">
+              <span className="flex items-center gap-3">
+                Start Creating
+                <ArrowRight className="h-6 w-6 group-hover:translate-x-1 transition-transform" />
+              </span>
+            </button>
+          </Link>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
+// Footer
+const Footer = () => (
+  <footer className="py-12 border-t border-white/5">
+    <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
+      <div className="flex items-center gap-2">
+        <Disc3 className="h-5 w-5 text-primary" />
+        <span className="text-lg font-bold tracking-wider">ANTHEM</span>
+      </div>
+      <p className="text-sm text-white/40" style={{ fontFamily: 'DM Sans' }}>
+        Every memory deserves one.
+      </p>
     </div>
-    <h3 className="text-2xl font-bold mb-3 text-white">{title}</h3>
-    <p className="text-muted-foreground leading-relaxed">
-      {desc}
-    </p>
-  </motion.div>
+  </footer>
 );
 
-const StepCard = ({ number, title, active = false }: { number: string, title: string, active?: boolean }) => (
-  <div className={`flex items-center gap-4 p-4 rounded-xl transition-all duration-300 ${active ? 'bg-white/5 border border-white/10' : 'opacity-50'}`}>
-    <div className={`text-3xl font-bold font-display ${active ? 'text-primary' : 'text-white/20'}`}>
-      {number}
-    </div>
-    <div className={`text-lg font-medium ${active ? 'text-white' : 'text-white/60'}`}>
-      {title}
-    </div>
-  </div>
-);
-
+// Main Index Component
 const Index = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const { generateSong } = useSongs();
+  const { createTrip } = useTrips();
+  const { balance, consumeCredits } = useCredits();
   const [showStopForm, setShowStopForm] = useState(false);
   const [generatingAudio, setGeneratingAudio] = useState(false);
+  const [generatingData, setGeneratingData] = useState<{ stopName: string; genre: string } | null>(null);
 
   const handleStopSubmit = async (data: {
     stopName: string;
     people: string;
     stories: string;
     genre: string;
+    customStyle?: string;
   }) => {
     if (!user) {
       navigate('/auth');
       return;
     }
 
-    setGeneratingAudio(true);
-    try {
-      const { supabase } = await import('@/integrations/supabase/client');
-      // ... same logic as before ...
-      // Keeping the core logic intact as requested, just simulating the styling
-      const { data: song, error } = await supabase.from('songs').insert([{
-        title: `${data.stopName} Memory`,
-        stop_name: data.stopName,
-        people: data.people,
-        stories: data.stories,
-        genre: data.genre,
-        prompt: `A ${data.genre} song about ${data.stories} at ${data.stopName}${data.people ? ` with ${data.people}` : ''}`,
-        audio_url: 'https://gicplztxvichoksdivlu.supabase.co/storage/v1/object/public/audio-files/Corpus%20Christi.wav',
-        user_id: user.id
-      }]).select().single();
+    if (!balance || balance.available_credits < 1) {
+      toast({
+        title: "Not Enough Credits",
+        description: "You need at least 1 credit to generate a song. Get more in settings.",
+        variant: "destructive"
+      });
+      return;
+    }
 
-      if (error) throw error;
-      toast({ title: "Song Created!", description: "Check your dashboard!" });
-      navigate('/dashboard');
+    setGeneratingAudio(true);
+    setGeneratingData({ stopName: data.stopName, genre: data.genre });
+
+    try {
+      const autoTripTitle = `${data.stopName} Adventures`;
+      const newTrip = await createTrip({
+        title: autoTripTitle,
+        description: `Memory album - started in ${data.stopName}`,
+        stops: [{
+          name: data.stopName,
+          description: data.stories,
+          people: data.people
+        }]
+      });
+
+      await generateSong({
+        title: `${data.stopName} Anthem`,
+        stop_name: data.stopName,
+        people: data.people || '',
+        stories: data.stories || '',
+        genre: data.genre,
+        custom_style: data.customStyle,
+        prompt: `A ${data.genre} song about ${data.stories} at ${data.stopName}${data.people ? ` with ${data.people}` : ''}`,
+        trip_id: newTrip.id,
+        user_id: user.id
+      });
+
+      await consumeCredits(1, `Anthem created for ${data.stopName}`);
+
+      toast({ title: "Your Anthem is Being Created!", description: "Check your album in a moment." });
+      navigate(`/trip/${newTrip.id}`);
     } catch (error) {
       console.error(error);
-      toast({ title: "Error", description: "Failed to create song", variant: "destructive" });
+      toast({ title: "Error", description: "Failed to create anthem. Please try again.", variant: "destructive" });
     } finally {
       setGeneratingAudio(false);
+      setGeneratingData(null);
       setShowStopForm(false);
     }
   };
 
-  // Logged In View
-  if (user) {
-    if (showStopForm) {
-      return (
-        <div className="min-h-screen bg-background">
-          <Nav user={user} handleSignOut={signOut} />
-          <div className="max-w-2xl mx-auto pt-32 px-6">
-            <Button variant="ghost" className="mb-6 hover:text-white" onClick={() => setShowStopForm(false)}>
-              ← Back to Home
-            </Button>
-            <div className="premium-card p-8">
-              <TripStopForm onSubmit={handleStopSubmit} loading={generatingAudio} />
-            </div>
-          </div>
-        </div>
-      );
-    }
-
+  // Logged In: Create Form View
+  if (user && showStopForm) {
     return (
       <div className="min-h-screen bg-background">
         <Nav user={user} handleSignOut={signOut} />
-        <AnimatedBackground />
+        <SongGenerationLoader
+          isVisible={generatingAudio}
+          songName={generatingData?.stopName}
+          genre={generatingData?.genre}
+        />
+        <div className="max-w-2xl mx-auto pt-32 px-6">
+          <Button variant="ghost" className="mb-6 hover:text-white" onClick={() => setShowStopForm(false)}>
+            ← Back
+          </Button>
+          <div className="premium-card p-8">
+            <h2 className="text-3xl font-bold tracking-wider mb-6">CREATE YOUR ANTHEM</h2>
+            <TripStopForm onSubmit={handleStopSubmit} loading={generatingAudio} />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-        <main className="container mx-auto px-6 pt-32 pb-20">
+  // Logged In: Dashboard-ish Home
+  if (user) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Nav user={user} handleSignOut={signOut} />
+
+        <main className="max-w-4xl mx-auto px-6 pt-32 pb-20">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-center mb-16"
           >
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Welcome Back! <span className="text-primary">Ready to create?</span></h1>
-            <p className="text-xl text-muted-foreground">Continue building your road trip soundtrack.</p>
+            <h1 className="text-5xl md:text-6xl font-bold tracking-wider mb-4">
+              WELCOME BACK
+            </h1>
+            <p className="text-xl text-white/50" style={{ fontFamily: 'DM Sans' }}>
+              Ready to lock in another memory?
+            </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <div
+          <div className="grid md:grid-cols-2 gap-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
               onClick={() => setShowStopForm(true)}
-              className="group cursor-pointer premium-card p-10 flex flex-col items-center text-center hover:bg-white/5 transition-all"
+              className="premium-card p-10 flex flex-col items-center text-center cursor-pointer group"
             >
-              <div className="w-20 h-20 rounded-full bg-gradient-brand flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <Plus className="h-10 w-10 text-white" />
+              <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-primary/30 transition-all">
+                <Plus className="h-10 w-10 text-primary" />
               </div>
-              <h3 className="text-2xl font-bold mb-2">Create New Song</h3>
-              <p className="text-muted-foreground">Capture a new memory from your recent stop.</p>
-            </div>
+              <h3 className="text-2xl font-bold tracking-wide mb-2">Create New Anthem</h3>
+              <p className="text-white/50" style={{ fontFamily: 'DM Sans' }}>
+                Capture a new memory in song
+              </p>
+            </motion.div>
 
-            <div className="group cursor-pointer premium-card p-10 flex flex-col items-center text-center opacity-60 hover:opacity-100 transition-all">
-              <div className="w-20 h-20 rounded-full bg-white/10 flex items-center justify-center mb-6">
-                <MapPin className="h-10 w-10 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold mb-2">My Trips</h3>
-              <p className="text-muted-foreground">View your past journeys and albums.</p>
-            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <Link to="/dashboard" className="block h-full">
+                <div className="premium-card p-10 flex flex-col items-center text-center h-full group">
+                  <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mb-6 group-hover:bg-white/10 transition-colors">
+                    <Headphones className="h-10 w-10 text-white/70" />
+                  </div>
+                  <h3 className="text-2xl font-bold tracking-wide mb-2">My Anthems</h3>
+                  <p className="text-white/50" style={{ fontFamily: 'DM Sans' }}>
+                    Listen to your memory collection
+                  </p>
+                </div>
+              </Link>
+            </motion.div>
           </div>
         </main>
       </div>
@@ -285,157 +610,16 @@ const Index = () => {
 
   // Public Landing Page
   return (
-    <div className="min-h-screen bg-background selection:bg-primary/30">
-      <Nav user={null} handleSignOut={() => { }} />
-      <AnimatedBackground />
-      <FloatingMusicNotes />
+    <div className="min-h-screen bg-background">
+      <Nav user={null} handleSignOut={() => {}} />
 
       <Hero />
-
-      {/* How It Works Section */}
-      <section className="py-32 relative overflow-hidden">
-        <div className="container mx-auto px-6">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-5xl font-bold mb-8 leading-tight">
-                Your Memories <br />
-                <span className="text-gradient-gold">Reimagined</span>
-              </h2>
-              <div className="space-y-6">
-                <StepCard number="01" title="Share a memory or stop" active />
-                <StepCard number="02" title="Pick a genre & vibe" active />
-                <StepCard number="03" title="Get a custom song instantly" active />
-              </div>
-              <div className="mt-12">
-                <Link to="/auth">
-                  <Button size="lg" className="shine-button">
-                    Start Your Journey
-                  </Button>
-                </Link>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-              className="relative"
-            >
-              <div className="absolute inset-0 bg-primary/20 blur-[100px] rounded-full" />
-              <div className="relative glass-panel rounded-3xl p-2 border-white/10 rotate-3 hover:rotate-0 transition-transform duration-500">
-                <img src={campfireImage} alt="App Interface" className="rounded-2xl w-full object-cover shadow-2xl" />
-
-                {/* Floating Player UI Element */}
-                <div className="absolute -bottom-8 -left-8 bg-[#1a1a1a] p-4 rounded-xl border border-white/10 shadow-xl flex items-center gap-4 animate-float max-w-xs">
-                  <div className="w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center text-primary">
-                    <Radio className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <div className="text-sm font-medium text-white">Grand Canyon Sunset</div>
-                    <div className="text-xs text-white/50">Indie Folk • Generated just now</div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Music Samples / Features */}
-      <section className="py-32 bg-secondary/30 relative">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">Listen to the <span className="text-primary italic">Adventure</span></h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              From desert rock anthems to coastal jazz, hear what AI-powered travel memories sound like.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            <FeatureCard
-              icon={MapPin}
-              title="Smart Locations"
-              desc="We automatically tag your stops and pull in local vibes to make the lyrics authentic to where you are."
-              delay={0.1}
-            />
-            <FeatureCard
-              icon={Sparkles}
-              title="AI Composition"
-              desc="Our advanced music engine composes unique melodies and lyrics that match the emotions of your story."
-              delay={0.2}
-            />
-            <FeatureCard
-              icon={Headphones}
-              title="Studio Quality"
-              desc="Get professionally mixed and mastered audio files ready for your Spotify or Apple Music road trip playlist."
-              delay={0.3}
-            />
-          </div>
-
-          <div className="mt-20 max-w-3xl mx-auto space-y-4">
-            {/* Reusing existing simplified song player UI but with new CSS */}
-            <div className="glass-panel rounded-2xl p-6 border border-white/5">
-              <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-                <Star className="text-primary h-5 w-5 fill-primary" />
-                Featured Creations
-              </h3>
-              <div className="space-y-4">
-                {[
-                  { title: "Midnight in Marfa", genre: "Desert Rock", city: "Marfa, TX" },
-                  { title: "Foggy Coastline", genre: "Acoustic Folk", city: "Big Sur, CA" },
-                  { title: "Neon Lights", genre: "Synthwave", city: "Las Vegas, NV" }
-                ].map((track, i) => (
-                  <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors group cursor-pointer">
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                        <Play className="h-5 w-5 ml-1" />
-                      </div>
-                      <div>
-                        <div className="font-bold text-white">{track.title}</div>
-                        <div className="text-sm text-white/50">{track.genre} • {track.city}</div>
-                      </div>
-                    </div>
-                    <div className="text-white/30 text-sm font-mono">2:45</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Final CTA */}
-      <section className="py-32 relative overflow-hidden">
-        <div className="container mx-auto px-6 text-center relative z-10">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="max-w-4xl mx-auto"
-          >
-            <h2 className="text-5xl md:text-7xl font-bold mb-8">
-              Start Your <span className="text-gradient-gold">Road Trip</span> Album
-            </h2>
-            <p className="text-2xl text-muted-foreground mb-12">
-              Your first song is FREE. No credit card required.
-            </p>
-            <Link to="/auth">
-              <button className="shine-button text-xl px-12 py-6">
-                Create My First Song
-              </button>
-            </Link>
-          </motion.div>
-        </div>
-
-        {/* Decorative background glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 blur-[150px] rounded-full -z-10" />
-      </section>
+      <OriginStory />
+      <WhatMakesItDifferent />
+      <UseCases />
+      <HowItWorks />
+      <FinalCTA />
+      <Footer />
 
       <PWAInstallPrompt />
     </div>

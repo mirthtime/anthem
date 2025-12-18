@@ -109,7 +109,7 @@ export const useReferral = () => {
     if (!link) return;
 
     const text = encodeURIComponent(
-      `🎵 I've been creating custom AI songs for my road trips with TripTunes!\n\nUse my link to get a FREE song: ${link}\n\n#TripTunesAI #RoadTrip`
+      `I've been turning my memories into personalized songs with Anthem!\n\nUse my link to get a FREE anthem: ${link}\n\n#Anthem #memories`
     );
     window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
   };

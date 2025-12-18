@@ -78,8 +78,8 @@ export const useCredits = () => {
 
         // Show welcome toast
         toast({
-          title: "🎉 Welcome to TripTunes!",
-          description: "You've got 1 FREE credit to create your first song!",
+          title: "Welcome to Anthem!",
+          description: "You've got 1 FREE credit to create your first anthem.",
         });
       }
     } catch (error) {
@@ -185,6 +185,30 @@ export const useCredits = () => {
       Promise.all([fetchBalance(), fetchTransactions()]).finally(() => {
         setLoading(false);
       });
+
+      // Subscribe to real-time changes on user_credits table
+      const channel = supabase
+        .channel('user_credits_changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'user_credits',
+            filter: `user_id=eq.${user.id}`
+          },
+          (payload) => {
+            console.log('Credits updated:', payload);
+            if (payload.new) {
+              setBalance(payload.new as CreditBalance);
+            }
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
     } else {
       setLoading(false);
     }

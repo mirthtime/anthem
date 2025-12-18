@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { MapPin, Music, Calendar, Users, Play, ExternalLink, Download } from 'lucide-react';
+import { MapPin, Disc3, Calendar, Users, Play, ExternalLink, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -159,8 +159,8 @@ const SharedTripAlbum = () => {
            {/* Trip Info */}
            <div className="text-center space-y-4">
              <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-               <Music className="h-4 w-4" />
-               <span>Shared from TripTunes AI</span>
+               <Disc3 className="h-4 w-4 text-primary" />
+               <span className="tracking-wider">Shared from ANTHEM</span>
              </div>
              
              <div className="flex flex-col items-center space-y-4">
@@ -318,15 +318,15 @@ const SharedTripAlbum = () => {
         >
           <p className="text-muted-foreground">
             Created with{' '}
-            <a 
-              href="https://triptunes.ai" 
-              className="text-primary hover:underline font-medium"
+            <a
+              href="/"
+              className="text-primary hover:underline font-medium tracking-wider"
               target="_blank"
               rel="noopener noreferrer"
             >
-              TripTunes AI
+              ANTHEM
             </a>
-            {' '}• Generate your own road trip soundtrack
+            {' '}• Turn your memories into music
           </p>
         </motion.div>
       </div>

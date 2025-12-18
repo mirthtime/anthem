@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Music, MapPin, Users, Calendar, Play, ExternalLink, Download, Copy, Sparkles, ChevronRight } from 'lucide-react';
+import { Disc3, MapPin, Users, Calendar, Play, ExternalLink, Download, Copy, Sparkles, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -106,7 +106,7 @@ const SharedSong = () => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Card className="max-w-md mx-auto">
           <CardContent className="text-center p-8">
-            <Music className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+            <Disc3 className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
             <h2 className="text-xl font-semibold mb-2">Song Not Found</h2>
             <p className="text-muted-foreground">
               This song may be private or no longer available.
@@ -128,8 +128,8 @@ const SharedSong = () => {
           {/* Header */}
           <div className="text-center space-y-4">
             <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-              <Music className="h-4 w-4" />
-              <span>Shared from TripTunes AI</span>
+              <Disc3 className="h-4 w-4 text-primary" />
+              <span className="tracking-wider">Shared from ANTHEM</span>
             </div>
             
             <div className="flex flex-col items-center space-y-4">
@@ -263,20 +263,20 @@ const SharedSong = () => {
                     <span className="text-sm font-medium text-primary">Your turn!</span>
                   </div>
 
-                  <h3 className="text-2xl font-bold text-foreground">
-                    Love this song? Create your own!
+                  <h3 className="text-2xl font-bold text-foreground tracking-wide">
+                    LOVE THIS? CREATE YOUR OWN.
                   </h3>
 
                   <p className="text-muted-foreground max-w-md mx-auto">
-                    Turn your road trip memories into custom AI-generated songs.
-                    Your first song is <span className="text-primary font-semibold">completely FREE</span>.
+                    Turn your memories into hyper-personalized songs you'll actually listen to again.
+                    Your first anthem is <span className="text-primary font-semibold">completely FREE</span>.
                   </p>
 
                   <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
                     <Link to="/auth">
                       <Button size="lg" className="gap-2 shadow-lg">
-                        <Music className="h-5 w-5" />
-                        Create My Free Song
+                        <Disc3 className="h-5 w-5" />
+                        Create My First Anthem
                         <ChevronRight className="h-4 w-4" />
                       </Button>
                     </Link>
@@ -301,9 +301,9 @@ const SharedSong = () => {
               Created with{' '}
               <Link
                 to="/"
-                className="text-primary hover:underline font-medium"
+                className="text-primary hover:underline font-medium tracking-wider"
               >
-                TripTunes AI
+                ANTHEM
               </Link>
             </p>
           </div>

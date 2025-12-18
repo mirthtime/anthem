@@ -200,23 +200,23 @@ Make it authentic, memorable, and emotionally resonant.`;
 
     console.log('Received audio blob, size:', audioBlob.size, 'bytes');
     const fileName = `${songId}.mp3`;
-    
+
     const { data: uploadData, error: uploadError } = await supabase
       .storage
-      .from('songs')
+      .from('audio-files')
       .upload(fileName, audioBlob, {
         contentType: 'audio/mpeg',
         upsert: true,
       });
-    
+
     if (uploadError) {
       throw uploadError;
     }
-    
+
     // Get public URL for the uploaded file
     const { data: { publicUrl } } = supabase
       .storage
-      .from('songs')
+      .from('audio-files')
       .getPublicUrl(fileName);
     
     // Update the song record with the audio URL

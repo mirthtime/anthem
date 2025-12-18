@@ -1,7 +1,7 @@
 
 import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import { Music } from 'lucide-react';
+import { Disc3 } from 'lucide-react';
 
 interface SharedContentLayoutProps {
   children: ReactNode;
@@ -19,8 +19,8 @@ export const SharedContentLayout = ({ children }: SharedContentLayoutProps) => {
           {/* Header */}
           <div className="text-center">
             <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mb-6">
-              <Music className="h-4 w-4" />
-              <span>Shared from TripTunes AI</span>
+              <Disc3 className="h-4 w-4 text-primary" />
+              <span className="tracking-wider">Shared from ANTHEM</span>
             </div>
           </div>
 
@@ -30,15 +30,15 @@ export const SharedContentLayout = ({ children }: SharedContentLayoutProps) => {
           <div className="text-center border-t border-border pt-8 mt-16">
             <p className="text-muted-foreground">
               Created with{' '}
-              <a 
-                href="https://triptunes.ai" 
-                className="text-primary hover:underline font-medium"
+              <a
+                href="/"
+                className="text-primary hover:underline font-medium tracking-wider"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                TripTunes AI
+                ANTHEM
               </a>
-              {' '}• Generate your own road trip soundtrack
+              {' '}• Turn your memories into music
             </p>
           </div>
         </motion.div>

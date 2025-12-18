@@ -14,7 +14,8 @@ import {
   Clock,
   Waves,
   Share2,
-  Download
+  Download,
+  AlertCircle
 } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { useArtwork } from '@/hooks/useArtwork';
@@ -203,12 +204,26 @@ export const SongCard = ({
                   <p className="text-muted-foreground text-base sm:text-lg font-medium mb-3">
                     {song.stop_name}
                   </p>
-                  <Badge
-                    variant="secondary"
-                    className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 transition-colors duration-200"
-                  >
-                    {song.genre}
-                  </Badge>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Badge
+                      variant="secondary"
+                      className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 transition-colors duration-200"
+                    >
+                      {song.genre}
+                    </Badge>
+                    {song.status === 'generating' && (
+                      <Badge variant="secondary" className="bg-amber-500/10 text-amber-500 border-amber-500/20">
+                        <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                        Generating
+                      </Badge>
+                    )}
+                    {song.status === 'failed' && (
+                      <Badge variant="secondary" className="bg-destructive/10 text-destructive border-destructive/20">
+                        <AlertCircle className="h-3 w-3 mr-1" />
+                        Failed
+                      </Badge>
+                    )}
+                  </div>
                 </div>
 
                 {/* Action Buttons */}
@@ -269,6 +284,38 @@ export const SongCard = ({
             </div>
           </div>
 
+          {/* Generation Status Banner */}
+          {song.status === 'generating' && (
+            <div className="mb-6 p-4 rounded-xl bg-primary/10 border border-primary/30 flex items-center gap-3">
+              <Loader2 className="h-5 w-5 text-primary animate-spin" />
+              <div>
+                <p className="font-medium text-primary">Creating your song...</p>
+                <p className="text-sm text-muted-foreground">This usually takes 1-2 minutes. Feel free to wait or come back later.</p>
+              </div>
+            </div>
+          )}
+
+          {song.status === 'failed' && (
+            <div className="mb-6 p-4 rounded-xl bg-destructive/10 border border-destructive/30 flex items-center gap-3">
+              <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0" />
+              <div className="flex-1">
+                <p className="font-medium text-destructive">Generation failed</p>
+                <p className="text-sm text-muted-foreground">{song.error_message || 'Something went wrong. Try regenerating the song.'}</p>
+              </div>
+              {onRegenerate && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => onRegenerate(song)}
+                  className="gap-2 border-destructive/50 hover:border-destructive hover:bg-destructive/10 text-destructive"
+                >
+                  <RotateCcw className="h-4 w-4" />
+                  Retry
+                </Button>
+              )}
+            </div>
+          )}
+
           {/* Story and People Section */}
           {(song.stories || song.people) && (
             <div className="grid grid-cols-1 gap-4 sm:gap-6 mb-6 sm:mb-8">
@@ -298,8 +345,8 @@ export const SongCard = ({
             </div>
           )}
 
-          {/* Audio Player */}
-          {song.audio_url && (
+          {/* Audio Player - only show for completed songs */}
+          {song.audio_url && song.status !== 'generating' && song.status !== 'failed' && (
             <div className="space-y-4">
               {/* Waveform Visualization Placeholder */}
               <div className="relative h-12 sm:h-16 bg-gradient-to-r from-muted/20 via-muted/40 to-muted/20 rounded-lg overflow-hidden touch-manipulation">
