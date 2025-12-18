@@ -211,6 +211,19 @@ export const SongCard = ({
                     >
                       {song.genre}
                     </Badge>
+                    {song.author && (
+                      <Badge
+                        variant="secondary"
+                        className="gap-1.5 border-border/50 hover:bg-muted/80 transition-colors duration-200"
+                        style={{
+                          backgroundColor: song.author.color + '15',
+                          borderColor: song.author.color + '30',
+                        }}
+                      >
+                        <span className="text-sm">{song.author.avatar}</span>
+                        <span style={{ color: song.author.color }}>{song.author.name}</span>
+                      </Badge>
+                    )}
                     {song.status === 'generating' && (
                       <Badge variant="secondary" className="bg-amber-500/10 text-amber-500 border-amber-500/20">
                         <Loader2 className="h-3 w-3 mr-1 animate-spin" />

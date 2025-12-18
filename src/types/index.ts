@@ -40,12 +40,13 @@ export interface Song {
   status?: 'generating' | 'completed' | 'failed';
   error_message?: string;
   duration?: number;
+  author?: Traveler;
   created_at: string;
 }
 
 export const GENRES = [
   'Rock',
-  'Country', 
+  'Country',
   'Pop',
   'Hip-Hop',
   'Electronic',
@@ -57,14 +58,10 @@ export const GENRES = [
 ] as const;
 
 export const STYLE_SUGGESTIONS = [
-  // Popular combinations
   'acoustic guitar', 'electric guitar', 'piano ballad', 'upbeat drums',
-  // Genres/Subgenres  
   'folk rock', 'country pop', 'indie rock', 'blues rock', 'jazz fusion',
   'synthwave', 'lo-fi hip hop', 'trap beats', 'acoustic folk',
-  // Instruments
   'harmonica', 'banjo', 'saxophone', 'violin', 'synthesizer', 'bass guitar',
-  // Vibes/Styles
   'nostalgic', 'uplifting', 'melancholic', 'energetic', 'chill vibes',
   'road trip anthem', 'campfire song', 'driving beat', 'sunset mood'
 ] as const;
@@ -90,3 +87,63 @@ export interface CreditTransaction {
   stripe_session_id?: string;
   created_at: string;
 }
+
+// ============================================
+// GAMIFICATION & ROUND-ROBIN TYPES
+// ============================================
+
+export interface Traveler {
+  id: string;
+  name: string;
+  avatar: string;
+  color: string;
+  isCurrentUser?: boolean;
+}
+
+export interface TripDay {
+  date: string;
+  dayNumber: number;
+  storyteller: Traveler;
+  notes: DayNote[];
+  songId?: string;
+  isComplete: boolean;
+  isToday: boolean;
+}
+
+export interface DayNote {
+  id: string;
+  content: string;
+  timestamp: string;
+  location?: string;
+  mood?: 'excited' | 'chill' | 'adventurous' | 'reflective' | 'funny';
+}
+
+export interface ActiveTrip extends Trip {
+  travelers: Traveler[];
+  days: TripDay[];
+  currentDayIndex: number;
+  startDate: string;
+  endDate?: string;
+  isActive: boolean;
+  roundRobinEnabled: boolean;
+}
+
+export const TRAVELER_COLORS = [
+  '#E67E22', // Amber
+  '#3498DB', // Blue
+  '#9B59B6', // Purple
+  '#1ABC9C', // Teal
+  '#E74C3C', // Coral
+  '#2ECC71', // Emerald
+  '#F39C12', // Gold
+  '#E91E63', // Pink
+] as const;
+
+export const TRAVELER_AVATARS = [
+  '🧑‍✈️', '👨‍🎤', '👩‍🎨', '🧑‍🚀', '👨‍💻', '👩‍🔬', '🧑‍🍳', '👨‍🌾',
+  '🦊', '🐻', '🦁', '🐯', '🐨', '🐼', '🦄', '🐸',
+  '🌟', '🔥', '⚡', '🌊', '🎸', '🎺', '🥁', '🎹'
+] as const;
+
+export type TravelerColor = typeof TRAVELER_COLORS[number];
+export type TravelerAvatar = typeof TRAVELER_AVATARS[number];

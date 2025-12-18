@@ -8,7 +8,7 @@ import { useCredits } from '@/hooks/useCredits';
 import { Button } from '@/components/ui/button';
 import { TripStopForm } from '@/components/TripStopForm';
 import { PWAInstallPrompt } from '@/components/PWAInstallPrompt';
-import { Music, MapPin, LogOut, Plus, Play, ArrowRight, Disc3, Headphones, Quote } from 'lucide-react';
+import { Music, MapPin, LogOut, Plus, Play, ArrowRight, Disc3, Headphones, Quote, Users, Mic2, Sparkles, RotateCcw } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import heroImage from '@/assets/hero-road-trip.jpg';
 import { SongGenerationLoader } from '@/components/SongGenerationLoader';
@@ -349,15 +349,183 @@ const UseCases = () => {
   );
 };
 
+// The Game Section - Showcasing Round-Robin Collaborative Experience
+const TheGame = () => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  const travelers = [
+    { name: "Sarah", avatar: "🧑‍✈️", color: "#E67E22", isToday: true },
+    { name: "Mike", avatar: "🎸", color: "#3498DB", isToday: false },
+    { name: "Jess", avatar: "🦊", color: "#9B59B6", isToday: false },
+    { name: "Alex", avatar: "🌟", color: "#1ABC9C", isToday: false },
+  ];
+
+  const gameSteps = [
+    { icon: "📝", title: "Capture", desc: "Today's storyteller logs moments throughout the day" },
+    { icon: "🎵", title: "Create", desc: "At day's end, generate your anthem from the memories" },
+    { icon: "🔄", title: "Pass It On", desc: "Tomorrow, someone else takes the mic" },
+  ];
+
+  return (
+    <section className="py-32 relative overflow-hidden" ref={ref}>
+      {/* Decorative Background */}
+      <div className="absolute top-1/4 right-0 w-96 h-96 bg-primary/5 blur-[150px] rounded-full" />
+      <div className="absolute bottom-1/4 left-0 w-64 h-64 bg-purple-500/5 blur-[100px] rounded-full" />
+
+      <div className="max-w-5xl mx-auto px-6 relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-16"
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/20 border border-primary/30 mb-6">
+            <Users className="h-4 w-4 text-primary" />
+            <span className="text-sm font-medium text-primary">Road Trips Are Better Together</span>
+          </div>
+
+          <h2 className="text-5xl md:text-7xl font-bold tracking-wider mb-6">
+            IT'S A <span className="text-gradient-gold">GAME</span>
+          </h2>
+          <p className="text-xl text-white/50 max-w-2xl mx-auto" style={{ fontFamily: 'DM Sans' }}>
+            Take turns being the day's storyteller. Capture moments. Create anthems.
+            Build your trip's soundtrack together.
+          </p>
+        </motion.div>
+
+        {/* Travelers Visual */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 0.2, duration: 0.8 }}
+          className="flex justify-center items-center gap-4 md:gap-8 mb-16 flex-wrap"
+        >
+          {travelers.map((traveler, i) => (
+            <motion.div
+              key={traveler.name}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={isInView ? { opacity: 1, scale: 1 } : {}}
+              transition={{ delay: 0.3 + i * 0.1, duration: 0.5 }}
+              className={`relative flex flex-col items-center ${traveler.isToday ? 'scale-110' : ''}`}
+            >
+              {/* Today Badge */}
+              {traveler.isToday && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.8 }}
+                  className="absolute -top-8 left-1/2 -translate-x-1/2 flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium"
+                  style={{ backgroundColor: traveler.color + '30', color: traveler.color }}
+                >
+                  <Mic2 className="h-3 w-3" />
+                  TODAY
+                </motion.div>
+              )}
+
+              {/* Avatar */}
+              <div
+                className={`w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center text-3xl md:text-4xl transition-all ${
+                  traveler.isToday
+                    ? 'ring-4 shadow-lg'
+                    : 'opacity-60'
+                }`}
+                style={{
+                  backgroundColor: traveler.color + '30',
+                  ringColor: traveler.isToday ? traveler.color : 'transparent'
+                }}
+              >
+                {traveler.avatar}
+              </div>
+
+              {/* Name */}
+              <span className={`mt-2 text-sm font-medium ${traveler.isToday ? 'text-white' : 'text-white/50'}`}>
+                {traveler.name}
+              </span>
+
+              {/* Connector Arrow */}
+              {i < travelers.length - 1 && (
+                <div className="hidden md:block absolute -right-6 top-1/2 -translate-y-1/2 text-white/20">
+                  →
+                </div>
+              )}
+            </motion.div>
+          ))}
+
+          {/* Loop Back Indicator */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : {}}
+            transition={{ delay: 0.9 }}
+            className="hidden md:flex items-center gap-2 text-white/30 ml-4"
+          >
+            <RotateCcw className="h-5 w-5" />
+            <span className="text-sm">Repeat</span>
+          </motion.div>
+        </motion.div>
+
+        {/* Game Flow */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 0.4, duration: 0.8 }}
+          className="grid md:grid-cols-3 gap-6"
+        >
+          {gameSteps.map((step, i) => (
+            <motion.div
+              key={step.title}
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: 0.5 + i * 0.15, duration: 0.6 }}
+              className="premium-card p-6 text-center relative group"
+            >
+              {/* Step Number */}
+              <div className="absolute top-3 right-3 text-xs font-bold text-primary/30">
+                {String(i + 1).padStart(2, '0')}
+              </div>
+
+              <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">
+                {step.icon}
+              </div>
+              <h3 className="text-xl font-bold tracking-wide mb-2">{step.title}</h3>
+              <p className="text-sm text-white/60" style={{ fontFamily: 'DM Sans' }}>
+                {step.desc}
+              </p>
+
+              {/* Connector */}
+              {i < gameSteps.length - 1 && (
+                <div className="hidden md:block absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-0.5 bg-gradient-to-r from-primary/30 to-transparent" />
+              )}
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Tagline */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ delay: 1, duration: 0.8 }}
+          className="text-center mt-12"
+        >
+          <p className="text-lg text-white/40 italic" style={{ fontFamily: 'DM Sans' }}>
+            "By the end of the trip, you'll have a complete album — written by everyone."
+          </p>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
 // How It Works
 const HowItWorks = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   const steps = [
-    { num: "01", title: "Tell Your Story", desc: "The place, the people, what happened. The more specific, the better." },
-    { num: "02", title: "Pick Your Sound", desc: "Rock anthem? Acoustic ballad? 80s synth? You choose the vibe." },
-    { num: "03", title: "Get Your Anthem", desc: "A full song with your details baked in. Ready to play forever." },
+    { num: "01", title: "Add Your Crew", desc: "Invite friends and family to your trip. Everyone gets a turn." },
+    { num: "02", title: "Capture Moments", desc: "The day's storyteller logs highlights, funny moments, and memories." },
+    { num: "03", title: "Generate Your Anthem", desc: "Turn the day's story into a hyper-personalized song." },
+    { num: "04", title: "Pass the Mic", desc: "Tomorrow, someone else takes over. Repeat until journey's end." },
   ];
 
   return (
@@ -617,6 +785,7 @@ const Index = () => {
       <OriginStory />
       <WhatMakesItDifferent />
       <UseCases />
+      <TheGame />
       <HowItWorks />
       <FinalCTA />
       <Footer />
