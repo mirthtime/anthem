@@ -21,7 +21,7 @@ if (!GEMINI_API_KEY) {
 const API_BASE = 'https://generativelanguage.googleapis.com/v1beta';
 const MODEL = 'gemini-2.0-flash-exp';
 
-const FAVICON_PROMPT = `Generate an app icon: a golden vinyl record disc on a deep charcoal black background. The vinyl should be warm amber gold color. Simple, minimalist, iconic design. Square format. No text.`;
+const FAVICON_PROMPT = `Generate an app icon: a circular golden vinyl record disc on a transparent background. The vinyl should be warm amber gold color (#D4A043). The record should be perfectly circular and centered. Transparent PNG with no background. Simple, minimalist, iconic design. No text. The vinyl grooves should be visible as subtle concentric circles.`;
 
 async function generateFavicon() {
   console.log('Generating Anthem favicon with Gemini 2.0 Flash...');
