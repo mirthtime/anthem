@@ -1,8 +1,8 @@
-# 🎵 TripTunes AI - Road Trip Music Generator
+# 🎵 Anthem - Road Trip Music Generator
 
 Transform your road trip memories into personalized AI-generated songs. Document your journey, capture the moments, and let AI create a unique soundtrack for every stop along the way.
 
-![TripTunes AI](https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=400&fit=crop)
+![Anthem](https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=400&fit=crop)
 
 ## ✨ Features
 

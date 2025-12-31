@@ -608,17 +608,25 @@ const FinalCTA = () => {
 // Footer
 const Footer = () => (
   <footer className="py-12 border-t border-white/5">
-    <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
-      <div className="flex items-center gap-2">
-        <Disc3 className="h-5 w-5 text-primary" />
-        <span className="text-lg font-bold tracking-wider">ANTHEM</span>
+    <div className="max-w-6xl mx-auto px-6">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-6">
+        <div className="flex items-center gap-2">
+          <Disc3 className="h-5 w-5 text-primary" />
+          <span className="text-lg font-bold tracking-wider">ANTHEM</span>
+        </div>
+        <div className="flex items-center gap-6">
+          <Link to="/privacy" className="text-sm text-white/40 hover:text-white/70 transition-colors" style={{ fontFamily: 'DM Sans' }}>Privacy Policy</Link>
+          <Link to="/terms" className="text-sm text-white/40 hover:text-white/70 transition-colors" style={{ fontFamily: 'DM Sans' }}>Terms of Service</Link>
+        </div>
       </div>
-      <p className="text-sm text-white/40" style={{ fontFamily: 'DM Sans' }}>
+      <p className="text-sm text-white/40 text-center" style={{ fontFamily: 'DM Sans' }}>
         Every memory deserves one.
       </p>
     </div>
   </footer>
 );
+
+
 
 // Main Index Component
 const Index = () => {

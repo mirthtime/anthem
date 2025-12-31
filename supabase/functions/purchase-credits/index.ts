@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
@@ -13,13 +12,11 @@ serve(async (req) => {
   }
 
   try {
-    // Initialize Supabase client with service role key
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? ""
     );
 
-    // Get authenticated user
     const authHeader = req.headers.get("Authorization")!;
     const token = authHeader.replace("Bearer ", "");
     const { data } = await supabaseClient.auth.getUser(token);
@@ -31,7 +28,6 @@ serve(async (req) => {
 
     const requestData = await req.json();
     
-    // Validate input
     const validation = validateCreditPurchaseRequest(requestData);
     if (!validation.isValid) {
       return new Response(
@@ -43,19 +39,33 @@ serve(async (req) => {
     const packageType = requestData.packageType;
     const mode = requestData.mode || 'payment';
     
-    // Define credit packages with updated pricing
-    const packages = {
-      starter: { credits: 3, price: 799, name: "Starter Pack" }, // $7.99
-      popular: { credits: 8, price: 1499, name: "Road Warrior" }, // $14.99
-      premium: { credits: 20, price: 2999, name: "Ultimate Pack" }, // $29.99
+    // Define credit packages with Stripe Price IDs
+    const packages: Record<string, { credits: number; priceId: string; name: string; description: string }> = {
+      starter: { 
+        credits: 3, 
+        priceId: "price_1SkQCGKLhNTZopXG1BcfuFCG",
+        name: "Anthem Starter Pack",
+        description: "3 AI song credits for your road trip memories"
+      },
+      popular: { 
+        credits: 8, 
+        priceId: "price_1SkQCGKLhNTZopXGuIwApSqT",
+        name: "Anthem Road Warrior Pack",
+        description: "8 AI song credits - Best value for most trips"
+      },
+      premium: { 
+        credits: 20, 
+        priceId: "price_1SkQCHKLhNTZopXGs4K2nKp6",
+        name: "Anthem Ultimate Pack",
+        description: "20 AI song credits - Maximum savings"
+      },
     };
 
-    const selectedPackage = packages[packageType as keyof typeof packages];
+    const selectedPackage = packages[packageType];
     if (!selectedPackage) {
       throw new Error("Invalid package type");
     }
 
-    // Check if Stripe secret key is available
     const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeSecretKey) {
       return new Response(JSON.stringify({ 
@@ -67,64 +77,45 @@ serve(async (req) => {
       });
     }
 
-    // Initialize Stripe
     const stripe = new Stripe(stripeSecretKey, {
       apiVersion: "2023-10-16",
     });
 
-    // Check for existing Stripe customer
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
     let customerId;
     if (customers.data.length > 0) {
       customerId = customers.data[0].id;
     }
 
+    const origin = req.headers.get("origin") || "https://anthem.fm";
+    
     const sessionConfig: any = {
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
       line_items: [
         {
-          price_data: {
-            currency: "usd",
-            product_data: { 
-              name: selectedPackage.name,
-              description: `${selectedPackage.credits} song generation credits`
-            },
-            unit_amount: selectedPackage.price,
-          },
+          price: selectedPackage.priceId,
           quantity: 1,
         },
       ],
       mode: "payment",
-      payment_method_types: ["card"],
       metadata: {
         user_id: user.id,
         credits: selectedPackage.credits.toString(),
-        packageType: packageType // Changed from package_type to packageType
+        packageType: packageType
       }
     };
 
-    // Enable Apple Pay and Google Pay on mobile
-    const userAgent = req.headers.get("user-agent") || "";
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(userAgent);
-    
-    if (isMobile) {
-      sessionConfig.payment_method_types.push("apple_pay", "google_pay");
-    }
-
-    // Configure for embedded mode or redirect mode
     if (mode === 'embedded') {
       sessionConfig.ui_mode = 'embedded';
-      sessionConfig.return_url = `${req.headers.get("origin")}/settings?purchase=success`;
+      sessionConfig.return_url = origin + "/settings?purchase=success";
     } else {
-      sessionConfig.success_url = `${req.headers.get("origin")}/settings?purchase=success`;
-      sessionConfig.cancel_url = `${req.headers.get("origin")}/settings?purchase=cancelled`;
+      sessionConfig.success_url = origin + "/settings?purchase=success";
+      sessionConfig.cancel_url = origin + "/settings?purchase=cancelled";
     }
 
-    // Create checkout session
     const session = await stripe.checkout.sessions.create(sessionConfig);
 
-    // Return appropriate response based on mode
     if (mode === 'embedded') {
       return new Response(JSON.stringify({ 
         clientSecret: session.client_secret 
